@@ -1,0 +1,24 @@
+# Java
+target/
+!target/README
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+angular.json.backup
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Jenkins
+jenkins_home/
