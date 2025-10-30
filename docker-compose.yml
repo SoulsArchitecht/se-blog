@@ -1,29 +1,26 @@
-# docker-compose.yml
-version: '3.8'
-
 services:
-  # === Backend ===
   backend-seblog:
+    container_name: seblog-backend
     build:
-      context: ./backend
+      context: ./backend-seblog
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/seblog
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-seblog:5432/seblog
       SPRING_DATASOURCE_USERNAME: seblog
       SPRING_DATASOURCE_PASSWORD: seblogpass
     depends_on:
-      - db
-      - elasticsearch
+      - db-seblog
+      - elasticsearch-seblog
     networks:
       - blog-network
 
-  # === Frontend ===
   frontend-seblog:
+    container_name: seblog-frontend
     build:
-      context: ./frontend
+      context: ./frontend-seblog
       dockerfile: Dockerfile
     ports:
       - "80:80"
@@ -32,22 +29,22 @@ services:
     networks:
       - blog-network
 
-  # === PostgreSQL ===
-  db:
+  db-seblog:
+    container_name: seblog-db
     image: postgres:15
     environment:
       POSTGRES_DB: seblog
       POSTGRES_USER: seblog
       POSTGRES_PASSWORD: seblogpass
     ports:
-      - "5432:5432"
+      - "5433:5432"   # Локально на 5433, внутри — 5432
     volumes:
-      - postgres_/var/lib/postgresql/data
+      - postgres-data-seblog:/var/lib/postgresql/data
     networks:
       - blog-network
 
-  # === Elasticsearch ===
-  elasticsearch:
+  elasticsearch-seblog:
+    container_name: seblog-elasticsearch
     image: elasticsearch:8.11.3
     environment:
       - discovery.type=single-node
@@ -58,20 +55,20 @@ services:
     networks:
       - blog-network
 
-  # === Kibana ===
-  kibana:
+  kibana-seblog:
+    container_name: seblog-kibana
     image: kibana:8.11.3
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-seblog:9200
     ports:
       - "5601:5601"
     depends_on:
-      - elasticsearch
+      - elasticsearch-seblog
     networks:
       - blog-network
 
-  # === Prometheus ===
-  prometheus:
+  prometheus-seblog:
+    container_name: seblog-prometheus
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
@@ -80,37 +77,40 @@ services:
     networks:
       - blog-network
 
-  # === Grafana ===
-  grafana:
+  grafana-seblog:
+    container_name: seblog-grafana
     image: grafana/grafana:latest
     ports:
       - "3000:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
-      - grafana_data:/var/lib/grafana
+      - grafana-data-seblog:/var/lib/grafana
     networks:
       - blog-network
 
-  # === Jenkins (CI/CD) ===
-  jenkins:
+  jenkins-seblog:
+    container_name: seblog-jenkins
     image: jenkins/jenkins:lts
     ports:
       - "8081:8080"
       - "50000:50000"
     volumes:
-      - jenkins_home:/var/jenkins_home
+      - jenkins-data-seblog:/var/jenkins_home
+      - ./jenkins/init.groovy.d:/usr/share/jenkins/ref/init.groovy.d      
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       JAVA_OPTS: -Djenkins.install.runSetupWizard=false
     networks:
       - blog-network
+    restart: unless-stopped
 
 volumes:
-  postgres_
-  jenkins_home:
-  grafana_
+  postgres-data-seblog:
+  grafana-data-seblog:
+  jenkins-data-seblog:
 
 networks:
   blog-network:
+    name: seblog-network  # Уникальное имя сети
     driver: bridge
