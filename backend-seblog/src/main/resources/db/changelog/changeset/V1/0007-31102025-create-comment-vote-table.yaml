@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0007-31102025-create-vote-table
+      author: serge
+      changes:
+        - createTable:
+            tableName: comment_votes
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: vote_type
+                  type: VARCHAR(10)
+                  defaultValue: UP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: comment_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: comments
+                    referencedColumnNames: id
+                    foreignKeyName: fk_comment_vote_comment
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    foreignKeyName: fk_comment_vote_user
+        - addUniqueConstraint:
+            tableName: comment_votes
+            columnNames: comment_id, user_id
+            constraintName: uk_comment_user_vote

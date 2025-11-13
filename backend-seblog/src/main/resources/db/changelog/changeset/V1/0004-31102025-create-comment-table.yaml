@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0004-31102025-create-comment-table
+      author: serge
+      changes:
+        - createTable:
+            tableName: comments
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(64)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: post_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: posts
+                    referencedColumnNames: id
+                    foreignKeyName: fk_comment_post
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    foreignKeyName: fk_comment_user
+              - column:
+                  name: parent_comment_id
+                  type: UUID
+                  constraints:
+                    referencedTableName: comments
+                    referencedColumnNames: id
+                    foreignKeyName: fk_comment_parent
+              - column:
+                  name: reply_count
+                  type: INT

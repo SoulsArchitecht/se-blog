@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0008-31102025-create-post-vote-table
+      author: serge
+      changes:
+        - createTable:
+            tableName: post_votes
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: vote_type
+                  type: VARCHAR(10)
+                  defaultValue: UP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: post_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: posts
+                    referencedColumnNames: id
+                    foreignKeyName: fk_post_vote_post
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    foreignKeyName: fk_post_vote_user
+        - addUniqueConstraint:
+            tableName: post_votes
+            columnNames: post_id, user_id
+            constraintName: uk_post_user_vote

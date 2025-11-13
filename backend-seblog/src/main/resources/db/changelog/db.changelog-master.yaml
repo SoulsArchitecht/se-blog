@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/V1/0001-31102025-create-user-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0002-31102025-create-user-profile-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0002a-31102025-create-post-type-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0003-31102025-create-post-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0004-31102025-create-comment-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0005-31102025-create-tag-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0006-31102025-create-post_tag-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0007-31102025-create-comment-vote-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0008-31102025-create-post-vote-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0009-01112025-insert-default-type-table.yaml

@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0002-31102025-create-user-profile-table
+      author: serge
+      changes:
+        - createTable:
+            tableName: user_profiles
+            columns:
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    foreignKeyName: fk_profile_user
+              - column:
+                  name: display_name
+                  type: VARCHAR(50)
+              - column:
+                  name: first_name
+                  type: VARCHAR(100)
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+              - column:
+                  name: birth_date
+                  type: DATE
+              - column:
+                  name: phone
+                  type: VARCHAR(20)
+              - column:
+                  name: avatar_url
+                  type: VARCHAR(500)
+              - column:
+                  name: bio
+                  type: TEXT
+              - column:
+                  name: last_login_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: rating
+                  type: int
+              - column:
+                  name: optional_email
+                  type: VARCHAR(50)

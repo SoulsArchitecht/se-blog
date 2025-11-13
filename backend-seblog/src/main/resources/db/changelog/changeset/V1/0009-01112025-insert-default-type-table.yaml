@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0009-31102025-insert-default-data-post-types
+      author: serge
+      changes:
+        - insert:
+            tableName: post_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Hardware
+              - column:
+                  name: slug
+                  value: hardware
+              - column:
+                  name: color_hex
+                  value: "#1f6feb"  # Синий
+              - column:
+                  name: icon
+                  value: "cpu"
+        - insert:
+            tableName: post_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Software
+              - column:
+                  name: slug
+                  value: software
+              - column:
+                  name: color_hex
+                  value: "#10b981"  # Зелёный
+              - column:
+                  name: icon
+                  value: "code"
+        - insert:
+            tableName: post_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Music
+              - column:
+                  name: slug
+                  value: music
+              - column:
+                  name: color_hex
+                  value: "#8b5cf6"  # Фиолетовый
+              - column:
+                  name: icon
+                  value: "music-note"
+        - insert:
+            tableName: post_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Humor
+              - column:
+                  name: slug
+                  value: jokes
+              - column:
+                  name: color_hex
+                  value: "#f59e0b"  # Оранжевый
+              - column:
+                  name: icon
+                  value: "laugh"

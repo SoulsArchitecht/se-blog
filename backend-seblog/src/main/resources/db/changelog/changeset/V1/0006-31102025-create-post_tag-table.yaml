@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0006-31102025-create-post_tag-table
+      author: serge
+      changes:
+        - createTable:
+            tableName: post_tags
+            columns:
+              - column:
+                  name: post_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: posts
+                    referencedColumnNames: id
+                    foreignKeyName: fk_to_post
+              - column:
+                  name: tag_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    referencedTableName: tags
+                    referencedColumnNames: id
+                    foreignKeyName: fk_to_tag
+        - addPrimaryKey:
+            tableName: post_tags
+            columnNames: post_id, tag_id
