@@ -34,11 +34,11 @@ public class CommentVote {
     private PostComment comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "voter_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User voter;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @Column(name = "vote_type", nullable = false)
     private VoteType type;
 
     @CreationTimestamp

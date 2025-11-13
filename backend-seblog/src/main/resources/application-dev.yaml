@@ -4,7 +4,8 @@ server:
 # --- Datasource ---
 spring:
   datasource:
-    url: jdbc:postgresql://db-seblog:5432/seblog
+    #url: jdbc:postgresql://db-seblog:5433/seblog
+    url: jdbc:postgresql://localhost:5433/seblog?currentSchema=public
     username: seblog
     password: seblogpass
     driver-class-name: org.postgresql.Driver
@@ -22,6 +23,7 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: public
 
 # --- Logging ---
 logging:

@@ -26,12 +26,6 @@ public class Tag {
     @Column(name = "slug", length = 100)
     private String slug;
 
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
-
-    @Column(name = "post_count", columnDefinition = "INT DEFAULT 0")
-    private Integer postCount;
-
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

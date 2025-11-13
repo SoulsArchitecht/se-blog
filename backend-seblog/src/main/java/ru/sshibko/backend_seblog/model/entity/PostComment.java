@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "post_comments", indexes = {
+@Table(name = "comments", indexes = {
         @Index(columnList = "post_id"),
         @Index(columnList = "created_at"),
         @Index(columnList = "parent_id")
@@ -33,7 +33,7 @@ public class PostComment {
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User author;
 
     @Column(columnDefinition = "TEXT", nullable = false)
@@ -48,7 +48,7 @@ public class PostComment {
     private LocalDateTime updated_at;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parent_comment_id")
     private PostComment parent;
 
     @OneToMany(mappedBy = "parent", cascade = {CascadeType.MERGE, CascadeType.PERSIST,
@@ -60,7 +60,7 @@ public class PostComment {
 
     @OneToMany(mappedBy = "comment", cascade = {CascadeType.MERGE, CascadeType.PERSIST,
             CascadeType.REMOVE, CascadeType.REFRESH}, orphanRemoval = true)
-    private List<PostVote> votes = new ArrayList<>();
+    private List<CommentVote> votes = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

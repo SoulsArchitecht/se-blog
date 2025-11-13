@@ -12,11 +12,11 @@ import java.util.UUID;
 @Table(name = "post_votes", uniqueConstraints = {
         @UniqueConstraint(
                 name = "uk_post_voter",
-                columnNames = {"post_id", "voter_id"}
+                columnNames = {"post_id", "user_id"}
         )
 }, indexes = {
         @Index(name = "idx_post_votes_post", columnList = "post_id"),
-        @Index(name = "idx_post_votes_voter", columnList = "voter_id")
+        @Index(name = "idx_post_votes_voter", columnList = "user_id")
 })
 @Getter
 @Setter
@@ -34,11 +34,11 @@ public class PostVote {
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "voter_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User voter;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @Column(name = "vote_type", nullable = false)
     private VoteType type;
 
     @CreationTimestamp

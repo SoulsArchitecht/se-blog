@@ -27,7 +27,7 @@ public class Post {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User author;
 
     @Column(name = "title", nullable = false, length = 200)
@@ -61,15 +61,16 @@ public class Post {
 
     @ManyToMany
     @JoinTable(
-            name = "tag_post",
+            name = "post_tags",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
 
-    @Column(name = "view_count", columnDefinition = "BIGINT default 0")
+    @Column(name = "view_count", nullable = false, columnDefinition = "BIGINT default 0")
     private Long viewCount;
 
-    @Column(name = "comment_count", columnDefinition = "INT DEFAULT 0")
-    private Integer commentCount;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_id", nullable = false)
+    private PostType postType;
 }
