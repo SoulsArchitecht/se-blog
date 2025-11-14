@@ -12,11 +12,11 @@ import java.util.UUID;
 @Table(name = "comment_votes", uniqueConstraints = {
         @UniqueConstraint(
                 name = "uk_comment_voter",
-                columnNames = {"comment_id", "voter_id"}
+                columnNames = {"comment_id", "user_id"}
         )
 }, indexes = {
         @Index(name = "idx_comment_votes_comment", columnList = "comment_id"),
-        @Index(name = "idx_comment_votes_voter", columnList = "voter_id")
+        @Index(name = "idx_comment_votes_voter", columnList = "user_id")
 })
 @Getter
 @Setter
@@ -31,7 +31,7 @@ public class CommentVote {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = false)
-    private PostComment comment;
+    private Comment comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

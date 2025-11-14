@@ -53,7 +53,7 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = {CascadeType.MERGE, CascadeType.PERSIST,
             CascadeType.REMOVE, CascadeType.REFRESH}, orphanRemoval = true)
-    private List<PostComment> comments = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = {CascadeType.MERGE, CascadeType.PERSIST,
             CascadeType.REMOVE, CascadeType.REFRESH}, orphanRemoval = true)

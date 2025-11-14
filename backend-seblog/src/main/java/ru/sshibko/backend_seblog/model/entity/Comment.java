@@ -22,7 +22,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class PostComment {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,11 +49,11 @@ public class PostComment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
-    private PostComment parent;
+    private Comment parent;
 
     @OneToMany(mappedBy = "parent", cascade = {CascadeType.MERGE, CascadeType.PERSIST,
             CascadeType.REMOVE, CascadeType.REFRESH}, orphanRemoval = true)
-    private List<PostComment> replies = new ArrayList<>();
+    private List<Comment> replies = new ArrayList<>();
 
     @Column(name = "reply_count", columnDefinition = "INT DEFAULT 0")
     private Integer replyCount;
