@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0012-191102025-insert-poetry-and-prose-types
+      author: serge
+      changes:
+        - insert:
+            tableName: post_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Поэзия
+              - column:
+                  name: slug
+                  value: poetry
+              - column:
+                  name: color_hex
+                  value: "#6366f1"  # Индиго
+              - column:
+                  name: icon
+                  value: "poem"
+
+        - insert:
+            tableName: post_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Проза
+              - column:
+                  name: slug
+                  value: prose
+              - column:
+                  name: color_hex
+                  value: "#8b5cf6"  # Фиолетовый
+              - column:
+                  name: icon
+                  value: "book-open"

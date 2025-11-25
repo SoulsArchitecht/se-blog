@@ -1,0 +1,135 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0011-17112025-insert-test-users
+      author: serge
+      changes:
+        # Пароль: "password" (зашифрован через BCrypt)
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: username
+                  value: user1
+              - column:
+                  name: email
+                  value: user1@example.com
+              - column:
+                  name: password_hash
+                  value: $2a$12$KfQYJZn5v6t7V8w9x0y1zOeWuXrTvSsTqRmNpLoPjKkIgHdGvFbAa
+              - column:
+                  name: role
+                  value: ROLE_USER
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: username
+                  value: mod1
+              - column:
+                  name: email
+                  value: mod1@example.com
+              - column:
+                  name: password_hash
+                  value: $2a$12$KfQYJZn5v6t7V8w9x0y1zOeWuXrTvSsTqRmNpLoPjKkIgHdGvFbAa
+              - column:
+                  name: role
+                  value: ROLE_MODERATOR
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: username
+                  value: admin1
+              - column:
+                  name: email
+                  value: admin1@example.com
+              - column:
+                  name: password_hash
+                  value: $2a$12$KfQYJZn5v6t7V8w9x0y1zOeWuXrTvSsTqRmNpLoPjKkIgHdGvFbAa
+              - column:
+                  name: role
+                  value: ROLE_ADMIN
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 0012-17112025-insert-user-profiles
+      author: serge
+      changes:
+        - insert:
+            tableName: user_profiles
+            columns:
+              - column:
+                  name: user_id
+                  valueComputed: (SELECT id FROM users WHERE username = 'user1')
+              - column:
+                  name: display_name
+                  value: User One
+              - column:
+                  name: avatar_url
+                  value: https://ui-avatars.com/api/?name=User+One&background=random
+              - column:
+                  name: bio
+                  value: Just a regular user.
+              - column:
+                  name: location
+                  value: Moscow
+
+        - insert:
+            tableName: user_profiles
+            columns:
+              - column:
+                  name: user_id
+                  valueComputed: (SELECT id FROM users WHERE username = 'mod1')
+              - column:
+                  name: display_name
+                  value: Moderator One
+              - column:
+                  name: location
+                  value: Saint Petersburg
+              - column:
+                  name: avatar_url
+                  value: https://ui-avatars.com/api/?name=Mod+One&background=random
+
+        - insert:
+            tableName: user_profiles
+            columns:
+              - column:
+                  name: user_id
+                  valueComputed: (SELECT id FROM users WHERE username = 'admin1')
+              - column:
+                  name: display_name
+                  value: Admin One
+              - column:
+                  name: location
+                  value: Novosibirsk
+              - column:
+                  name: avatar_url
+                  value: https://ui-avatars.com/api/?name=Admin+One&background=random

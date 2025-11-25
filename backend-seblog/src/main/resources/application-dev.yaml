@@ -3,6 +3,10 @@ server:
 
 # --- Datasource ---
 spring:
+
+  main:
+    allow-bean-definition-overriding: false
+
   datasource:
     #url: jdbc:postgresql://db-seblog:5433/seblog
     url: jdbc:postgresql://localhost:5433/seblog?currentSchema=public
@@ -19,11 +23,33 @@ spring:
         format_sql: true
         default_schema: public
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      timeout: 5s
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min idle: 0
+          max-wait: -1ms
+
 # --- Liquibase ---
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
     default-schema: public
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      use-key-prefix: true
+
+redis:
+  ttl-hours: 24
 
 # --- Logging ---
 logging:

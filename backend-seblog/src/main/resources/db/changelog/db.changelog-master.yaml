@@ -19,3 +19,9 @@ databaseChangeLog:
       file: db/changelog/changeset/V1/0008-31102025-create-post-vote-table.yaml
   - include:
       file: db/changelog/changeset/V1/0009-01112025-insert-default-type-table.yaml
+  - include:
+      file: db/changelog/changeset/V1/0010-17112025-add-location-to-user-profile.yaml
+  - include:
+      file: db/changelog/changeset/V1/0011-17112025-insert-test-users.yaml
+  - include:
+      file: db/changelog/changeset/V1/0012-19112025-insert-additional-post-types.yaml

@@ -33,8 +33,11 @@ public class Post {
     @Column(name = "title", nullable = false, length = 200)
     private String title;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @Column(name = "slug", nullable = false, unique = true)
+    private String slug;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -72,5 +75,5 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id", nullable = false)
-    private PostType postType;
+    private PostType type;
 }

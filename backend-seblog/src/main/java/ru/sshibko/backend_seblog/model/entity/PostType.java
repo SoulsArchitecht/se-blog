@@ -34,4 +34,7 @@ public class PostType {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "color_hex")
+    private String colorHex;
 }
