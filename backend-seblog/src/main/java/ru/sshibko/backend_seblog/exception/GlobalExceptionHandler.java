@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
+import java.util.prefs.BackingStoreException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,6 +38,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e,
+                                                                       WebRequest request) {
+        ErrorResponse error = ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(),
+                e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e,
                                                                        WebRequest request) {
         ErrorResponse error = ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(),
                 e.getMessage());

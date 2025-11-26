@@ -3,10 +3,12 @@ package ru.sshibko.backend_seblog.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import ru.sshibko.backend_seblog.model.entity.enums.UserRole;
 import ru.sshibko.backend_seblog.model.entity.enums.UserStatus;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.UUID;
 
 @Entity
@@ -45,4 +47,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "String default ACTIVE")
     private UserStatus status;
+
+    public org.springframework.security.core.userdetails.User toUserDetails() {
+        return new org.springframework.security.core.userdetails.User(
+                this.email,
+                this.passwordHash,
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+    }
 }

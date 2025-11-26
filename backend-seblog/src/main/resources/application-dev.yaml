@@ -67,3 +67,16 @@ management:
   endpoint:
     health:
       show-details: always
+
+# --- Security ---
+
+jwt:
+  secret: "mySecretKeyForJWTGenerationThatIsAtLeast256BitsLongForSecurity"
+  access-token-expiration: 900000 # 15 min
+  refresh-token-expiration: 604800000 # 7 days
+
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          secret-value: ${jwt.secret}
