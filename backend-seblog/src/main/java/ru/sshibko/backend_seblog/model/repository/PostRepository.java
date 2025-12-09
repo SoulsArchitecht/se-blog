@@ -10,21 +10,49 @@ import org.springframework.stereotype.Repository;
 import ru.sshibko.backend_seblog.model.entity.Post;
 import ru.sshibko.backend_seblog.model.entity.enums.PostStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, UUID> {
 
+    Optional<Post> findBySlug(String slug);
+
+    boolean existsBySlug(String slug);
+
+    boolean existsBySlugAndIdNot(String slug, UUID id);
+
+    Page<Post> findAllByStatus(PostStatus status, Pageable pageable);
+
+    Page<Post> findAllByAuthorId(UUID authorId, Pageable pageable);
+
+    @Query("SELECT p FROM Post p JOIN p.tags t WHERE t.id = :tagId AND p.status = 'PUBLISHED'")
+    Page<Post> findAllByTagId(@Param("tagId") UUID tagId, Pageable pageable);
+
+    Page<Post> findAllByTypeId(UUID typeId, Pageable pageable);
+
+    //TODO write query
+    Page<Post> findAllByStatusAndPublishedAfter(
+            PostStatus status,
+            LocalDateTime publishedAt,
+            Pageable pageable);
+
     @Modifying
     @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")
     void incrementViewCount(@Param("postId") UUID postId);
 
+    @Query("SELECT p FROM Post p WHERE " +
+            "(LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(p.content) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+            "p.status = 'PUBLISHED'")
+    Page<Post> search(@Param("query") String query, Pageable pageable);
+
     List<Post> id(UUID id);
 
-    Page<Post> findAllByStatus(PostStatus status, Pageable pageable);
 
-    @Query("""
+/*    @Query("""
     SELECT p FROM Post p
     JOIN FETCH p.author u
     LEFT JOIN FETCH u.profile
@@ -41,5 +69,5 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
             @Param("tagSlug") String tagSlug,
             @Param("search") String search,
             Pageable pageable
-    );
+    );*/
 }

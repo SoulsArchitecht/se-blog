@@ -13,7 +13,8 @@ import java.util.*;
 @Table(name = "posts", indexes = {
         @Index(columnList = "author_id"),
         @Index(columnList = "created_at"),
-        @Index(columnList = "status")
+        @Index(columnList = "status"),
+        @Index(columnList = "slug")
 })
 @Getter
 @Setter
@@ -68,12 +69,35 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+    @Builder.Default
     private Set<Tag> tags = new HashSet<>();
 
     @Column(name = "view_count", nullable = false, columnDefinition = "BIGINT default 0")
     private Long viewCount;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id", nullable = false)
     private PostType type;
+
+    // Хелпер-методы для работы с тегами
+    public void addTag(Tag tag) {
+        tags.add(tag);
+        tag.getPosts().add(this);
+    }
+
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
+        tag.getPosts().remove(this);
+    }
+
+    // Хелпер для публикации
+    public void publish() {
+        this.status = PostStatus.PUBLISHED;
+        this.publishedAt = LocalDateTime.now();
+    }
+
+    // Хелпер для инкремента просмотров
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
 }
