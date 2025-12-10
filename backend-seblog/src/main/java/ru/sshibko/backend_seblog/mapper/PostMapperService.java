@@ -2,86 +2,60 @@ package ru.sshibko.backend_seblog.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.sshibko.backend_seblog.dto.PostDto;
-import ru.sshibko.backend_seblog.dto.PostSummaryDto;
+import ru.sshibko.backend_seblog.dto.PostResponse;
+import ru.sshibko.backend_seblog.dto.PostUpdateRequest;
 import ru.sshibko.backend_seblog.model.entity.Post;
-import ru.sshibko.backend_seblog.model.entity.enums.VoteType;
 
-import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PostMapperService {
 
-    private final UserMapperService userMapper;
-
-    private final PostTypeMapperService postTypeMapper;
+    private final  PostTypeMapperService postTypeMapper;
 
     private final TagMapperService tagMapper;
 
-    public PostDto toFull(Post post, UUID currentUserId) {
+    public PostResponse toResponse(Post post) {
         if (post == null) {
             return null;
         }
-        long upvotes = post.getVotes().stream()
-                .filter(v -> v.getType() == VoteType.UP).count();
-        long downvotes = post.getVotes().stream()
-                .filter(v -> v.getType() == VoteType.DOWN).count();
 
-        boolean hasUp = post.getVotes().stream()
-                .anyMatch(v -> v.getUser().getId().equals(currentUserId)
-                && v.getType() == VoteType.UP);
-        boolean hasDown = post.getVotes().stream()
-                .anyMatch(v -> v.getUser().getId().equals(currentUserId)
-                && v.getType() == VoteType.DOWN);
-
-
-        return PostDto.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .slug(post.getSlug())
-                .status(post.getStatus().name())
-                .publishedAt(post.getPublishedAt())
-                .createdAt(post.getCreatedAt())
-                .updatedAt(post.getUpdatedAt())
-                .author(userMapper.toSummaryDto(post.getAuthor()))
-                .type(postTypeMapper.toDto(post.getType()))
-                .tags(post.getTags().stream().map(tagMapper::toDto).collect(Collectors.toSet()))
-                .upvotes((int) upvotes)
-                .downvotes((int) downvotes)
-                .userHasUpvoted(hasUp)
-                .userHasDownvoted(hasDown)
-                .commentCount(post.getComments().size())
-                .viewCount(post.getViewCount()) // ← добавлено
-                .build();
+        return new PostResponse(
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getSlug(),
+                post.getStatus(),
+                post.getPublishedAt(),
+                post.getCreatedAt(),
+                post.getUpdatedAt(),
+                post.getViewCount(),
+                post.getAuthor().getId(),
+                postTypeMapper.toResponse(post.getType()),
+                post.getTags().stream()
+                        .map(tagMapper::mapToResponse)
+                        .collect(Collectors.toSet()),
+                0, // TODO: Добавить логику комментариев
+                0  // TODO: Добавить логику голосования
+        );
     }
 
-    public PostSummaryDto toSummary(Post post) {
-        if (post == null) return null;
-        long upvotes = post.getVotes().stream()
-                .filter(v -> v.getType() == VoteType.UP).count();
-        long downvotes = post.getVotes().stream()
-                .filter(v -> v.getType() == VoteType.DOWN).count();
+    public void updateEntityFromRequest(Post post, PostUpdateRequest request) {
+        if (request.title() != null && !request.title().isBlank()) {
+            post.setTitle(request.title());
+        }
 
-        return PostSummaryDto.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .slug(post.getSlug())
-                .author(userMapper.toSummaryDto(post.getAuthor()))
-                .type(postTypeMapper.toDto(post.getType()))
-                .createdAt(post.getCreatedAt())
-                .commentCount(post.getComments().size())
-                .upvotes((int) upvotes)
-                .viewCount(post.getViewCount()) // ← добавлено
-                .build();
-    }
+        if (request.content() != null) {
+            post.setContent(request.content());
+        }
 
-    public Set<PostSummaryDto> toSummarySet(Set<Post> posts, String currentUserId) {
-        return posts.stream()
-                .map(this::toSummary)
-                .collect(Collectors.toSet());
+        if (request.slug() != null && !request.slug().isBlank()) {
+            post.setSlug(request.slug());
+        }
+
+        if (request.status() != null) {
+            post.setStatus(request.status());
+        }
     }
 }

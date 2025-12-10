@@ -20,7 +20,9 @@ public interface TagRepository extends JpaRepository<Tag, UUID> {
 
     boolean existsByNameAndIdNot(String name, UUID id);
 
-    Set<Tag> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Set<Tag> findByNameIn(Set<String> names);
+
+    Page<Tag> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     @Query("SELECT t FROM Tag t LEFT JOIN t.posts p " +
             "WHERE p.status = 'PUBLISHED' " +
