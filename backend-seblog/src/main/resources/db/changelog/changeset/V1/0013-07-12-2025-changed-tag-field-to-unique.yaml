@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0013-08-12-2025-changed-tag-fields-to-unique
+      author: serge
+      changes:
+        - addUniqueConstraint:
+            tableName: tags
+            columnNames: name
+            constraintName: uk_tag_name
+        - dropColumn:
+            tableName: tags
+            columnName: slug
+        - createIndex:
+            tableName: tags
+            indexName: idx_tags_name
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+        - createIndex:
+            tableName: post_types
+            indexName: idx_post_types_slug
+            columns:
+              - column:
+                  name: slug
+        - createIndex:
+            tableName: posts
+            indexName: idx_posts_slug
+            columns:
+              - column:
+                  name: slug
+

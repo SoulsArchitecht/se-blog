@@ -25,3 +25,5 @@ databaseChangeLog:
       file: db/changelog/changeset/V1/0011-17112025-insert-test-users.yaml
   - include:
       file: db/changelog/changeset/V1/0012-19112025-insert-additional-post-types.yaml
+  - include:
+      file: db/changelog/changeset/V1/0013-07-12-2025-changed-tag-field-to-unique.yaml
