@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.sshibko.backend_seblog.dto.PostResponse;
 import ru.sshibko.backend_seblog.dto.PostUpdateRequest;
 import ru.sshibko.backend_seblog.model.entity.Post;
+import ru.sshibko.backend_seblog.model.entity.PostType;
+import ru.sshibko.backend_seblog.model.repository.PostTypeRepository;
 
 import java.util.stream.Collectors;
 
@@ -32,7 +34,7 @@ public class PostMapperService {
                 post.getUpdatedAt(),
                 post.getViewCount(),
                 post.getAuthor().getId(),
-                postTypeMapper.toResponse(post.getType()),
+                post.getType(),
                 post.getTags().stream()
                         .map(tagMapper::mapToResponse)
                         .collect(Collectors.toSet()),

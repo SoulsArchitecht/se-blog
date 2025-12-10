@@ -1,5 +1,6 @@
 package ru.sshibko.backend_seblog.dto;
 
+import ru.sshibko.backend_seblog.model.entity.PostType;
 import ru.sshibko.backend_seblog.model.entity.enums.PostStatus;
 
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ public record PostResponse(
         LocalDateTime updatedAt,
         Long viewCount,
         UUID authorId,
-        PostTypeResponse type,
+        PostType type,
         Set<TagResponse> tags,
         Integer commentCount,
         Integer voteCount
@@ -38,7 +39,7 @@ public record PostResponse(
         private LocalDateTime updatedAt;
         private Long viewCount;
         private UUID authorId;
-        private PostTypeResponse type;
+        private PostType type;
         private Set<TagResponse> tags;
         private Integer commentCount;
         private Integer voteCount;

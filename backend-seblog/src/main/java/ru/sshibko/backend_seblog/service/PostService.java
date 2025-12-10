@@ -46,7 +46,7 @@ public class PostService {
 
     @Transactional
     public PostResponse createPost(PostCreateRequest request) {
-        PostType postType = postTypeRepo.findById(request.postTypeId())
+        PostType postType = postTypeRepo.findByName(request.postTypeName())
                 .orElseThrow(() -> new ResourceNotFoundException("PostType not found"));
         String slug = slugService.generateUniqueSlug(
                 request.title(),

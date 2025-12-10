@@ -15,4 +15,6 @@ public interface PostTypeRepository extends JpaRepository<PostType, UUID> {
     boolean existsBySlug(String slug);
 
     boolean existsByName(String name);
+
+    Optional<PostType> findByName(String name);
 }
