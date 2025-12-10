@@ -2,22 +2,32 @@ package ru.sshibko.backend_seblog.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.sshibko.backend_seblog.dto.PostCreateRequest;
 import ru.sshibko.backend_seblog.dto.PostDto;
+import ru.sshibko.backend_seblog.dto.PostResponse;
 import ru.sshibko.backend_seblog.dto.PostSummaryDto;
+import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
 import ru.sshibko.backend_seblog.mapper.PostMapperService;
 import ru.sshibko.backend_seblog.model.entity.Post;
+import ru.sshibko.backend_seblog.model.entity.PostType;
+import ru.sshibko.backend_seblog.model.entity.Tag;
+import ru.sshibko.backend_seblog.model.entity.User;
 import ru.sshibko.backend_seblog.model.entity.enums.PostStatus;
 import ru.sshibko.backend_seblog.model.repository.PostRepository;
+import ru.sshibko.backend_seblog.model.repository.PostTypeRepository;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepo;
@@ -26,48 +36,50 @@ public class PostService {
 
     private final ViewLogService viewLogService;
 
-    @Transactional(readOnly = true)
-    public PostDto getPostById(UUID id, UUID userId) {
-        Post post = postRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+    private final PostTypeRepository postTypeRepo;
 
-        if (userId != null && !viewLogService.hasUserViewedToday(id, userId)) {
-            incrementPostViews(id);
-            viewLogService.logView(id, userId);
-        }
+    private final TagService tagService;
 
-        return postMapper.toFull(post, userId);
-    }
+    private final UserService userService;
 
-    @Transactional(readOnly = true)
-    public PostSummaryDto getSummaryById(UUID id) {
-        Post post = postRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-        return postMapper.toSummary(post);
-    }
-
-    public Page<PostSummaryDto> getPostSummary(String status,
-                                               String typeSlug,
-                                               String tagSlug,
-                                               String search,
-                                               int page,
-                                               int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        PostStatus statusEnum = status !=  null ? PostStatus.valueOf(status.toLowerCase()) : null;
-
-        return postRepo.findAllFiltered(statusEnum, typeSlug, tagSlug, search, pageable)
-                .map(postMapper::toSummary);
-    }
-
-    public Page<PostSummaryDto> getAllPostsPublished(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return postRepo.findAllByStatus(PostStatus.PUBLISHED, pageable)
-                .map(postMapper::toSummary);
-    }
+    private final SlugService slugService;
 
     @Transactional
-    protected void incrementPostViews(UUID postId) {
-        postRepo.incrementViewCount(postId);
+    public PostResponse createPost(PostCreateRequest request) {
+        PostType postType = postTypeRepo.findById(request.postTypeId())
+                .orElseThrow(() -> new ResourceNotFoundException("PostType not found"));
+        String slug = slugService.generateUniqueSlug(
+                request.title(),
+                postRepo::existsBySlug
+        );
+
+        User currentUser = userService.getCurrentUser();
+
+        Post post = Post.builder()
+                .title(request.title())
+                .content(request.content())
+                .slug(slug)
+                .status(request.status())
+                .author(currentUser)
+                .type(postType)
+                .viewCount(0L)
+                .build();
+
+        if (!request.tagNames().isEmpty()) {
+            var tags = tagService.getOrCreateTags(request.tagNames());
+            post.setTags(tags);
+        }
+
+        if (post.getStatus() == PostStatus.PUBLISHED) {
+            post.setPublishedAt(LocalDateTime.now());
+        }
+
+        Post newPost = postRepo.save(post);
+        log.info("Created post {} with id {} , slug: {}",
+                newPost.getTitle(), newPost.getId(), newPost.getSlug());
+
+        return postMapper.toResponse(newPost);
     }
+
 
 }

@@ -17,7 +17,7 @@ public record PostCreateRequest(
         String content,
 
         @NotNull(message = "Post type is required")
-        UUID postTypeId,
+        String postTypeName,
 
         PostStatus status,
 

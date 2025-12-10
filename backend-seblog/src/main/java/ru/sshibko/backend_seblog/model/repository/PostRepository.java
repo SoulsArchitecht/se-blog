@@ -34,7 +34,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     Page<Post> findAllByTypeId(UUID typeId, Pageable pageable);
 
     //TODO write query
-    Page<Post> findAllByStatusAndPublishedAfter(
+    Page<Post> findAllByStatusAndPublishedAtAfter(
             PostStatus status,
             LocalDateTime publishedAt,
             Pageable pageable);
