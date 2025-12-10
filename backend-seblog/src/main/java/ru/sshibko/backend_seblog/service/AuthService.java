@@ -37,7 +37,7 @@ public class AuthService {
     public AuthResponse login(AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(),
+                    new UsernamePasswordAuthenticationToken(authRequest.getEmail(),
                             authRequest.getPassword())
             );
 
@@ -60,7 +60,7 @@ public class AuthService {
 
             UserDetails userDetails = user.toUserDetails();
 
-            if (!jwtUtils.validateToken(refreshTokenRequest.getRefreshToken(), userDetails)) {
+            if (!jwtUtils.validateToken(refreshTokenRequest.getRefreshToken())) {
                 throw new InvalidTokenException("Invalid refresh token");
             }
 
@@ -105,7 +105,7 @@ public class AuthService {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new InvalidTokenException("User not found for token"));
 
-            if (!jwtUtils.validateToken(token, user.toUserDetails())) {
+            if (!jwtUtils.validateToken(token)) {
                 throw new InvalidTokenException("Invalid token");
             }
         } catch (Exception e) {

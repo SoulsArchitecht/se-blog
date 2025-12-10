@@ -46,7 +46,8 @@ public class SecurityConfig {
                                 "swagger-ui/**").permitAll()
                         .requestMatchers("/posts", "/posts/{id}", "/types", "/tags").permitAll()
                         .requestMatchers("/comments/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
-                        .requestMatchers("/posts/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
+                        .requestMatchers("posts","posts/", "/posts/create","/posts/**")
+                        .hasAnyRole("USER", "MODERATOR", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -71,7 +72,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(12);
     }
 
     @Bean

@@ -1,8 +1,9 @@
 package ru.sshibko.backend_seblog.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.sshibko.backend_seblog.config.JwtProperties;
@@ -12,8 +13,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class JwtUtils {
 
     private final JwtProperties jwtProperties;
@@ -26,7 +29,12 @@ public class JwtUtils {
     }
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
     }
 
     public Date extractExpiration(String token) {
@@ -53,17 +61,20 @@ public class JwtUtils {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername(),
-                jwtProperties.getAccessTokenExpiration());
+                jwtProperties.getAccessTokenExpiration(), userDetails);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername(),
-                jwtProperties.getAccessTokenExpiration());
+                jwtProperties.getAccessTokenExpiration(), userDetails);
     }
 
     private String createToken(Map<String, Object> claims, String subject,
-                               long expiration) {
+                               long expiration, UserDetails userDetails) {
+        claims.put("roles", userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList()));
         return Jwts.builder()
                 .claims(claims)
                 .subject(subject)
@@ -73,8 +84,22 @@ public class JwtUtils {
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && isTokenExpired(token));
+    public Boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (SecurityException | MalformedJwtException e) {
+            log.warn("Invalid JWT signature: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.warn("Expired JWT token: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.warn("Unsupported JWT token: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.warn("JWT claims string is empty: {}", e.getMessage());
+        }
+        return false;
     }
 }
