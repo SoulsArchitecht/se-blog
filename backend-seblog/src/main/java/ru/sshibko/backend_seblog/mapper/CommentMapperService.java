@@ -3,9 +3,15 @@ package ru.sshibko.backend_seblog.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.sshibko.backend_seblog.dto.CommentDto;
+import ru.sshibko.backend_seblog.dto.response.CommentResponse;
+import ru.sshibko.backend_seblog.dto.response.UserResponse;
 import ru.sshibko.backend_seblog.model.entity.Comment;
+import ru.sshibko.backend_seblog.model.entity.CommentVote;
 import ru.sshibko.backend_seblog.model.entity.enums.VoteType;
+import ru.sshibko.backend_seblog.service.CommentVoteService;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,42 +21,32 @@ public class CommentMapperService {
 
     private final UserMapperService userMapper;
 
-    public CommentDto toDtoWithReplies(Comment comment, String currentUserId,
-                                       int depth, int maxDepth) {
+    private final CommentVoteService commentVoteService;
+
+    public CommentResponse mapToResponse(Comment comment) {
+        return mapToResponse(comment, Collections.emptyList());
+    }
+
+    public CommentResponse mapToResponse(Comment comment, List<CommentResponse> replies) {
         if (comment == null) {
             return null;
         }
 
-        Set<CommentDto> replies = comment.getReplies().stream()
-                .filter(c -> "PUBLISHED".equals(c.getStatus().toString()))
-                .map(reply -> toDtoWithReplies(reply, currentUserId,
-                        depth + 1, maxDepth))
-                .filter(dto -> dto != null)
-                .collect(Collectors.toSet());
+        UserResponse authorResponse = userMapper.mapToResponse(comment.getAuthor());
 
-        boolean hasUp = hasUserVoted(comment, currentUserId, true);
-        boolean hasDown = hasUserVoted(comment, currentUserId, false);
-
-        return CommentDto.builder()
+        return CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
-                .status(comment.getStatus().toString())
-                .createdAt(comment.getCreatedAt())
-                .updatedAt(comment.getUpdatedAt())
-                .author(userMapper.toSummaryDto(comment.getAuthor()))
+                .author(authorResponse)
                 .postId(comment.getPost().getId())
                 .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
+                .createdAt(comment.getCreatedAt())
+                .updatedAt(comment.getUpdatedAt())
+                //TODO .isDeleted(comment.getIsDeleted())
+                .likeCount(commentVoteService.getCommentLikeCount(comment.getId()))
+                .dislikeCount(commentVoteService.getCommentDislikeCount(comment.getId()))
+                .currentUserVote(commentVoteService.getCurrentUserVoteForComment(comment.getId()))
                 .replies(replies)
-                .upvotes((int) comment.getVotes().stream().filter(v -> v.getType() == VoteType.UP).count())
-                .downvotes((int) comment.getVotes().stream().filter(v -> v.getType() == VoteType.DOWN).count())
-                .userHasUpvoted(hasUp)
-                .userHasDownvoted(hasDown)
                 .build();
-    }
-
-    private boolean hasUserVoted(Comment comment, String userId, boolean isUp) {
-        return comment.getVotes().stream()
-                .anyMatch(vote -> vote.getUser().getId().toString().equals(userId)
-                && vote.getType() == (isUp ? VoteType.UP : VoteType.DOWN));
     }
 }

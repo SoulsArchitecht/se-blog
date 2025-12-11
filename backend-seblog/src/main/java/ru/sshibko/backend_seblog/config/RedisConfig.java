@@ -64,6 +64,8 @@ public class RedisConfig {
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(2)))
                 .withCacheConfiguration("users",
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(2)))
+                .withCacheConfiguration("slugs",
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(12)))
                 .build();
     }
 }

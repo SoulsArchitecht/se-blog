@@ -2,25 +2,26 @@ package ru.sshibko.backend_seblog.mapper;
 
 import org.springframework.stereotype.Service;
 import ru.sshibko.backend_seblog.dto.PostTypeCreateRequest;
-import ru.sshibko.backend_seblog.dto.PostTypeResponse;
+import ru.sshibko.backend_seblog.dto.response.PostTypeResponse;
 import ru.sshibko.backend_seblog.model.entity.PostType;
 
 @Service
 public class PostTypeMapperService {
 
-    public PostTypeResponse toResponse(PostType postType) {
+    public PostTypeResponse mapToResponse(PostType postType) {
         if (postType == null) {
             return null;
         }
 
-        return new PostTypeResponse(
-                postType.getId(),
-                postType.getName(),
-                postType.getSlug(),
-                postType.getIcon(),
-                postType.getColorHex(),
-                postType.getCreatedAt()
-        );
+        return PostTypeResponse.builder()
+                .id(postType.getId())
+                .name(postType.getName())
+                .slug(postType.getSlug())
+                .icon(postType.getIcon())
+                .colorHex(postType.getColorHex())
+                .createdAt(postType.getCreatedAt())
+                .build();
+
     }
 
     public PostType toEntity(PostTypeCreateRequest request) {

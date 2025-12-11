@@ -2,62 +2,66 @@ package ru.sshibko.backend_seblog.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.sshibko.backend_seblog.dto.PostResponse;
-import ru.sshibko.backend_seblog.dto.PostUpdateRequest;
+import ru.sshibko.backend_seblog.dto.response.PostResponse;
+import ru.sshibko.backend_seblog.dto.response.PostTypeResponse;
+import ru.sshibko.backend_seblog.dto.response.TagResponse;
+import ru.sshibko.backend_seblog.dto.response.UserResponse;
 import ru.sshibko.backend_seblog.model.entity.Post;
-import ru.sshibko.backend_seblog.model.entity.PostType;
-import ru.sshibko.backend_seblog.model.repository.PostTypeRepository;
+import ru.sshibko.backend_seblog.model.entity.enums.VoteType;
+import ru.sshibko.backend_seblog.service.PostTypeService;
+import ru.sshibko.backend_seblog.service.PostVoteService;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PostMapperService {
 
-    private final  PostTypeMapperService postTypeMapper;
+    private final UserMapperService userMapper;
 
-    private final TagMapperService tagMapper;
+    private final PostTypeService postTypeService;
+    private final PostVoteService postVoteService;
 
-    public PostResponse toResponse(Post post) {
+    public PostResponse mapToResponse(Post post) {
         if (post == null) {
             return null;
         }
 
-        return new PostResponse(
-                post.getId(),
-                post.getTitle(),
-                post.getContent(),
-                post.getSlug(),
-                post.getStatus(),
-                post.getPublishedAt(),
-                post.getCreatedAt(),
-                post.getUpdatedAt(),
-                post.getViewCount(),
-                post.getAuthor().getId(),
-                post.getType(),
-                post.getTags().stream()
-                        .map(tagMapper::mapToResponse)
-                        .collect(Collectors.toSet()),
-                0, // TODO: Добавить логику комментариев
-                0  // TODO: Добавить логику голосования
-        );
-    }
+        PostTypeResponse typeResponse = postTypeService.getPostTypeById(post.getType().getId());
+        UserResponse authorResponse = userMapper.mapToResponse(post.getAuthor());
 
-    public void updateEntityFromRequest(Post post, PostUpdateRequest request) {
-        if (request.title() != null && !request.title().isBlank()) {
-            post.setTitle(request.title());
-        }
+        Set<TagResponse> tagResponses = post.getTags().stream()
+                .map(tag -> TagResponse.builder()
+                        .id(tag.getId())
+                        .name(tag.getName())
+                        //.slug(slugService.generateSlug(tag.getName()))
+                        .createdAt(tag.getCreatedAt())
+                        .postCount(tag.getPosts().size())
+                        .build())
+                .collect(Collectors.toSet());
+        
+        VoteType currentUserVote = postVoteService.getCurrentUserVoteForPost(post.getId());
+        Integer likeCount = postVoteService.getPostLikeCount(post.getId());
+        Integer dislikeCount = postVoteService.getPostDislikeCount(post.getId());
 
-        if (request.content() != null) {
-            post.setContent(request.content());
-        }
-
-        if (request.slug() != null && !request.slug().isBlank()) {
-            post.setSlug(request.slug());
-        }
-
-        if (request.status() != null) {
-            post.setStatus(request.status());
-        }
+        return PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .slug(post.getSlug())
+                .status(post.getStatus())
+                .publishedAt(post.getPublishedAt())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .viewCount(post.getViewCount())
+                .author(authorResponse)
+                .type(typeResponse)
+                .tags(tagResponses)
+                .commentCount(post.getComments().size())
+                .likeCount(likeCount)
+                .dislikeCount(dislikeCount)
+                .currentUserVote(currentUserVote)
+                .build();
     }
 }
