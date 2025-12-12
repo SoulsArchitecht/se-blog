@@ -55,4 +55,8 @@ public class User {
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
         );
     }
+
+    public boolean hasRole(UserRole role) {
+        return this.role.equals(role);
+    }
 }

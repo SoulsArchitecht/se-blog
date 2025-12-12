@@ -2,9 +2,7 @@ package ru.sshibko.backend_seblog.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.sshibko.backend_seblog.dto.TagCreateRequest;
 import ru.sshibko.backend_seblog.dto.response.TagResponse;
-import ru.sshibko.backend_seblog.dto.TagUpdateRequest;
 import ru.sshibko.backend_seblog.model.entity.Tag;
 import ru.sshibko.backend_seblog.service.SlugService;
 

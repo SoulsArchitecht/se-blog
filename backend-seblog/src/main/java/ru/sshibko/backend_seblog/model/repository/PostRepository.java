@@ -24,30 +24,65 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 
     boolean existsBySlugAndIdNot(String slug, UUID id);
 
-    Page<Post> findAllByStatus(PostStatus status, Pageable pageable);
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.tags " +
+            "LEFT JOIN FETCH p.comments c " +
+            "LEFT JOIN FETCH c.author " +
+            "WHERE p.slug = :slug")
+    Optional<Post> findBySlugWithDetails(@Param("slug") String slug);
 
-    Page<Post> findAllByAuthorId(UUID authorId, Pageable pageable);
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.tags " +
+            "WHERE p.id = :id")
+    Optional<Post> findByIdWithDetails(@Param("id") UUID id);
 
-    @Query("SELECT p FROM Post p JOIN p.tags t WHERE t.id = :tagId AND p.status = 'PUBLISHED'")
+    @Query("SELECT p FROM Post p " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.tags " +
+            "WHERE p.status = :status")
+    Page<Post> findAllByStatus(@Param("status") PostStatus status, Pageable pageable);
+
+    //TODO resolve
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.tags " +
+            "WHERE p.type = :type AND p.status = 'PUBLISHED'")
+    Page<Post> findAllByType(@Param("type") String type, Pageable pageable);
+
+    @Query("SELECT p FROM Post p " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.tags " +
+            "WHERE p.author.id = :authorId AND p.status = 'PUBLISHED'")
+    Page<Post> findAllByAuthorId(@Param("authorId") UUID authorId, Pageable pageable);
+
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "JOIN p.tags t " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.tags " +
+            "WHERE t.id = :tagId AND p.status = 'PUBLISHED'")
     Page<Post> findAllByTagId(@Param("tagId") UUID tagId, Pageable pageable);
 
-    Page<Post> findAllByTypeId(UUID typeId, Pageable pageable);
+    @Query("SELECT p FROM Post p " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.tags " +
+            "WHERE (LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(p.content) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+            "p.status = 'PUBLISHED'")
+    Page<Post> search(@Param("query") String query, Pageable pageable);
+
+    @Modifying
+    @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")
+    void incrementViewCount(@Param("postId") UUID postId);
+
+    //TODO Resolve below
 
     //TODO write query
     Page<Post> findAllByStatusAndPublishedAtAfter(
             PostStatus status,
             LocalDateTime publishedAt,
             Pageable pageable);
-
-    @Modifying
-    @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")
-    void incrementViewCount(@Param("postId") UUID postId);
-
-    @Query("SELECT p FROM Post p WHERE " +
-            "(LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "LOWER(p.content) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
-            "p.status = 'PUBLISHED'")
-    Page<Post> search(@Param("query") String query, Pageable pageable);
 
     List<Post> id(UUID id);
 

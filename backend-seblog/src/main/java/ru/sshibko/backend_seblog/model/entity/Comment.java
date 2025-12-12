@@ -65,4 +65,14 @@ public class Comment {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private CommentStatus status;
+
+    private boolean isDeleted;
+
+    public boolean getIsDeleted() {
+        return CommentStatus.DELETED.equals(status);
+    }
+
+    public void setIsDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
 }

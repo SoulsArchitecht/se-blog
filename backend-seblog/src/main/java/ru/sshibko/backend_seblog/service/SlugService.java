@@ -7,8 +7,8 @@ import com.optimaize.langdetect.ngram.NgramExtractors;
 import com.optimaize.langdetect.profiles.LanguageProfile;
 import com.optimaize.langdetect.profiles.LanguageProfileReader;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import com.optimaize.langdetect.LanguageDetector;
 import ru.sshibko.backend_seblog.config.LocaleConfig;
@@ -29,7 +29,6 @@ public class SlugService {
 
     @PostConstruct
     public void init() {
-        // Инициализация детектора языка
         try {
             List<LanguageProfile> languageProfiles = new LanguageProfileReader().readAllBuiltIn();
             languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
@@ -65,6 +64,7 @@ public class SlugService {
                 .build();
     }
 
+    @Cacheable(value = "slugs", key = "#text")
     public String generateSlug(String text) {
         if (text == null || text.isBlank()) {
             throw new IllegalArgumentException("Text cannot be null or blank");
