@@ -1,5 +1,6 @@
 package ru.sshibko.backend_seblog.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +29,17 @@ public class UserService {
     }*/
 
     public User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new AuthenticationException("User not authenticated");
+        }
+        String email = auth.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+    }
+
+/*    public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -49,7 +61,7 @@ public class UserService {
             log.error("Unknown user principal type: {}", principal.getClass().getName());
             throw new ResourceNotFoundException("Не удалось получить информацию о пользователе");
         }
-    }
+    }*/
 
     private User convertUserDetailsToUser(org.springframework.security.core.userdetails.User userDetails) {
         String roleName = userDetails.getAuthorities().stream()

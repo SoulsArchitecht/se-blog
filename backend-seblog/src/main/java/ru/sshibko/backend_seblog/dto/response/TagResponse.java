@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
-@Schema(description = "Ответ с информацией о пользователе")
+@Schema(description = "Ответ с информацией о тэге")
 public record TagResponse(
         @Schema(description = "ID тега",
                 example = "123e4567-e89b-12d3-a456-426614174000")

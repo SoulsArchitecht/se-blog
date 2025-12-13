@@ -69,7 +69,7 @@ public class TagService {
         return tagMapper.mapToResponse(savedTag);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Set<Tag> getOrCreateTags(Set<String> tagNames) {
         if (tagNames == null || tagNames.isEmpty()) {
             return new HashSet<>();

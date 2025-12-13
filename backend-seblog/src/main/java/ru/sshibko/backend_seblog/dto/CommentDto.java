@@ -2,6 +2,7 @@ package ru.sshibko.backend_seblog.dto;
 
 import lombok.Builder;
 import lombok.Value;
+import ru.sshibko.backend_seblog.dto.response.UserSummaryResponse;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -16,7 +17,7 @@ public class CommentDto {
     String status;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    UserSummaryDto author;
+    UserSummaryResponse author;
     UUID postId;
     UUID parentId;
     Set<CommentDto> replies;

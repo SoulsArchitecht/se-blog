@@ -20,7 +20,7 @@ public record CommentResponse(
         String content,
 
         @Schema(description = "Автор")
-        UserResponse author,
+        UserSummaryResponse author,
 
         @Schema(description = "ID поста",
                 example = "123e4567-e89b-12d3-a456-426614174000")

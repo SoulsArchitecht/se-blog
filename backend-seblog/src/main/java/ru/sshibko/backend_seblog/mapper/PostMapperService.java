@@ -1,11 +1,9 @@
 package ru.sshibko.backend_seblog.mapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.sshibko.backend_seblog.dto.response.PostResponse;
-import ru.sshibko.backend_seblog.dto.response.PostTypeResponse;
-import ru.sshibko.backend_seblog.dto.response.TagResponse;
-import ru.sshibko.backend_seblog.dto.response.UserResponse;
+import ru.sshibko.backend_seblog.dto.response.*;
 import ru.sshibko.backend_seblog.model.entity.Post;
 import ru.sshibko.backend_seblog.model.entity.enums.VoteType;
 import ru.sshibko.backend_seblog.service.PostTypeService;
@@ -16,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostMapperService {
 
     private final UserMapperService userMapper;
@@ -24,12 +23,22 @@ public class PostMapperService {
     private final PostVoteService postVoteService;
 
     public PostResponse mapToResponse(Post post) {
+
+        log.info("enter to mapper");
         if (post == null) {
             return null;
         }
 
+        log.info("post not null checked");
+
         PostTypeResponse typeResponse = postTypeService.getPostTypeById(post.getType().getId());
-        UserResponse authorResponse = userMapper.mapToResponse(post.getAuthor());
+
+        log.info("before userresponse");
+        UserSummaryResponse authorResponse = userMapper.mapToUserSummaryResponse(post.getAuthor());
+
+        Integer postCount = 1;
+
+        log.info("before tagResponse");
 
         Set<TagResponse> tagResponses = post.getTags().stream()
                 .map(tag -> TagResponse.builder()
@@ -37,13 +46,17 @@ public class PostMapperService {
                         .name(tag.getName())
                         //.slug(slugService.generateSlug(tag.getName()))
                         .createdAt(tag.getCreatedAt())
-                        .postCount(tag.getPosts().size())
+                        .postCount(postCount)
                         .build())
                 .collect(Collectors.toSet());
+
+        log.info("tags not null checked");
         
         VoteType currentUserVote = postVoteService.getCurrentUserVoteForPost(post.getId());
         Integer likeCount = postVoteService.getPostLikeCount(post.getId());
         Integer dislikeCount = postVoteService.getPostDislikeCount(post.getId());
+
+        log.info("Starting to map post response");
 
         return PostResponse.builder()
                 .id(post.getId())
@@ -58,7 +71,8 @@ public class PostMapperService {
                 .author(authorResponse)
                 .type(typeResponse)
                 .tags(tagResponses)
-                .commentCount(post.getComments().size())
+                //TODO add entity field
+                //.commentCount(post.getComments().size())
                 .likeCount(likeCount)
                 .dislikeCount(dislikeCount)
                 .currentUserVote(currentUserVote)

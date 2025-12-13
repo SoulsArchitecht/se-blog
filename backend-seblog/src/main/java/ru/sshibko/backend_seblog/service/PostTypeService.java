@@ -21,28 +21,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Slf4j
 @CacheConfig(cacheNames = "postTypes")
-@Transactional(readOnly = true)
+@Transactional
 public class PostTypeService {
 
     private final PostTypeRepository postTypeRepository;
 
-    private final PostTypeMapperService postMapper;
+    private final PostTypeMapperService postTypeMapper;
 
     @Cacheable(key = "'all'")
     public List<PostTypeResponse> getAllPostTypes() {
         log.debug("getAllPostTypes()");
         return postTypeRepository.findAll().stream()
-                .map(postMapper::mapToResponse)
+                .map(postTypeMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(key = "#id")
+    //@Cacheable(key = "#id")
     public PostTypeResponse getPostTypeById(UUID id) {
         log.debug("getPostTypeById({})", id);
         PostType postType = postTypeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "PostType with id: " + id + " not found!") );
-        return postMapper.mapToResponse(postType);
+        log.debug("entering to postTypeMapper {}", postType.getName());
+        return postTypeMapper.mapToResponse(postType);
     }
 
     public boolean existsById(UUID id) {

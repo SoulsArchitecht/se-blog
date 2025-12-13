@@ -2,18 +2,13 @@ package ru.sshibko.backend_seblog.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.sshibko.backend_seblog.dto.CommentDto;
 import ru.sshibko.backend_seblog.dto.response.CommentResponse;
-import ru.sshibko.backend_seblog.dto.response.UserResponse;
+import ru.sshibko.backend_seblog.dto.response.UserSummaryResponse;
 import ru.sshibko.backend_seblog.model.entity.Comment;
-import ru.sshibko.backend_seblog.model.entity.CommentVote;
-import ru.sshibko.backend_seblog.model.entity.enums.VoteType;
 import ru.sshibko.backend_seblog.service.CommentVoteService;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +27,7 @@ public class CommentMapperService {
             return null;
         }
 
-        UserResponse authorResponse = userMapper.mapToResponse(comment.getAuthor());
+        UserSummaryResponse authorResponse = userMapper.mapToUserSummaryResponse(comment.getAuthor());
 
         return CommentResponse.builder()
                 .id(comment.getId())

@@ -64,6 +64,10 @@ public class PostService {
             throw new ValidationException("Post type not found " + request.postTypeId());
         }
 
+        log.info("Checking slug");
+
+/*        String slug = slugService.generateUniqueSlug(request.title(), postRepository::existsBySlug);*/
+
         String slug;
         if (request.customSlug() != null && !request.customSlug().isBlank()) {
             slug = request.customSlug().trim();
@@ -79,6 +83,8 @@ public class PostService {
                     postRepository::existsBySlug
             );
         }
+
+        log.info("finding post with slug: {}", slug);
 
        PostType postType = postTypeRepository.findById(request.postTypeId())
                .orElseThrow(() -> new ResourceNotFoundException(

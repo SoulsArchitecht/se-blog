@@ -1,15 +1,43 @@
 package ru.sshibko.backend_seblog.mapper;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.sshibko.backend_seblog.dto.response.UserResponse;
+import ru.sshibko.backend_seblog.dto.response.UserSummaryResponse;
 import ru.sshibko.backend_seblog.model.entity.User;
 import ru.sshibko.backend_seblog.model.entity.UserProfile;
+
+import java.time.LocalDate;
 
 @Service
 public class UserMapperService {
 
-    UserResponse mapToResponse(User user){
+    public UserSummaryResponse mapToUserSummaryResponse(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        UserProfile profile = user.getProfile();
+        String displayName = profile != null && profile.getDisplayName() != null
+                ? profile.getDisplayName()
+                : "-";
+
+        String avatarUrl = profile != null && profile.getAvatarUrl() != null
+                ? profile.getAvatarUrl()
+                : "-";
+
+        Integer registrationYear = user.getCreatedAt() != null
+                ? user.getCreatedAt().getYear()
+                : LocalDate.now().getYear();
+        return new UserSummaryResponse(
+                user.getId(),
+                displayName,
+                user.getUsername(),
+                avatarUrl,
+                registrationYear
+        );
+    }
+
+/*    UserResponse mapToResponse(User user){
         if (user == null){
             return null;
         }
@@ -40,5 +68,5 @@ public class UserMapperService {
                 .avatarUrl(avatar)
                 .registeredAt(user.getCreatedAt())
                 .build();
-    }
+    }*/
 }

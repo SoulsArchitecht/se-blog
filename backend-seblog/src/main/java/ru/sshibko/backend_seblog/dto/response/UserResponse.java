@@ -1,13 +1,9 @@
 package ru.sshibko.backend_seblog.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Builder
 @Schema(description = "Ответ с рег данными пользователя")
 public record UserResponse(
         @Schema(description = "ID пользователя",

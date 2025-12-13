@@ -1,5 +1,6 @@
 package ru.sshibko.backend_seblog.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -20,6 +21,7 @@ public class UserProfile {
     @Id
     private UUID id;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id")

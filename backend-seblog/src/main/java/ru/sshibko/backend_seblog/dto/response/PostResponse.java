@@ -49,7 +49,7 @@ public record PostResponse(
         Long viewCount,
 
         @Schema(description = "Автор")
-        UserResponse author,
+        UserSummaryResponse author,
 
         @Schema(description = "Тип поста")
         PostTypeResponse type,
@@ -57,9 +57,10 @@ public record PostResponse(
         @Schema(description = "Теги")
         Set<TagResponse> tags,
 
-        @Schema(description = "Количество комментариев",
+        //TODO add Entity field
+/*        @Schema(description = "Количество комментариев",
                 example = "12")
-        Integer commentCount,
+        Integer commentCount,*/
 
         @Schema(description = "Количество лайков",
                 example = "45")
