@@ -52,11 +52,26 @@ redis:
   ttl-hours: 24
 
 # --- Logging ---
+#logging:
+#  level:
+#    org.springframework.security: DEBUG
+#    org.hibernate.sql: DEBUG
+#    org.hibernate.type.descriptor.sql: TRACE
+
 logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} [requestId:%X{requestId}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} [requestId:%X{requestId}] - %msg%n"
+
   level:
-    org.springframework.security: DEBUG
-    org.hibernate.sql: DEBUG
-    org.hibernate.type.descriptor.sql: TRACE
+    ru.sshibko.backend_seblog: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: WARN
+
+  file:
+    name: logs/application.log
+    max-size: 10MB
+    max-history: 30
 
 # --- Management (Actuator) ---
 management:

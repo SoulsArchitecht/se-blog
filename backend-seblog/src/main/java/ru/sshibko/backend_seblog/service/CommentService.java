@@ -17,6 +17,7 @@ import ru.sshibko.backend_seblog.mapper.CommentMapperService;
 import ru.sshibko.backend_seblog.model.entity.Comment;
 import ru.sshibko.backend_seblog.model.entity.Post;
 import ru.sshibko.backend_seblog.model.entity.User;
+import ru.sshibko.backend_seblog.model.entity.enums.CommentStatus;
 import ru.sshibko.backend_seblog.model.entity.enums.UserRole;
 import ru.sshibko.backend_seblog.model.repository.CommentRepository;
 import ru.sshibko.backend_seblog.model.repository.PostRepository;
@@ -67,7 +68,8 @@ public class CommentService {
                 .author(currentUser)
                 .post(post)
                 .parent(parent)
-                .isDeleted(false) //TODO check in tests
+                //.isDeleted(false) //TODO check in tests
+                .status(CommentStatus.ACTIVE)
                 .build();
 
         Comment newComment = commentRepository.save(comment);
@@ -83,7 +85,7 @@ public class CommentService {
         log.debug("Get comments for post: {}: page {}, size {}",
                 postId, pageable.getPageNumber(), pageable.getPageSize());
 
-        return commentRepository.findAllByPostIdAndIsDeletedFalse(postId, pageable)
+        return commentRepository.findAllByPostIdAndStatus(postId, CommentStatus.ACTIVE, pageable)
                 .map(commentMapper::mapToResponse);
     }
 
@@ -92,7 +94,8 @@ public class CommentService {
     public List<CommentResponse> getCommentTree(UUID postId) {
         log.debug("Get comments for post: {}", postId);
 
-        List<Comment> rootComments = commentRepository.findRootCommentsByPostId(postId);
+        List<Comment> rootComments = commentRepository.findRootCommentsByPostId(
+                postId, CommentStatus.ACTIVE);
 
         return rootComments.stream()
                 .map(this::buildCommentTree)
@@ -117,7 +120,10 @@ public class CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found: "
                 + commentId));
 
-        if (comment.getIsDeleted()) {
+/*        if (comment.getIsDeleted()) {
+            throw  new ValidationException("Comment with id: " + commentId + " is deleted");
+        }*/
+        if (comment.getStatus().equals(CommentStatus.DELETED)) {
             throw  new ValidationException("Comment with id: " + commentId + " is deleted");
         }
 
@@ -137,7 +143,8 @@ public class CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Комментарий не найден: " + commentId));
         //if child comment exists marked as deleted
         if (!comment.getReplies().isEmpty()) {
-            comment.setIsDeleted(true); //TODO setIsDeleted()
+            //comment.setIsDeleted(true); //TODO setIsDeleted()
+            comment.setStatus(CommentStatus.DELETED);
             comment.setContent("[Comment is deleted]");
             commentRepository.save(comment);
             log.info("Comment is marked as deleted: ID {}", commentId);
@@ -177,7 +184,8 @@ public class CommentService {
 
     private CommentResponse buildCommentTree(Comment comment) {
         List<CommentResponse> replies = comment.getReplies().stream()
-                .filter(reply -> !reply.getIsDeleted()) //TODO isDeleted
+                //.filter(reply -> !reply.getIsDeleted()) //TODO isDeleted
+                .filter(reply -> reply.getStatus() != CommentStatus.DELETED)
                 .map(this::buildCommentTree)
                 .toList();
 

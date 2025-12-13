@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.sshibko.backend_seblog.model.entity.Comment;
+import ru.sshibko.backend_seblog.model.entity.enums.CommentStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,20 +16,20 @@ import java.util.UUID;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
-    Page<Comment> findAllByPostIdAndIsDeletedFalse(UUID postId, Pageable pageable);
+    Page<Comment> findAllByPostIdAndStatus(UUID postId, CommentStatus status, Pageable pageable);
 
     @Query("SELECT c FROM Comment c " +
-            "WHERE c.post.id = :postId AND c.parent IS NULL AND c.isDeleted = false " +
+            "WHERE c.post.id = :postId AND c.parent IS NULL AND c.status = :status " +
             "ORDER BY c.createdAt ASC")
-    List<Comment> findRootCommentsByPostId(@Param("postId") UUID postId);
+    List<Comment> findRootCommentsByPostId(@Param("postId") UUID postId, @Param("status") CommentStatus status);
 
     @Query("SELECT c FROM Comment c " +
             "LEFT JOIN FETCH c.author " +
             "LEFT JOIN FETCH c.replies r " +
             "LEFT JOIN FETCH r.author " +
-            "WHERE c.post.id = :postId AND c.parent IS NULL AND c.isDeleted = false " +
+            "WHERE c.post.id = :postId AND c.parent IS NULL AND c.status = :status " +
             "ORDER BY c.createdAt ASC")
-    List<Comment> findCommentTreeByPostId(@Param("postId") UUID postId);
+    List<Comment> findCommentTreeByPostId(@Param("postId") UUID postId, @Param("status") CommentStatus status);
 
     @Query("SELECT c FROM Comment c " +
             "LEFT JOIN FETCH c.author " +
@@ -40,6 +41,6 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
     List<Comment> findAllByParentId(UUID parentId);
 
-    @Query("SELECT COUNT(c) FROM Comment c WHERE c.post.id = :postId AND c.isDeleted = false")
-    Integer countByPostId(@Param("postId") UUID postId);
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.post.id = :postId AND c.status = :status")
+    Integer countByPostId(@Param("postId") UUID postId,  @Param("status") CommentStatus status);
 }
