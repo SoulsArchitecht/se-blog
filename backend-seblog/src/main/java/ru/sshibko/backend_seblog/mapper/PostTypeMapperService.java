@@ -2,7 +2,6 @@ package ru.sshibko.backend_seblog.mapper;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.sshibko.backend_seblog.dto.PostTypeCreateRequest;
 import ru.sshibko.backend_seblog.dto.response.PostTypeResponse;
 import ru.sshibko.backend_seblog.model.entity.PostType;
 

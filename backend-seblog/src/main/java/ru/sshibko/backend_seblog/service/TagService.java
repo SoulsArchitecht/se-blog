@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.sshibko.backend_seblog.dto.TagCreateRequest;
+import ru.sshibko.backend_seblog.dto.request.TagCreateRequest;
 import ru.sshibko.backend_seblog.dto.response.TagResponse;
 import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
 import ru.sshibko.backend_seblog.exception.ValidationException;

@@ -26,11 +26,18 @@ public record PostCreateRequest(
                 requiredMode = Schema.RequiredMode.REQUIRED)
         String content,
 
-        @NotNull(message = "Тип поста обязателен")
+        //TODO resolve deletion
+/*        @NotNull(message = "Тип поста обязателен")
         @Schema(description = "ID типа поста",
                 example = "123e4567-e89b-12d3-a456-426614174000",
                 requiredMode = Schema.RequiredMode.REQUIRED)
-        UUID postTypeId,
+        UUID postTypeId,*/
+
+        @NotNull(message = "Тип поста обязателен")
+        @Schema(description = "имя типа поста",
+                example = "Hardware",
+                requiredMode = Schema.RequiredMode.REQUIRED)
+        String postTypeName,
 
         @Schema(description = "Статус поста",
                 example = "DRAFT",

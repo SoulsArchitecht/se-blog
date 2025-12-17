@@ -60,9 +60,15 @@ public class PostService {
 
         User currentUser = userService.getCurrentUser();
 
+        PostType postType = postTypeRepository.findByName(request.postTypeName())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Post type not found with name " + request.postTypeName()));
+
+/*
         if (!postTypeService.existsById(request.postTypeId())) {
             throw new ValidationException("Post type not found " + request.postTypeId());
         }
+*/
 
         log.info("Checking slug");
 
@@ -86,9 +92,9 @@ public class PostService {
 
         log.info("finding post with slug: {}", slug);
 
-       PostType postType = postTypeRepository.findById(request.postTypeId())
+/*       PostType postType = postTypeRepository.findById(request.postTypeId())
                .orElseThrow(() -> new ResourceNotFoundException(
-                       "Post type not found " + request.postTypeId()));
+                       "Post type not found " + request.postTypeId()));*/
 
         Post post = Post.builder()
                 .title(request.title())
@@ -172,7 +178,7 @@ public class PostService {
         return postMapper.mapToResponse(updatedPost);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Cacheable(value = "posts", key = "#slug")
     public PostResponse getPostBySlug(String slug) {
         log.debug("Getting post by slug: {}", slug);
@@ -216,12 +222,12 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "postsByType", key = "#type + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
-    public Page<PostResponse> getPostsByType(PostType type, Pageable pageable) {
+    @Cacheable(value = "postsByType", key = "#typeName + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public Page<PostResponse> getPostsByTypeName(String typeName, Pageable pageable) {
         log.debug("Getting post by type {}: page {}, size {}",
-                type, pageable.getPageNumber(), pageable.getPageSize());
+                typeName, pageable.getPageNumber(), pageable.getPageSize());
 
-        return postRepository.findAllByType(String.valueOf(type), pageable)
+        return postRepository.findAllByTypeName(typeName, pageable)
                 .map(postMapper::mapToResponse);
     }
 

@@ -1,4 +1,4 @@
-package ru.sshibko.backend_seblog.dto;
+package ru.sshibko.backend_seblog.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

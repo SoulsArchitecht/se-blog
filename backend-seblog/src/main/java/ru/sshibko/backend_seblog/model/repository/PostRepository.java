@@ -45,11 +45,17 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     Page<Post> findAllByStatus(@Param("status") PostStatus status, Pageable pageable);
 
     //TODO resolve
-    @Query("SELECT DISTINCT p FROM Post p " +
+/*    @Query("SELECT DISTINCT p FROM Post p " +
             "LEFT JOIN FETCH p.author " +
             "LEFT JOIN FETCH p.tags " +
             "WHERE p.type = :type AND p.status = 'PUBLISHED'")
-    Page<Post> findAllByType(@Param("type") String type, Pageable pageable);
+    Page<Post> findAllByType(@Param("type") String type, Pageable pageable);*/
+
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.tags " +
+            "WHERE p.type.name = :typeName AND p.status = 'PUBLISHED'")
+    Page<Post> findAllByTypeName(@Param("typeName") String typeName, Pageable pageable);
 
     @Query("SELECT p FROM Post p " +
             "LEFT JOIN FETCH p.author " +
