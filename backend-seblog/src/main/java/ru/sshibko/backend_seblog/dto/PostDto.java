@@ -2,6 +2,7 @@ package ru.sshibko.backend_seblog.dto;
 
 import lombok.Builder;
 import lombok.Value;
+import ru.sshibko.backend_seblog.dto.response.UserSummaryResponse;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class PostDto {
     LocalDateTime publishedAt;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    UserSummaryDto author;
+    UserSummaryResponse author;
     PostTypeDto type;
     Set<TagDto> tags;
     int upvotes;
