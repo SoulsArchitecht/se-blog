@@ -1,0 +1,18 @@
+<header class="header">
+  <div class="logo">
+    <a routerLink="/">SE Blog</a>
+  </div>
+  
+  <nav class="nav">
+    <a routerLink="/" class="nav-link">Главная</a>
+    
+    @if (authService.isAuthenticated()) {
+      <a routerLink="/create-post" class="nav-link">Создать пост</a>
+      <a routerLink="/profile" class="nav-link">Профиль</a>
+      <button class="nav-button" (click)="logout()">Выйти</button>
+    } @else {
+      <a routerLink="/login" class="nav-link">Войти</a>
+      <a routerLink="/register" class="nav-link">Регистрация</a>
+    }
+  </nav>
+</header><p>header works!</p>

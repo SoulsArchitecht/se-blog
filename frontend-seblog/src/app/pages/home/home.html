@@ -1,0 +1,83 @@
+<div class="home-page">
+  <div class="page-header">
+    <h1>Последние посты</h1>
+    
+    @if (isAuthenticated) {
+      <a routerLink="/create-post" class="create-post-btn">+ Создать пост</a>
+    }
+  </div>
+  
+  @if (isLoading() && posts().length === 0) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Загрузка постов...</p>
+    </div>
+  }
+  
+  @if (posts().length > 0) {
+    <div class="posts-grid">
+      @for (post of posts(); track post.id) {
+        <article class="post-card">
+          <div class="post-header">
+            <div class="post-author">
+              <img 
+                [src]="post.author.avatar || '/assets/default-avatar.png'" 
+                [alt]="post.author.username"
+                class="avatar"
+              >
+              <div>
+                <span class="author-name">{{ post.author.username }}</span>
+                <span class="post-date">{{ post.createdAt | date:'dd.MM.yyyy' }}</span>
+              </div>
+            </div>
+            <span class="post-category">{{ post.category }}</span>
+          </div>
+          
+          <h3 class="post-title">
+            <a [routerLink]="['/post', post.id]">{{ post.title }}</a>
+          </h3>
+          
+          <p class="post-excerpt">{{ post.excerpt || (post.content | slice:0:200) }}...</p>
+          
+          <div class="post-footer">
+            <div class="post-stats">
+              <span class="stat">👁️ {{ post.viewsCount }}</span>
+              <span class="stat">💬 {{ post.commentsCount }}</span>
+              <span class="stat">❤️ {{ post.likesCount }}</span>
+            </div>
+            
+            <div class="post-tags">
+              @for (tag of post.tags; track tag) {
+                <span class="tag">{{ tag }}</span>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+    
+    @if (hasMorePosts()) {
+      <div class="load-more">
+        <button 
+          (click)="loadMore()" 
+          [disabled]="isLoading()"
+          class="load-more-btn"
+        >
+          @if (isLoading()) {
+            <span class="spinner-small"></span>
+            Загрузка...
+          } @else {
+            Показать еще
+          }
+        </button>
+      </div>
+    }
+  } @else if (!isLoading()) {
+    <div class="empty-state">
+      <p>Пока нет постов. Будьте первым!</p>
+      @if (isAuthenticated) {
+        <a routerLink="/create-post" class="btn">Создать первый пост</a>
+      }
+    </div>
+  }
+</div>

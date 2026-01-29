@@ -1,39 +1,184 @@
+/* Глобальные стили приложения */
 
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
-@use '@angular/material' as mat;
+/* CSS Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
 html {
-  @include mat.theme((
-    color: (
-      primary: mat.$magenta-palette,
-      tertiary: mat.$violet-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
   margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  background-color: #f8f9fa;
 }
-/* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* Links */
+a {
+  color: #3498db;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+  cursor: pointer;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #333;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  background-color: #f8f9fa;
+  border-color: #ccc;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #3498db;
+  border-color: #3498db;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+}
+
+/* Forms */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.15s;
+}
+
+.form-control:focus {
+  border-color: #3498db;
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+}
+
+/* Utilities */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-5 { margin-top: 3rem; }
+
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.d-flex { display: flex; }
+.d-none { display: none; }
+.flex-column { flex-direction: column; }
+.align-items-center { align-items: center; }
+.justify-content-center { justify-content: center; }
+.justify-content-between { justify-content: space-between; }
+
+/* Loading States */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Card */
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* Responsive Images */
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.5rem; }
+  
+  .container {
+    padding: 0 15px;
+  }
+}

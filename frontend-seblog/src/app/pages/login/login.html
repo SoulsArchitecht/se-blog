@@ -1,0 +1,91 @@
+<div class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <h2 class="login-title">Вход в систему</h2>
+      
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+            placeholder="Введите email"
+            autocomplete="email"
+          />
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <div class="error-messages">
+              @if (loginForm.get('email')?.errors?.['required']) {
+                <span>Обязательное поле</span>
+              }
+              @if (loginForm.get('email')?.errors?.['email']) {
+                <span>Некорректный email</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Пароль</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            placeholder="Введите пароль"
+            autocomplete="current-password"
+          />
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <div class="error-messages">
+              @if (loginForm.get('password')?.errors?.['required']) {
+                <span>Обязательное поле</span>
+              }
+              @if (loginForm.get('password')?.errors?.['minlength']) {
+                <span>Минимум 6 символов</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="rememberMe">
+            <span>Запомнить меня</span>
+          </label>
+          
+          <a routerLink="/forgot-password" class="forgot-password">Забыли пароль?</a>
+        </div>
+
+        <!-- Error Message -->
+        @if (errorMessage()) {
+          <div class="alert error">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || isLoading()"
+          class="submit-button"
+        >
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            <span>Вход...</span>
+          } @else {
+            <span>Войти</span>
+          }
+        </button>
+      </form>
+
+      <div class="register-link">
+        <p>Нет аккаунта? <a routerLink="/register">Зарегистрироваться</a></p>
+        <p><a routerLink="/">На главную</a></p>
+      </div>
+    </div>
+  </div>
+</div><p>login works!</p>
