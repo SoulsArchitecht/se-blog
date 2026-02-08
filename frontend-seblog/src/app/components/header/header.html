@@ -5,6 +5,7 @@
   
   <nav class="nav">
     <a routerLink="/" class="nav-link">Главная</a>
+    <br>
     
     @if (authService.isAuthenticated()) {
       <a routerLink="/create-post" class="nav-link">Создать пост</a>
@@ -15,4 +16,4 @@
       <a routerLink="/register" class="nav-link">Регистрация</a>
     }
   </nav>
-</header><p>header works!</p>
+</header>
