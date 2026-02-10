@@ -1,0 +1,116 @@
+$footer-bg: #1f2937;
+$footer-text: #d1d5db;
+$footer-link: #93c5fd;
+$footer-link-hover: #bfdbfe;
+$footer-border: #374151;
+$footer-accent: #3b82f6;
+
+.footer {
+  background-color: $footer-bg;
+  color: $footer-text;
+  padding-top: 2.5rem;
+  padding-bottom: 1.5rem;
+  margin-top: auto; // толкает футер вниз, если контент короткий
+
+  @media (max-width: 768px) {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.footer-brand h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.75rem;
+}
+
+.footer-brand p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: $footer-text;
+  max-width: 90%;
+}
+
+.footer-links h4,
+.footer-social h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.footer-links a,
+.social-icon {
+  text-decoration: none;
+  color: $footer-link;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $footer-link-hover;
+  }
+}
+
+.footer-social .social-icons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: background 0.2s, transform 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid $footer-border;
+  text-align: center;
+  font-size: 0.9rem;
+  color: $footer-text;
+}

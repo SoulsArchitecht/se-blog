@@ -1,1 +1,32 @@
-<p>news-panel works!</p>
+<div class="news-panel">
+  <!-- Трендовые посты -->
+  <section class="trending-section">
+    <h3 class="section-title">Популярное</h3>
+    <ul class="trending-list">
+      @for (post of trendingPosts; track post.title) {
+        <li class="trending-item">
+          <a routerLink="/post/slug" class="trending-link">
+            <span class="trending-title">{{ post.title }}</span>
+            <span class="trending-views">{{ post.views | number }} просмотров</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- Недавние комментарии -->
+  <section class="comments-section">
+    <h3 class="section-title">Недавние комментарии</h3>
+    <ul class="comments-list">
+      @for (comment of recentComments; track comment.user + comment.time) {
+        <li class="comment-item">
+          <div class="comment-user">{{ comment.user }}</div>
+          <div class="comment-meta">
+            <a routerLink="/post/slug" class="comment-post-link">{{ comment.post }}</a>
+            <time class="comment-time">{{ comment.time }}</time>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+</div>

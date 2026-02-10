@@ -58,7 +58,7 @@ export class RegisterComponent {
         this.router.navigate(['/']);
       },
       error: (error) => {
-        this.errorMessage.set(error.message);
+        this.errorMessage.set(error.message || 'Ошибка регистрации');
         this.isLoading.set(false);
       }
     });

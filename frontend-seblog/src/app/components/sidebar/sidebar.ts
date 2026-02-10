@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './sidebar.scss'
 })
 export class Sidebar {
+  authService = inject(AuthService);
 
   categories = [
     { name: 'Все посты', path: '/' },

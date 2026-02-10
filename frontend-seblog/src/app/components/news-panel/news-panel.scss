@@ -1,0 +1,102 @@
+$panel-bg: #ffffff;
+$panel-border: #e5e7eb;
+$text-color: #374151;
+$secondary-text: #6b7280;
+$link-color: #3b82f6;
+$hover-bg: #f9fafb;
+
+.news-panel {
+  background: $panel-bg;
+  border: 1px solid $panel-border;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+  }
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $text-color;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid $panel-border;
+}
+
+.trending-list,
+.comments-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.trending-item {
+  a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: $hover-bg;
+    }
+  }
+}
+
+.trending-title {
+  font-weight: 600;
+  color: $text-color;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.trending-views {
+  font-size: 0.875rem;
+  color: $secondary-text;
+}
+
+.comment-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0;
+}
+
+.comment-user {
+  font-weight: 600;
+  color: $text-color;
+  font-size: 0.95rem;
+}
+
+.comment-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.comment-post-link {
+  color: $link-color;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.comment-time {
+  font-size: 0.85rem;
+  color: $secondary-text;
+}

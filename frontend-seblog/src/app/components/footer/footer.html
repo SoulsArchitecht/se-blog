@@ -1,1 +1,53 @@
-<p>footer works!</p>
+<footer class="footer">
+  <div class="footer-container">
+    <!-- Левая колонка: Описание и быстрые ссылки -->
+    <div class="footer-section">
+      <div class="footer-brand">
+        <h3>SE Blog</h3>
+        <p>Технологии, программирование и немного жизни. Делимся знаниями с 2026 года.</p>
+      </div>
+
+      <nav class="footer-links">
+        <h4>Быстрые ссылки</h4>
+        <ul>
+          @for (link of quickLinks; track link.path) {
+            <li><a [routerLink]="link.path">{{ link.label }}</a></li>
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Правая колонка: Юридическое и соцсети -->
+    <div class="footer-section">
+      <nav class="footer-links">
+        <h4>Информация</h4>
+        <ul>
+          @for (link of legalLinks; track link.path) {
+            <li><a [routerLink]="link.path">{{ link.label }}</a></li>
+          }
+        </ul>
+      </nav>
+
+      <div class="footer-social">
+        <h4>Связаться</h4>
+        <div class="social-icons">
+          @for (social of socialLinks; track social.name) {
+            <a
+              [href]="social.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-icon"
+              [title]="social.name"
+            >
+              {{ social.icon }}
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {{ currentYear }} SE Blog. Все права защищены.</p>
+  </div>
+</footer>

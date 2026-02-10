@@ -1,1 +1,39 @@
-<p>sidebar works!</p>
+<div class="sidebar">
+  <!-- Категории -->
+  <nav class="categories-nav">
+    <h3 class="nav-title">Категории</h3>
+    <ul class="nav-list">
+      @for (cat of categories; track cat.path) {
+        <li>
+          <a
+            [routerLink]="cat.path"
+            routerLinkActive="active"
+            class="nav-link"
+          >
+            {{ cat.name }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- Пользовательское меню (только для авторизованных) -->
+  @if (authService.isAuthenticated()) {
+    <nav class="user-nav">
+      <h3 class="nav-title">Личный кабинет</h3>
+      <ul class="nav-list">
+        @for (item of userMenu; track item.path) {
+          <li>
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="active"
+              class="nav-link"
+            >
+              {{ item.name }}
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+  }
+</div>
