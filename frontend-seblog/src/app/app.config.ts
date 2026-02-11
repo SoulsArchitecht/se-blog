@@ -24,7 +24,7 @@ export const appConfig: ApplicationConfig = {
     
     // HTTP клиент с интерсепторами
     provideHttpClient(
-      withFetch(),
+      //withFetch(),
       withInterceptors([authInterceptor])
     )
   ]
