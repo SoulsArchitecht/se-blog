@@ -19,6 +19,12 @@ export interface RegisterRequest extends AuthRequest {
 }
 
 export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
   user: User;
-  token: string;
 }
+
+// export interface AuthResponse {
+//   accessToken: string;
+// }

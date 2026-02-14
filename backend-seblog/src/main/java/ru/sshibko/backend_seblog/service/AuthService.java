@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.sshibko.backend_seblog.dto.UserDto;
 import ru.sshibko.backend_seblog.dto.security.AuthRequest;
 import ru.sshibko.backend_seblog.dto.security.AuthResponse;
 import ru.sshibko.backend_seblog.dto.security.RefreshTokenRequest;
@@ -16,6 +17,7 @@ import ru.sshibko.backend_seblog.exception.AuthenticationException;
 import ru.sshibko.backend_seblog.exception.InvalidTokenException;
 import ru.sshibko.backend_seblog.exception.UserAlreadyExistsException;
 import ru.sshibko.backend_seblog.exception.UsernameNotFoundException;
+import ru.sshibko.backend_seblog.mapper.UserMapperService;
 import ru.sshibko.backend_seblog.model.entity.User;
 import ru.sshibko.backend_seblog.model.entity.enums.UserRole;
 import ru.sshibko.backend_seblog.model.entity.enums.UserStatus;
@@ -33,6 +35,7 @@ public class AuthService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final UserMapperService userMapperService;
 
     public AuthResponse login(AuthRequest authRequest) {
         try {
@@ -45,7 +48,13 @@ public class AuthService {
             String accessToken = jwtUtils.generateToken(userDetails);
             String refreshToken = jwtUtils.generateRefreshToken(userDetails);
 
-            return new AuthResponse(accessToken, refreshToken);
+            User user = userRepository.findByEmail(authRequest.getEmail())
+                    .orElseThrow(() -> new UsernameNotFoundException(
+                            "User not found with email: " + authRequest.getEmail()));
+
+            UserDto userDto = userMapperService.mapToUserDto(user);
+
+            return new AuthResponse(accessToken, refreshToken, userDto);
         } catch (BadCredentialsException e) {
             throw new AuthenticationException("Invalid username or password");
         }
@@ -67,7 +76,9 @@ public class AuthService {
             String newAccessToken = jwtUtils.generateToken(userDetails);
             String newRefreshToken = jwtUtils.generateRefreshToken(userDetails);
 
-            return new AuthResponse(newAccessToken, newRefreshToken);
+            UserDto userDto = userMapperService.mapToUserDto(user);
+
+            return new AuthResponse(newAccessToken, newRefreshToken,  userDto);
         } catch (Exception e) {
             throw new InvalidTokenException("Invalid refresh token: " + e.getMessage());
         }
@@ -96,7 +107,9 @@ public class AuthService {
         String accessToken = jwtUtils.generateToken(userDetails);
         String refreshToken = jwtUtils.generateRefreshToken(userDetails);
 
-        return new AuthResponse(accessToken, refreshToken);
+        UserDto userDto = userMapperService.mapToUserDto(savedUser);
+
+        return new AuthResponse(accessToken, refreshToken, userDto);
     }
 
     public void validateToken(String token) {
