@@ -1,6 +1,7 @@
 package ru.sshibko.backend_seblog.mapper;
 
 import org.springframework.stereotype.Service;
+import ru.sshibko.backend_seblog.dto.UserDto;
 import ru.sshibko.backend_seblog.dto.response.UserResponse;
 import ru.sshibko.backend_seblog.dto.response.UserSummaryResponse;
 import ru.sshibko.backend_seblog.model.entity.User;
@@ -35,6 +36,15 @@ public class UserMapperService {
                 avatarUrl,
                 registrationYear
         );
+    }
+
+    public UserDto mapToUserDto(User user) {
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(String.valueOf(user.getRole()))
+                .build();
     }
 
 /*    UserResponse mapToResponse(User user){

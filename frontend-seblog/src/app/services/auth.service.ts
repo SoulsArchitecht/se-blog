@@ -51,10 +51,10 @@ export class AuthService {
 
     private setSession(authResponse: AuthResponse): void {
         this.userSignal.set(authResponse.user);
-        this.tokenSignal.set(authResponse.token);
+        this.tokenSignal.set(authResponse.accessToken);
 
         localStorage.setItem('user', JSON.stringify(authResponse.user));
-        localStorage.setItem('token', authResponse.token);
+        localStorage.setItem('token', authResponse.accessToken);
     }
 
     register(data: RegisterRequest): Observable<ApiResponse<AuthResponse>> {
@@ -66,7 +66,8 @@ export class AuthService {
     }
 
     login(credentials: AuthRequest): Observable<ApiResponse<AuthResponse>> {
-        return this.apiService.post<AuthResponse>(`${this.BASE_URL}/auth/login`, credentials) 
+        //return this.apiService.post<AuthResponse>(`${this.BASE_URL}/auth/login`, credentials)
+        return this.apiService.post<AuthResponse>(`/auth/login`, credentials)  
         .pipe(
             tap(response => this.setSession(response.data))
         );
