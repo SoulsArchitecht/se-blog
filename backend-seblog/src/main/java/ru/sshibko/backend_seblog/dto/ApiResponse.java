@@ -10,11 +10,10 @@ public class ApiResponse<T> {
     T data;
     String message;
     String errorCode;
-    String errorMessage;
     Integer httpStatus;
 
     public static <T> ApiResponse<T> success(T data, String message, HttpStatus httpStatus) {
-        return new ApiResponse<>(true, data, message, null, null, httpStatus.value());
+        return new ApiResponse<>(true, data, message,  null, httpStatus.value());
     }
 
     public static <T> ApiResponse<T> success(T data, String message) {
@@ -27,6 +26,6 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> error(String message, String errorCode,
                                            String errorMessage, HttpStatus httpStatus) {
-        return new ApiResponse<>(false, null, message, errorCode, errorMessage, httpStatus.value());
+        return new ApiResponse<>(false, null, message, errorCode, httpStatus.value());
     }
 }
