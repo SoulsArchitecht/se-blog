@@ -1,8 +1,15 @@
 package ru.sshibko.backend_seblog.exception;
 
-public class UserAlreadyExistsException extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-    public UserAlreadyExistsException(String message) {
-        super(message);
+public class UserAlreadyExistsException extends BaseException {
+
+
+    public UserAlreadyExistsException(ErrorCode errorCode, String userMessage) {
+        super(errorCode.getCode(), HttpStatus.FORBIDDEN, userMessage);
+    }
+
+    public UserAlreadyExistsException(ErrorCode errorCode, String userMessage, String developerMessage) {
+        super(errorCode.getCode(), HttpStatus.FORBIDDEN, userMessage, developerMessage);
     }
 }

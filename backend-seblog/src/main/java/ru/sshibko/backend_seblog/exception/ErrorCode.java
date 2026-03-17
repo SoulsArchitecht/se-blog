@@ -35,7 +35,8 @@ public enum ErrorCode {
     // Конфликты
     COMMENT_PARENT_MISMATCH("ERR-0401", "Родительский комментарий принадлежит другому посту"),
     VOTE_ALREADY_EXISTS("ERR-0402", "Голос уже существует"),
-    VOTE_NOT_FOUND("ERR-0403", "Голос не найден");
+    VOTE_NOT_FOUND("ERR-0403", "Голос не найден"),
+    USER_ALREADY_EXISTS("ERR-0404", "Пользователь уже существует");
 
     private final String code;
     private final String defaultMessage;
