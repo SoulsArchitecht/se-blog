@@ -8,6 +8,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.response.PostTypeResponse;
+import ru.sshibko.backend_seblog.exception.ErrorCode;
+import ru.sshibko.backend_seblog.exception.NotFoundException;
 import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
 import ru.sshibko.backend_seblog.mapper.PostTypeMapperService;
 import ru.sshibko.backend_seblog.model.entity.PostType;
@@ -40,7 +42,10 @@ public class PostTypeService {
     public PostTypeResponse getPostTypeById(UUID id) {
         log.debug("getPostTypeById({})", id);
         PostType postType = postTypeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "PostType",
+                        id,
                         "PostType with id: " + id + " not found!") );
         log.debug("entering to postTypeMapper {}", postType.getName());
         return postTypeMapper.mapToResponse(postType);

@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.request.VoteRequest;
+import ru.sshibko.backend_seblog.exception.ErrorCode;
+import ru.sshibko.backend_seblog.exception.NotFoundException;
 import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
 import ru.sshibko.backend_seblog.model.entity.Comment;
 import ru.sshibko.backend_seblog.model.entity.CommentVote;
@@ -41,7 +43,11 @@ public class CommentVoteService {
 
         User currentUser = userService.getCurrentUser();
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("comment not found: " + commentId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.COMMENT_NOT_FOUND,
+                        "Comment",
+                        commentId,
+                        "comment not found with ID: " + commentId));
 
         if (comment.getAuthor().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You are not allowed to vote this comment");
@@ -107,7 +113,11 @@ public class CommentVoteService {
         User currentUser = userService.getCurrentUser();
 
         CommentVote vote = commentVoteRepository.findByUserIdAndCommentId(currentUser.getId(), commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Vote not found"));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.VOTE_NOT_FOUND,
+                        "CommentVote",
+                        commentId,
+                        "Vote not found"));
 
         commentVoteRepository.delete(vote);
         log.info("Vote deleted: user {}, comment {}", currentUser.getId(), commentId);

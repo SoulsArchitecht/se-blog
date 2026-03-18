@@ -13,10 +13,7 @@ import ru.sshibko.backend_seblog.dto.security.AuthRequest;
 import ru.sshibko.backend_seblog.dto.security.AuthResponse;
 import ru.sshibko.backend_seblog.dto.security.RefreshTokenRequest;
 import ru.sshibko.backend_seblog.dto.security.RegisterRequest;
-import ru.sshibko.backend_seblog.exception.AuthenticationException;
-import ru.sshibko.backend_seblog.exception.InvalidTokenException;
-import ru.sshibko.backend_seblog.exception.UserAlreadyExistsException;
-import ru.sshibko.backend_seblog.exception.UsernameNotFoundException;
+import ru.sshibko.backend_seblog.exception.*;
 import ru.sshibko.backend_seblog.mapper.UserMapperService;
 import ru.sshibko.backend_seblog.model.entity.User;
 import ru.sshibko.backend_seblog.model.entity.enums.UserRole;
@@ -49,14 +46,21 @@ public class AuthService {
             String refreshToken = jwtUtils.generateRefreshToken(userDetails);
 
             User user = userRepository.findByEmail(authRequest.getEmail())
-                    .orElseThrow(() -> new UsernameNotFoundException(
-                            "User not found with email: " + authRequest.getEmail()));
+                    .orElseThrow(() -> new NotFoundException(
+                            ErrorCode.USER_NOT_FOUND,
+                            "User",
+                            authRequest.getEmail(),
+                            "User not found with email: " + authRequest.getEmail())
+                    );
 
             UserDto userDto = userMapperService.mapToUserDto(user);
 
             return new AuthResponse(accessToken, refreshToken, userDto);
         } catch (BadCredentialsException e) {
-            throw new AuthenticationException("Invalid username or password");
+            throw new AuthenticationException(
+                    ErrorCode.ACCESS_DENIED,
+                    "Неправильное имя пользователя или пароль",
+                    "Wrong password or username at login user with email: " + authRequest.getEmail());
         }
     }
 
@@ -64,13 +68,21 @@ public class AuthService {
         try {
             String username = jwtUtils.extractUsername(refreshTokenRequest.getRefreshToken());
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found for token: "
-                            + refreshTokenRequest.getRefreshToken()));
+                    .orElseThrow(() -> new NotFoundException(
+                            ErrorCode.USER_NOT_FOUND,
+                            "User",
+                            username,
+                            "User not found with username: " + username)
+                    );
 
             UserDetails userDetails = user.toUserDetails();
 
             if (!jwtUtils.validateToken(refreshTokenRequest.getRefreshToken())) {
-                throw new InvalidTokenException("Invalid refresh token");
+                throw new InvalidTokenException(
+                        ErrorCode.ACCESS_DENIED,
+                        "Невалидный токен",
+                        refreshTokenRequest.getRefreshToken()
+                );
             }
 
             String newAccessToken = jwtUtils.generateToken(userDetails);
@@ -80,19 +92,29 @@ public class AuthService {
 
             return new AuthResponse(newAccessToken, newRefreshToken,  userDto);
         } catch (Exception e) {
-            throw new InvalidTokenException("Invalid refresh token: " + e.getMessage());
+            throw new InvalidTokenException(
+                    ErrorCode.ACCESS_DENIED,
+                    "Невалидный токен",
+                    refreshTokenRequest.getRefreshToken()
+            );
         }
     }
 
     public AuthResponse register(RegisterRequest registerRequest) {
         if (userRepository.findByUsername(registerRequest.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("User with username " +
-                    registerRequest.getUsername() + " already exists");
+            throw new UserAlreadyExistsException(
+                    ErrorCode.USER_ALREADY_EXISTS,
+                    "Пользователь с данным именем уже существует",
+                    "User already exists with username: " + registerRequest.getUsername()
+            );
         }
 
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("User with email " +
-                    registerRequest.getEmail() + " already exists");
+            throw new UserAlreadyExistsException(
+                    ErrorCode.USER_ALREADY_EXISTS,
+                    "Пользователь с данной почтой уже существует",
+                    "User already exists with email: " + registerRequest.getEmail()
+            );
         }
 
         User user = new User();
@@ -116,13 +138,25 @@ public class AuthService {
         try {
             String username = jwtUtils.extractUsername(token);
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new InvalidTokenException("User not found for token"));
+                    .orElseThrow(() -> new InvalidTokenException(
+                            ErrorCode.ACCESS_DENIED,
+                            "Невалидный токен",
+                            "Invalid token: " + token)
+                    );
 
             if (!jwtUtils.validateToken(token)) {
-                throw new InvalidTokenException("Invalid token");
+                throw new InvalidTokenException(
+                        ErrorCode.ACCESS_DENIED,
+                        "Невалидный токен",
+                        "Invalid token: " + token
+                );
             }
         } catch (Exception e) {
-            throw new InvalidTokenException("Token validation failed: " + e.getMessage());
+            throw new InvalidTokenException(
+                    ErrorCode.ACCESS_DENIED,
+                    "Невалидный токен",
+                    "Invalid token: " + token
+            );
         }
     }
 }

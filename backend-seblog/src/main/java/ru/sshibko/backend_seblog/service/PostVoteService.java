@@ -9,8 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.request.VoteRequest;
-import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
-import ru.sshibko.backend_seblog.exception.ValidationException;
+import ru.sshibko.backend_seblog.exception.*;
 import ru.sshibko.backend_seblog.model.entity.Post;
 import ru.sshibko.backend_seblog.model.entity.PostVote;
 import ru.sshibko.backend_seblog.model.entity.User;
@@ -40,11 +39,18 @@ public class PostVoteService {
 
         User currentUser = userService.getCurrentUser();
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found: "  + postId));
-
-
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        postId,
+                        "Post not found with ID: " + postId)
+                );
         if (post.getAuthor().getId().equals(currentUser.getId())) {
-            throw new ValidationException("You can't vote for your own post");
+            throw new AccessDeniedException(
+                    ErrorCode.ACCESS_DENIED,
+                    "Вы не можете голосовать за свой пост",
+                    "User is not allowed to vote for this post with id: " + postId
+            );
         }
 
         Optional<PostVote> existingVote = postVoteRepository.findByUserIdAndPostId(
@@ -104,7 +110,11 @@ public class PostVoteService {
         User currentUser = userService.getCurrentUser();
 
         PostVote postVote = postVoteRepository.findByUserIdAndPostId(currentUser.getId(), postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Vote not found"));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.VOTE_NOT_FOUND,
+                        "PostVote",
+                        postId,
+                        "Vote not found"));
 
         postVoteRepository.delete(postVote);
         log.info("Vote removed for post {}, user: {}", postId, currentUser.getId());

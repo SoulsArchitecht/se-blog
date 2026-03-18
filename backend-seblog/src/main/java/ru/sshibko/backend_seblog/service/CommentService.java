@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.request.CommentCreateRequest;
 import ru.sshibko.backend_seblog.dto.response.CommentResponse;
+import ru.sshibko.backend_seblog.exception.ErrorCode;
+import ru.sshibko.backend_seblog.exception.NotFoundException;
 import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
 import ru.sshibko.backend_seblog.exception.ValidationException;
 import ru.sshibko.backend_seblog.mapper.CommentMapperService;
@@ -49,17 +51,30 @@ public class CommentService {
 
         User currentUser = userService.getCurrentUser();
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post with id: " + postId + " not found"));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        postId,
+                        "Post with not found with ID: " + postId)
+                );
 
         Comment parent = null;
         if (request.parentId() != null) {
             parent = commentRepository.findById(request.parentId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Parent comment with id: " + request.parentId() + " not found"));
+                    .orElseThrow(() -> new NotFoundException(
+                            ErrorCode.COMMENT_NOT_FOUND,
+                            "Comment",
+                            request.parentId(),
+                            "Parent comment not found with ID: " + request.parentId())
+                    );
 
             if (!parent.getPost().getId().equals(post.getId())) {
                 throw  new ValidationException(
-                        "Parent comment with id: " + request.parentId() + " belongs to different post");
+                        ErrorCode.COMMENT_PARENT_MISMATCH,
+                        "Parent comment with id: " + request.parentId() + " belongs to different post",
+                        String.format("Parent comment with id: %s belongs to post %s, not %s",
+                                parent.getId(), parent.getPost().getId(), post.getId())
+                        );
             }
         }
 
@@ -105,8 +120,11 @@ public class CommentService {
     @Transactional(readOnly = true)
     public CommentResponse getCommentById(UUID commentId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Comment with id: " + commentId + " not found"));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.COMMENT_NOT_FOUND,
+                        "Comment",
+                        commentId,
+                        "Comment not found with ID: " + commentId));
 
         return commentMapper.mapToResponse(comment);
     }
@@ -117,14 +135,21 @@ public class CommentService {
         log.info("Update comment for post: {}, commentId: {}", postId, commentId);
 
         Comment comment = commentRepository.findByIdAndPostId(commentId, postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment not found: "
-                + commentId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.COMMENT_NOT_FOUND,
+                        "Comment",
+                        commentId,
+                        "Comment not found with ID: " + commentId)
+                );
 
 /*        if (comment.getIsDeleted()) {
             throw  new ValidationException("Comment with id: " + commentId + " is deleted");
         }*/
         if (comment.getStatus().equals(CommentStatus.DELETED)) {
-            throw  new ValidationException("Comment with id: " + commentId + " is deleted");
+            throw  new ValidationException(
+                    ErrorCode.CANNOT_EDIT_DELETED_COMMENT,
+                    "Comment is deleted",
+                    "Comment deleted with ID: " + commentId);
         }
 
         comment.setContent(request.content());
@@ -140,7 +165,12 @@ public class CommentService {
         log.info("Удаление комментария: {}", commentId);
 
         Comment comment = commentRepository.findByIdAndPostId(commentId, postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Комментарий не найден: " + commentId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.COMMENT_NOT_FOUND,
+                        "Comment",
+                        commentId,
+                        "Comment not found with ID: " + commentId)
+                );
         //if child comment exists marked as deleted
         if (!comment.getReplies().isEmpty()) {
             //comment.setIsDeleted(true); //TODO setIsDeleted()
@@ -157,7 +187,12 @@ public class CommentService {
     public boolean canEditComment(UUID commentId) {
         User currentUser = userService.getCurrentUser();
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment not found: " + commentId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.COMMENT_NOT_FOUND,
+                        "Comment",
+                        commentId,
+                        "Comment not found with ID: " + commentId)
+                );
 
         if (currentUser.hasRole(UserRole.ROLE_ADMIN) || currentUser.hasRole(UserRole.ROLE_MODERATOR)) {
             return true;
@@ -169,7 +204,12 @@ public class CommentService {
     public boolean canDeleteComment(UUID commentId) {
         User currentUser = userService.getCurrentUser();
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Комментарий не найден"));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.COMMENT_NOT_FOUND,
+                        "Comment",
+                        commentId,
+                        "Comment not found with ID: " + commentId)
+                );
 
         if (currentUser.hasRole(UserRole.ROLE_ADMIN)) {
             return true;

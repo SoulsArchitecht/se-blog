@@ -9,6 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.sshibko.backend_seblog.exception.AuthenticationException;
+import ru.sshibko.backend_seblog.exception.ErrorCode;
+import ru.sshibko.backend_seblog.exception.NotFoundException;
 import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
 import ru.sshibko.backend_seblog.model.entity.User;
 import ru.sshibko.backend_seblog.model.entity.enums.UserRole;
@@ -31,12 +33,20 @@ public class UserService {
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            throw new AuthenticationException("User not authenticated");
+            throw new AuthenticationException(
+                    ErrorCode.UNAUTHORIZED,
+                    "Пользователь не авторизован",
+                    null
+            );
         }
         String email = auth.getName();
 
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.USER_NOT_FOUND,
+                        "User",
+                        email,
+                        "User not found with email: " + email));
     }
 
 /*    public User getCurrentUser() {

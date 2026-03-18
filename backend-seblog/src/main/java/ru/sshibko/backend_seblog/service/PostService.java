@@ -13,8 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.request.PostCreateRequest;
 import ru.sshibko.backend_seblog.dto.request.PostUpdateRequest;
 import ru.sshibko.backend_seblog.dto.response.PostResponse;
-import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
-import ru.sshibko.backend_seblog.exception.ValidationException;
+import ru.sshibko.backend_seblog.exception.*;
 import ru.sshibko.backend_seblog.mapper.PostMapperService;
 import ru.sshibko.backend_seblog.model.entity.Post;
 import ru.sshibko.backend_seblog.model.entity.PostType;
@@ -61,7 +60,10 @@ public class PostService {
         User currentUser = userService.getCurrentUser();
 
         PostType postType = postTypeRepository.findByName(request.postTypeName())
-                .orElseThrow(() -> new ResourceNotFoundException(
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_TYPE_NOT_FOUND,
+                        "PostType",
+                        request.postTypeName(),
                         "Post type not found with name " + request.postTypeName()));
 
 /*
@@ -78,10 +80,16 @@ public class PostService {
         if (request.customSlug() != null && !request.customSlug().isBlank()) {
             slug = request.customSlug().trim();
             if (!slugService.isValidSlug(slug)) {
-                throw new ValidationException("Custom slug " + slug + " is invalid");
+                throw new ValidationException(
+                        ErrorCode.INVALID_SLUG_FORMAT,
+                        "Slug format is invalid",
+                        "Custom slug " + slug + " is invalid");
             }
             if (postRepository.existsBySlug(slug)) {
-                throw new ValidationException("Post already exists with Slug " + slug);
+                throw new ValidationException(
+                        ErrorCode.DUPLICATE_SLUG,
+                        "Duplicate slug",
+                        "Post already exists with Slug " + slug);
             }
         } else {
             slug = slugService.generateUniqueSlug(
@@ -127,7 +135,21 @@ public class PostService {
         log.info("Обновление поста: {}", postId);
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Пост не найден: " + postId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        postId,
+                        "Post not found with ID: " + postId));
+
+        User currentUser = userService.getCurrentUser();
+        if (!canEditPost(postId)) {
+            throw new AccessDeniedException(
+                    ErrorCode.ACCESS_DENIED,
+                    "Вы не можете редактировать этот пост",
+                    String.format("User %s cannot edit post %s",
+                            currentUser.getId(), postId)
+            );
+        }
 
         if (request.title() != null && !request.title().isBlank()) {
             post.setTitle(request.title());
@@ -142,11 +164,19 @@ public class PostService {
 
             if (!newSlug.equals(post.getSlug())) {
                 if (!slugService.isValidSlug(newSlug)) {
-                    throw new ValidationException("Incorrect format of slug: " + newSlug);
+                    throw new ValidationException(
+                            ErrorCode.INVALID_SLUG_FORMAT,
+                            "Incorrect format of slug",
+                            "Incorrect format of slug: " + newSlug
+                    );
                 }
 
                 if (postRepository.existsBySlugAndIdNot(newSlug, postId)) {
-                    throw new ValidationException("Slug '" + newSlug + "' already exists");
+                    throw new ValidationException(
+                            ErrorCode.DUPLICATE_SLUG,
+                            "Duplicate slug",
+                            "Slug '" + newSlug + "' already exists"
+                    );
                 }
 
                 post.setSlug(newSlug);
@@ -162,8 +192,11 @@ public class PostService {
         }
 
         PostType postType = postTypeRepository.findById(request.postTypeId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Post type not found " + request.postTypeId()));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        request.postTypeId(),
+                        "Post type not found with ID: " + request.postTypeId()));
 
         post.setType(postType);
 
@@ -184,7 +217,11 @@ public class PostService {
         log.debug("Getting post by slug: {}", slug);
 
         Post post = postRepository.findBySlugWithDetails(slug)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found: " + slug));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        postRepository.findBySlugWithDetails(slug),
+                        "Post not found with slug: " + slug));
 
         postRepository.incrementViewCount(post.getId());
         post.incrementViewCount();
@@ -198,7 +235,11 @@ public class PostService {
         log.debug("Getting post by id: {}", id);
 
         Post post = postRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        id,
+                        "Post not found with ID: " + id));
         return postMapper.mapToResponse(post);
     }
 
@@ -256,8 +297,12 @@ public class PostService {
         log.info("Deleting post: {}", postId);
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
-
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        postId,
+                        "Post not found with ID: " + postId)
+                );
         postRepository.delete(post);
         log.info("Post deleted: {} (ID: {})", post.getTitle(), post.getId());
     }
@@ -269,7 +314,12 @@ public class PostService {
         log.info("Post publishing: {}", postId);
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        postId,
+                        "Post not found with ID: " + postId)
+                );
 
         post.setStatus(PostStatus.PUBLISHED);
         if (post.getPublishedAt() == null) {
@@ -285,7 +335,12 @@ public class PostService {
     public boolean canEditPost(UUID postId) {
         User currentUser = userService.getCurrentUser();
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        postId,
+                        "Post not found with ID: " + postId)
+                );
 
         if (currentUser.hasRole(UserRole.ROLE_ADMIN) || currentUser.hasRole(UserRole.ROLE_MODERATOR)) {
             return true;
@@ -297,7 +352,12 @@ public class PostService {
     public boolean canDeletePost(UUID postId) {
         User currentUser = userService.getCurrentUser();
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Пост не найден"));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        postId,
+                        "Post not found with ID: " + postId)
+                );
 
         if (currentUser.hasRole(UserRole.ROLE_ADMIN)) {
             return true;
@@ -319,7 +379,12 @@ public class PostService {
 
         //TODO resolve to delete user rights to publish post
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.POST_NOT_FOUND,
+                        "Post",
+                        postId,
+                        "Post not found with ID: " + postId)
+                );
 
         return post.getAuthor().getId().equals(currentUser.getId());
     }

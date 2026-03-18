@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.request.TagCreateRequest;
 import ru.sshibko.backend_seblog.dto.response.TagResponse;
+import ru.sshibko.backend_seblog.exception.ErrorCode;
+import ru.sshibko.backend_seblog.exception.NotFoundException;
 import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
 import ru.sshibko.backend_seblog.exception.ValidationException;
 import ru.sshibko.backend_seblog.mapper.TagMapperService;
@@ -46,7 +48,12 @@ public class TagService {
     @Cacheable(value = "tags", key = "#id")
     public TagResponse getTagById(UUID id) {
         Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tag not found: " + id));
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.TAG_NOT_FOUND,
+                        "Tag",
+                        id,
+                        "Tag not found with ID: " + id)
+                );
         return tagMapper.mapToResponse(tag);
     }
 
@@ -56,7 +63,11 @@ public class TagService {
         String name = request.name().trim();
 
         if (tagRepository.existsByName(name)) {
-            throw new ValidationException("Tag already exists: " + name);
+            throw new ValidationException(
+                    ErrorCode.DUPLICATE_TAG_NAME,
+                    "Тэг уже существует",
+                    request.name()
+            );
         }
 
         Tag tag = Tag.builder()
