@@ -17,6 +17,11 @@ public enum SuccessCode {
     POST_DELETED("MSG-0203", "Пост удалён"),
     POST_PUBLISHED("MSG-0204", "Пост опубликован"),
     POST_UNPUBLISHED("MSG-0205", "Публикация поста отменена"),
+    POST_BY_SLUG_RECEIVED("MSG-0206", "Посты по слагу получены"),
+    POST_BY_ID_RECEIVED("MSG_0207", "Пост получен по ID"),
+    POSTS_PUBLISHED_LIST_RECEIVED("MSG-0208", "Опубликованные посты получены"),
+    POSTS_BY_TAG_RECEIVED("MSG-0209", "Посты по указанному тэгу получены"),
+    POSTS_BY_TYPE_RECEIVED("MSG-0210", "Посты с указанным типом получены"),
 
     // Комментарии
     COMMENT_ADDED("MSG-0301", "Комментарий добавлен"),

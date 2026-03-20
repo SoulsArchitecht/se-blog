@@ -1,8 +1,8 @@
 package ru.sshibko.backend_seblog.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@Tag(name = "Authentication", description = "Authentication API")
 public class AuthController {
 
     private final AuthService authService;
@@ -36,8 +37,11 @@ public class AuthController {
     private final MessageService messageService;
 
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody AuthRequest authRequest) {
-        return authService.login(authRequest);
+    public ApiResponse<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) {
+        AuthResponse authResponse = authService.login(authRequest);
+        String message = messageService.getSuccessMessage(SuccessCode.USER_LOGGED_IN, locale);
+
+        return ApiResponse.success(authResponse, message);
     }
 
     @PostMapping("/refresh")
