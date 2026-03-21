@@ -25,26 +25,19 @@ export class HomeComponent implements OnInit {
     this.loadPosts();
   }
   
-  loadPosts(page = 1): void {
-    this.isLoading.set(true);
-    
-    this.postService.getPosts({ page, limit: 10 }).subscribe({
-      next: (response) => {
-        if (page === 1) {
-          this.posts.set(response.data.items);
-        } else {
-          this.posts.set([...this.posts(), ...response.data.items]);
-        }
-        
-        this.currentPage.set(page);
-        this.hasMorePosts.set(page < response.data.totalPages);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.isLoading.set(false);
-      }
-    });
-  }
+loadPosts(page = 1): void {
+  this.isLoading.set(true);
+  
+  this.postService.getPosts({ page, limit: 10 }).subscribe({
+    next: (response) => {
+      // Уже обработано в PostService → postsSignal обновлён
+      this.isLoading.set(false);
+    },
+    error: () => {
+      this.isLoading.set(false);
+    }
+  });
+}
   
   loadMore(): void {
     this.loadPosts(this.currentPage() + 1);
