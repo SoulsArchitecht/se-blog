@@ -16,7 +16,8 @@ export class HomeComponent implements OnInit {
   private postService = inject(PostService);
   private authService = inject(AuthService);
   
-  posts = signal<Post[]>([]);
+  //posts = signal<Post[]>([]);
+  readonly posts = this.postService.posts;
   isLoading = signal(true);
   currentPage = signal(1);
   hasMorePosts = signal(true);

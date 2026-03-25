@@ -35,11 +35,11 @@ export class PostDetailComponent implements OnInit {
   
   ngOnInit() {
     this.route.params.subscribe(params => {
-      this.loadPost(Number(params['id']));
+      this.loadPost(String(params['id']));
     });
   }
   
-  loadPost(id: number): void {
+  loadPost(id: string): void {
     this.isLoading.set(true);
     
     this.postService.getPost(id).subscribe({
@@ -62,10 +62,11 @@ export class PostDetailComponent implements OnInit {
     // Здесь будет логика добавления комментария через API
     setTimeout(() => {
       const newComment: Comment = {
-        id: Math.random(),
+        //id: Math.random(),
+        id: "1",
         content: this.commentForm.value.content,
         author: {
-          id: this.authService.user()?.id || 0,
+          id: this.authService.user()?.id || "0",
           username: this.authService.user()?.username || 'Аноним'
         },
         createdAt: new Date()

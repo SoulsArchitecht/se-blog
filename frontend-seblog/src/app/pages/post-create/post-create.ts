@@ -34,7 +34,7 @@ export class PostCreateComponent {
     this.postForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
       content: ['', [Validators.required, Validators.minLength(50)]],
-      category: ['', Validators.required],
+      postType: ['', Validators.required],
       tags: [''],
       isPublished: [true]
     });
@@ -53,7 +53,7 @@ export class PostCreateComponent {
     const postData: PostCreate = {
       title: formValue.title,
       content: formValue.content,
-      category: formValue.category,
+      postType: formValue.category,
       tags: formValue.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean)
     };
     

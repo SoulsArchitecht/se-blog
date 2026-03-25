@@ -1,24 +1,25 @@
 export interface Author {
-  id: number;
+  id: string;
   username: string;
   avatar?: string;
 }
 
 export interface Comment {
-  id: number;
+  id: string;
   content: string;
   author: Author;
   createdAt: Date;
 }
 
 export interface Post {
-  id: number;
+  id: string;
   title: string;
   content: string;
-  excerpt: string;
+  //excerpt: string;
   slug: string;
+  status: string;
   author: Author;
-  category: string;
+  postType: string;
   tags: string[];
   commentsCount: number;
   likesCount: number;
@@ -32,7 +33,7 @@ export interface Post {
 export interface PostCreate {
   title: string;
   content: string;
-  category: string;
+  postType: string;
   tags: string[];
 }
 

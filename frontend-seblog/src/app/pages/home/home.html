@@ -20,37 +20,54 @@
         <article class="post-card">
           <div class="post-header">
             <div class="post-author">
+              <!-- Заглушка для автора -->
               <img 
                 [src]="post.author.avatar || '/assets/default-avatar.png'" 
-                [alt]="post.author.username"
+                [alt]="post.author.username || 'Автор'"
                 class="avatar"
+                onerror="this.src='/assets/default-avatar.png'"
               >
               <div>
-                <span class="author-name">{{ post.author.username }}</span>
-                <span class="post-date">{{ post.createdAt | date:'dd.MM.yyyy' }}</span>
+                <span class="author-name">{{ post.author.username || 'Аноним' }}</span>
+                <span class="post-date">{{ post.createdAt ? (post.createdAt | date:'dd.MM.yyyy') : '—' }}</span>
               </div>
             </div>
-            <span class="post-category">{{ post.category }}</span>
+            <!-- Категория как строка или заглушка -->
+            <span class="post-category">{{ post.postType || 'Без категории' }}</span>
           </div>
           
           <h3 class="post-title">
-            <a [routerLink]="['/post', post.id]">{{ post.title }}</a>
+            <a [routerLink]="['/post', post.id]">{{ post.title || 'Без заголовка' }}</a>
           </h3>
           
-          <p class="post-excerpt">{{ post.excerpt || (post.content | slice:0:200) }}...</p>
+          <!-- Эксперт: либо есть, либо обрезаем content -->
+          <!-- <p class="post-excerpt">
+            {{ 
+              post.excerpt 
+                ? post.excerpt 
+                : (post.content 
+                    ? (post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content)
+                    : 'Описание отсутствует'
+                )
+            }}
+          </p> -->
           
           <div class="post-footer">
             <div class="post-stats">
-              <span class="stat">👁️ {{ post.viewsCount }}</span>
-              <span class="stat">💬 {{ post.commentsCount }}</span>
-              <span class="stat">❤️ {{ post.likesCount }}</span>
+              <span class="stat">👁️ {{ post.viewsCount || 0 }}</span>
+              <span class="stat">💬 {{ post.commentsCount || 0 }}</span>
+              <span class="stat">❤️ {{ post.likesCount || 0 }}</span>
             </div>
             
-            <div class="post-tags">
-              @for (tag of post.tags; track tag) {
-                <span class="tag">{{ tag }}</span>
+            <!-- <div class="post-tags">
+              @if (post.tags && post.tags.length > 0) {
+                @for (tag of post.tags; track tag.id || tag.name || tag) {
+                  <span class="tag">{{ tag.name || tag }}</span>
+                }
+              } @else {
+                <span class="tag muted">без тегов</span>
               }
-            </div>
+            </div> -->
           </div>
         </article>
       }
@@ -74,7 +91,7 @@
     }
   } @else if (!isLoading()) {
     <div class="empty-state">
-      <p>Пока нет постов. Будьте первым!</p>
+      <p>Пока нет опубликованных постов.</p>
       @if (isAuthenticated) {
         <a routerLink="/create-post" class="btn">Создать первый пост</a>
       }

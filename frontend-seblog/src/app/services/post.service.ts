@@ -53,7 +53,7 @@ export class PostService {
     );
   }
 
-  getPost(id: number): Observable<ApiResponse<Post>> {
+  getPost(id: string): Observable<ApiResponse<Post>> {
     return this.apiService.get<Post>(`/posts/${id}`);
   }
 
@@ -61,11 +61,11 @@ export class PostService {
     return this.apiService.post<Post>('/posts', data);
   }
 
-  updatePost(id: number, data: PostUpdate): Observable<ApiResponse<Post>> {
+  updatePost(id: string, data: PostUpdate): Observable<ApiResponse<Post>> {
     return this.apiService.put<Post>(`/posts/${id}`, data);
   }
 
-  deletePost(id: number): Observable<ApiResponse<void>> {
+  deletePost(id: string): Observable<ApiResponse<void>> {
     return this.apiService.delete<void>(`/posts/${id}`);
   }
 
