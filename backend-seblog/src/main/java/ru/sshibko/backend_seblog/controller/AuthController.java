@@ -45,8 +45,11 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public AuthResponse refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-        return authService.refreshToken(refreshTokenRequest);
+    public ApiResponse<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        AuthResponse authResponse = authService.refreshToken(refreshTokenRequest);
+        String message = messageService.getSuccessMessage(SuccessCode.TOKEN_REFRESHED, locale);
+
+        return ApiResponse.success(authResponse, message);
     }
 
     @PostMapping("/register")
