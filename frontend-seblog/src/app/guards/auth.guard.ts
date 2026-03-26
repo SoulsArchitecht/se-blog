@@ -1,16 +1,15 @@
 import { inject } from '@angular/core';
 import { Router, type CanActivateFn } from '@angular/router';
-import { AuthService } from '../services/auth.service';
 
 export const authGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
   const router = inject(Router);
   
-  const user = authService.user;
+  const token = localStorage.getItem('token');
   
-  // if (user) {
-  //   return true;
-  // }
+  // Проверяем, что токен существует и выглядит как JWT
+  if (token && token.startsWith('eyJ') && !token.includes(' ') && token.length > 50) {
+    return true;
+  }
   
   router.navigate(['/login']);
   return false;

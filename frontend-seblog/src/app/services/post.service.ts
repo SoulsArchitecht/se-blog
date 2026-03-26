@@ -58,7 +58,7 @@ export class PostService {
   }
 
   createPost(data: PostCreate): Observable<ApiResponse<Post>> {
-    return this.apiService.post<Post>('/posts', data);
+    return this.apiService.post<Post>('/posts/', data);
   }
 
   updatePost(id: string, data: PostUpdate): Observable<ApiResponse<Post>> {

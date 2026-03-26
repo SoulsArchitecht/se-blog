@@ -15,7 +15,7 @@ import { PostCreate } from '../../models/post.model';
 export class PostCreateComponent {
   private fb = inject(FormBuilder);
   private postService = inject(PostService);
-  private router = inject(Router);
+  public router = inject(Router);
   
   postForm: FormGroup;
   isLoading = signal(false);
@@ -59,7 +59,7 @@ export class PostCreateComponent {
     
     this.postService.createPost(postData).subscribe({
       next: (response) => {
-        this.router.navigate(['/post', response.data.id]);
+        this.router.navigate(['/posts', response.data.id]);
       },
       error: (error) => {
         this.errorMessage.set(error.message);

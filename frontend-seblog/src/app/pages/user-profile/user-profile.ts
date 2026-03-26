@@ -58,20 +58,21 @@ export class ProfileComponent implements OnInit {
     setTimeout(() => {
       this.userPosts.set([
         {
-          id: 1,
+          id: "1",
           title: 'Пример поста',
           content: 'Содержимое поста...',
-          excerpt: 'Краткое описание...',
+          //excerpt: 'Краткое описание...',
           slug: 'primer-posta',
           author: this.user()!,
-          category: 'Программирование',
+          postType: 'Программирование',
           tags: ['angular', 'typescript'],
           commentsCount: 5,
           likesCount: 10,
           viewsCount: 100,
           isPublished: true,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          status: ''
         }
       ]);
       this.isLoading.set(false);

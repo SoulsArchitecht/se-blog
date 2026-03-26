@@ -1,0 +1,218 @@
+@use 'sass:math';
+
+$bg: #ffffff;
+$card-bg: #ffffff;
+$border: #e5e7eb;
+$text: #1f2937;
+$secondary-text: #6b7280;
+$error-color: #ef4444;        
+$success-color: #10b981;      
+$link-color: #3b82f6;        
+$primary: #1d4ed8;            
+$primary-hover: #1e40af;      
+$shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+$radius: 12px;
+$transition: all 0.2s ease;
+
+.post-create-page {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 2rem 0;
+}
+
+.post-create-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.post-create-card {
+  background: $card-bg;
+  border-radius: $radius;
+  box-shadow: $shadow;
+  padding: 2.5rem;
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding: 1.75rem;
+  }
+}
+
+.post-create-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: $text;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.post-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &.form-checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+ margin-top: 0.25rem;
+  }
+}
+
+.form-group label {
+  font-weight: 600;
+  color: $text;
+  font-size: 0.975rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 0.75rem 1rem;
+  border: 1px solid $border;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: $transition;
+  background-color: white;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.2);
+  }
+
+  &.invalid {
+    border-color: $error-color;
+    background-color: rgba($error-color, 0.05);
+  }
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.form-hint {
+  font-size: 0.85rem;
+  color: $secondary-text;
+  margin-top: 0.25rem;
+
+  code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+}
+
+.error-messages {
+  color: $error-color;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: $text;
+
+  input[type="checkbox"] {
+    margin: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+  }
+}
+
+.alert.error {
+  background-color: rgba($error-color, 0.1);
+  color: $error-color;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  border-left: 4px solid $error-color;
+  margin-top: 0.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+}
+
+.submit-button,
+.cancel-button {
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: none;
+  flex: 1;
+  min-width: 140px;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.submit-button {
+  background-color: $primary;
+  color: white;
+
+  &:not(:disabled):hover {
+    background-color: $primary-hover;
+    transform: translateY(-1px);
+  }
+
+  &:not(:disabled):active {
+    transform: translateY(0);
+  }
+}
+
+.cancel-button {
+  background-color: #f3f4f6;
+  color: $text;
+
+  &:not(:disabled):hover {
+    background-color: #e5e7eb;
+  }
+}
+
+.spinner,
+.spinner-small {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

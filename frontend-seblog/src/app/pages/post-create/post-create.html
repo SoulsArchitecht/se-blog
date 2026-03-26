@@ -1,1 +1,129 @@
-<p>post-create works!</p>
+<div class="post-create-page">
+  <div class="post-create-container">
+    <div class="post-create-card">
+      <h2 class="post-create-title">Создать новый пост</h2>
+
+      <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-create-form">
+        <!-- Заголовок -->
+        <div class="form-group">
+          <label for="title">Заголовок *</label>
+          <input
+            id="title"
+            type="text"
+            formControlName="title"
+            [class.invalid]="postForm.get('title')?.invalid && postForm.get('title')?.touched"
+            placeholder="Введите заголовок (минимум 5 символов)"
+          />
+          @if (postForm.get('title')?.invalid && postForm.get('title')?.touched) {
+            <div class="error-messages">
+              @if (postForm.get('title')?.errors?.['required']) {
+                <span>Заголовок обязателен</span>
+              }
+              @if (postForm.get('title')?.errors?.['minlength']) {
+                <span>Минимум 5 символов</span>
+              }
+              @if (postForm.get('title')?.errors?.['maxlength']) {
+                <span>Не более 200 символов</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Категория / Тип поста -->
+        <div class="form-group">
+          <label for="postType">Категория *</label>
+          <select
+            id="postType"
+            formControlName="postType"
+            [class.invalid]="postForm.get('postType')?.invalid && postForm.get('postType')?.touched"
+          >
+            <option value="">Выберите категорию</option>
+            @for (category of categories; track category) {
+              <option [value]="category">{{ category }}</option>
+            }
+          </select>
+          @if (postForm.get('postType')?.invalid && postForm.get('postType')?.touched) {
+            <div class="error-messages">
+              <span>Пожалуйста, выберите категорию</span>
+            </div>
+          }
+        </div>
+
+        <!-- Теги -->
+        <div class="form-group">
+          <label for="tags">Теги</label>
+          <input
+            id="tags"
+            type="text"
+            formControlName="tags"
+            placeholder="Введите теги через запятую (например: Angular, TypeScript, Blog)"
+          />
+          <small class="form-hint">Разделяйте теги запятыми. Пример: <code>Angular, Java, Блог</code></small>
+        </div>
+
+        <!-- Статус публикации -->
+        <div class="form-group form-checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="isPublished">
+            <span>Опубликовать сразу</span>
+          </label>
+          <small class="form-hint">Если не отмечено — пост сохранится как черновик</small>
+        </div>
+
+        <!-- Контент -->
+        <div class="form-group">
+          <label for="content">Содержание *</label>
+          <textarea
+            id="content"
+            formControlName="content"
+            [class.invalid]="postForm.get('content')?.invalid && postForm.get('content')?.touched"
+            placeholder="Напишите содержание поста (минимум 50 символов)..."
+            rows="12"
+          ></textarea>
+          @if (postForm.get('content')?.invalid && postForm.get('content')?.touched) {
+            <div class="error-messages">
+              @if (postForm.get('content')?.errors?.['required']) {
+                <span>Содержание обязательно</span>
+              }
+              @if (postForm.get('content')?.errors?.['minlength']) {
+                <span>Минимум 50 символов</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Ошибка сервера -->
+        @if (errorMessage()) {
+          <div class="alert error">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <!-- Кнопки -->
+        <div class="form-actions">
+          <button
+            type="submit"
+            [disabled]="postForm.invalid || isLoading()"
+            class="submit-button"
+          >
+            @if (isLoading()) {
+              <span class="spinner"></span>
+              <span>Сохранение...</span>
+            } @else {
+              <span>Опубликовать</span>
+            }
+          </button>
+
+          <button
+            type="button"
+            (click)="router.navigate(['/'])"
+            [disabled]="isLoading()"
+            class="cancel-button"
+          >
+            Отмена
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
