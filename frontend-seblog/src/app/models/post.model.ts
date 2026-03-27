@@ -31,10 +31,12 @@ export interface Post {
 }
 
 export interface PostCreate {
-  title: string;
   content: string;
-  postType: string;
-  tags: string[];
+  postTypeName: string;
+  title: string;
+  status: string;
+  tagNames: string[];
+  customSlug?: string;
 }
 
 export interface PostUpdate extends Partial<PostCreate> {

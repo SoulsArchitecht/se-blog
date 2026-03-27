@@ -77,4 +77,21 @@ export class AuthService {
         this.clearSession();
         this.router.navigate(['/login']);
     }
+
+    refreshTokens(): Observable<ApiResponse<AuthResponse>> {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+            this.logout();
+            throw new Error('No refresh token');
+        }
+
+        return this.apiService.post<AuthResponse>('/auth/refresh', { refreshToken })
+            .pipe(
+                tap(response => {
+                    this.tokenSignal.set(response.data.accessToken);
+                    localStorage.setItem('token', response.data.accessToken);
+                    localStorage.setItem('refreshToken', response.data.refreshToken)
+                })
+        );
+    }
 }

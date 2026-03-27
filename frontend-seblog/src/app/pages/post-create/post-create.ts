@@ -22,12 +22,12 @@ export class PostCreateComponent {
   errorMessage = signal<string>('');
   
   categories = [
-    'Технологии',
-    'Программирование',
-    'Дизайн',
-    'Бизнес',
-    'Маркетинг',
-    'Образование'
+    'Hardware',
+    'Software',
+    'Music',
+    'Humor',
+    'Поэзия',
+    'Проза'
   ];
   
   constructor() {
@@ -36,7 +36,8 @@ export class PostCreateComponent {
       content: ['', [Validators.required, Validators.minLength(50)]],
       postType: ['', Validators.required],
       tags: [''],
-      isPublished: [true]
+      isPublished: [true],
+      customSlug: ['']
     });
   }
   
@@ -51,10 +52,12 @@ export class PostCreateComponent {
     
     const formValue = this.postForm.value;
     const postData: PostCreate = {
-      title: formValue.title,
       content: formValue.content,
-      postType: formValue.category,
-      tags: formValue.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean)
+      postTypeName: formValue.category,
+      title: formValue.title,
+      status: 'DRAFT',
+      tagNames: formValue.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
+      customSlug: formValue.customSlug || undefined,
     };
     
     this.postService.createPost(postData).subscribe({
