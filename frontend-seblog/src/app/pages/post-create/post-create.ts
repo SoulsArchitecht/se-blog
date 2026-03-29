@@ -53,12 +53,15 @@ export class PostCreateComponent {
     const formValue = this.postForm.value;
     const postData: PostCreate = {
       content: formValue.content,
-      postTypeName: formValue.category,
+      postTypeName: formValue.postType,
       title: formValue.title,
       status: 'DRAFT',
       tagNames: formValue.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
       customSlug: formValue.customSlug || undefined,
     };
+
+    console.log('Raw form value:', this.postForm.value);
+    console.log('JSON for request: ' + JSON.stringify(postData, null, 2));
     
     this.postService.createPost(postData).subscribe({
       next: (response) => {
