@@ -19,4 +19,5 @@ public class UserProfileDto {
     String avatarUrl;
     String bio;
     String location;
+    Integer rating;
 }

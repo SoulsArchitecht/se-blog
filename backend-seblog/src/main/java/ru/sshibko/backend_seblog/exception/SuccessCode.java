@@ -11,6 +11,7 @@ public enum SuccessCode {
     USER_PROFILE_UPDATED("MSG-0104", "Профиль обновлён"),
     USER_PASSWORD_CHANGED("MSG-0105", "Пароль успешно изменён"),
     TOKEN_REFRESHED("MSG-0106", "Токен успешно обновлен"),
+    USER_PROFILE_RECEIVED("MSG-0107", "Профиль пользователя получен"),
 
     // Посты
     POST_CREATED("MSG-0201", "Пост успешно создан"),
