@@ -18,7 +18,10 @@ public class UserProfileMapperService {
                 .avatarUrl(userProfileDto.getAvatarUrl())
                 .bio(userProfileDto.getBio())
                 .location(userProfileDto.getLocation())
+                .updatedAt(userProfileDto.getUpdateAt())
+                .lastLoginAt(userProfileDto.getLastLoginAt())
                 .rating(userProfileDto.getRating())
+                .optionalEmail(userProfileDto.getOptionalEmail())
                 .build();
     }
 
@@ -33,7 +36,10 @@ public class UserProfileMapperService {
                 .avatarUrl(userProfile.getAvatarUrl())
                 .bio(userProfile.getBio())
                 .location(userProfile.getLocation())
+                .updateAt(userProfile.getUpdatedAt())
+                .lastLoginAt(userProfile.getLastLoginAt())
                 .rating(userProfile.getRating())
+                .optionalEmail(userProfile.getOptionalEmail())
                 .build();
     }
 }

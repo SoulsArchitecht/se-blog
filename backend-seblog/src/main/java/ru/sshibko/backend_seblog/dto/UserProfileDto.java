@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Value
@@ -11,6 +12,7 @@ import java.util.UUID;
 public class UserProfileDto {
 
     UUID id;
+    String User;
     String displayName;
     String firstName;
     String lastName;
@@ -19,5 +21,8 @@ public class UserProfileDto {
     String avatarUrl;
     String bio;
     String location;
+    LocalDateTime updateAt;
+    LocalDateTime lastLoginAt;
     Integer rating;
+    String optionalEmail;
 }
