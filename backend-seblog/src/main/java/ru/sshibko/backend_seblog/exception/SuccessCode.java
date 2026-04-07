@@ -12,6 +12,7 @@ public enum SuccessCode {
     USER_PASSWORD_CHANGED("MSG-0105", "Пароль успешно изменён"),
     TOKEN_REFRESHED("MSG-0106", "Токен успешно обновлен"),
     USER_PROFILE_RECEIVED("MSG-0107", "Профиль пользователя получен"),
+    AVATAR_UPLOADED("MSG-0108", "Аватар успешно загружен"),
 
     // Посты
     POST_CREATED("MSG-0201", "Пост успешно создан"),

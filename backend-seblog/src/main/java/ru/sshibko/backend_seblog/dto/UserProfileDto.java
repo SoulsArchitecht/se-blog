@@ -12,7 +12,7 @@ import java.util.UUID;
 public class UserProfileDto {
 
     UUID id;
-    String User;
+    UserDto user;
     String displayName;
     String firstName;
     String lastName;
