@@ -6,6 +6,7 @@ export interface User {
   bio?: string;
   createdAt: Date;
   updatedAt: Date;
+  role: string;
 }
 
 export interface AuthRequest {
@@ -23,6 +24,23 @@ export interface AuthResponse {
   refreshToken: string;
   tokenType: string;
   user: User;
+}
+
+export interface UserProfile {
+  id: string;
+  user: User;
+  displayName: string;
+  firstName: string;
+  lastName: string;
+  birthDate: Date;
+  phone: string;
+  avatarUrl: string;
+  bio: string;
+  location: string;
+  updatedAt: Date;
+  lastLoginAt: Date;
+  rating: number;
+  optionalEmail: string;
 }
 
 // export interface AuthResponse {

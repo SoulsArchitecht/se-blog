@@ -1,19 +1,93 @@
-<header class="header">
-  <div class="logo">
-    <a routerLink="/">SE Blog</a>
+<header class="app-header">
+  <div class="header-container">
+    <a routerLink="/" class="logo">
+      <span class="logo-text">Serge Blog</span>
+    </a>
+
+    <nav class="main-nav">
+      <a routerLink="/" routerLinkActive="active">Главная</a>
+      <a routerLink="/posts" routerLinkActive="active">Посты</a>
+      @if (isAdmin()) {
+        <a routerLink="/admin" routerLinkActive="active">Админка</a>
+      }
+      @if (isModerator()) {
+        <a routerLink="/moderation" routerLinkActive="active">Модерация</a>
+      }
+    </nav>
+
+    <div class="header-actions">
+      @if (isAuthenticated()) {
+        <!-- Кнопка профиля -->
+        <div class="profile-dropdown" (click)="toggleProfileMenu()" (mouseleave)="closeProfileMenu()">
+          <div class="profile-trigger">
+            <img 
+              [src]="profile()?.avatarUrl || '/assets/default-avatar.png'" 
+              [alt]="user()?.username || 'User'"
+              class="avatar"
+              onerror="this.src='/assets/default-avatar.png'"
+            >
+            <span class="username">{{ user()?.username }}</span>
+            <i class="dropdown-icon">▼</i>
+          </div>
+
+          @if (profileMenuOpen()) {
+            <div class="dropdown-menu">
+              <div class="dropdown-header">
+                <img [src]="profile()?.avatarUrl || '/assets/default-avatar.png'" class="dropdown-avatar">
+                <div>
+                  <div class="dropdown-username">{{ user()?.username }}</div>
+                  <div class="dropdown-email">{{ profile()?.user?.email }}</div>
+                  <div class="dropdown-role">
+                    @if (isAdmin()) {
+                      <span class="role-badge admin">Администратор</span>
+                    } @else if (isModerator()) {
+                      <span class="role-badge moderator">Модератор</span>
+                    } @else {
+                      <span class="role-badge user">Пользователь</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-divider"></div>
+
+              <a routerLink="/profile" class="dropdown-item">
+                <i class="icon">👤</i>
+                <span>Мой профиль</span>
+              </a>
+
+              <a routerLink="/my-posts" class="dropdown-item">
+                <i class="icon">📝</i>
+                <span>Мои посты</span>
+              </a>
+
+              @if (isAdmin()) {
+                <a routerLink="/admin" class="dropdown-item">
+                  <i class="icon">⚙️</i>
+                  <span>Администрирование</span>
+                </a>
+              }
+
+              @if (isModerator()) {
+                <a routerLink="/moderation" class="dropdown-item">
+                  <i class="icon">🛡️</i>
+                  <span>Модерация</span>
+                </a>
+              }
+
+              <div class="dropdown-divider"></div>
+
+              <button (click)="logout()" class="dropdown-item logout-btn">
+                <i class="icon">🚪</i>
+                <span>Выйти</span>
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <a routerLink="/login" class="btn-login">Войти</a>
+        <a routerLink="/register" class="btn-register">Регистрация</a>
+      }
+    </div>
   </div>
-  
-  <nav class="nav">
-    <a routerLink="/" class="nav-link">Главная</a>
-    <br>
-    
-    @if (authService.isAuthenticated()) {
-      <a routerLink="/create-post" class="nav-link">Создать пост</a>
-      <a routerLink="/profile" class="nav-link">Профиль</a>
-      <button class="nav-button" (click)="logout()">Выйти</button>
-    } @else {
-      <a routerLink="/login" class="nav-link">Войти</a>
-      <a routerLink="/register" class="nav-link">Регистрация</a>
-    }
-  </nav>
 </header>
