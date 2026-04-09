@@ -1,1 +1,154 @@
-<p>user-profile works!</p>
+<div class="profile-page">
+  <div class="profile-container">
+    <div class="profile-card">
+      <h2 class="profile-title">Мой профиль</h2>
+
+      <div class="profile-header">
+        <div class="avatar-upload">
+          <img 
+            [src]="profile?.avatarUrl || '/assets/default-avatar.png'" 
+            alt="Аватар"
+            class="profile-avatar"
+            onerror="this.src='/assets/default-avatar.png'"
+          >
+          <label class="upload-btn">
+            <input type="file" accept="image/*" (change)="onAvatarUpload($event)" hidden>
+            📷 Загрузить фото
+          </label>
+        </div>
+
+        <div class="profile-info">
+          <h3 class="profile-username">{{ user?.username || 'Пользователь' }}</h3>
+          <p class="profile-email">{{ profile?.user?.email }}</p>
+          <div class="profile-role">
+            <span class="role-badge">{{ profile?.user?.role || 'USER' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+        <!-- Сообщения -->
+        @if (successMessage()) {
+          <div class="alert success">
+            {{ successMessage() }}
+          </div>
+        }
+
+        @if (errorMessage()) {
+          <div class="alert error">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <!-- Основная информация -->
+        <div class="form-section">
+          <h4>Основная информация</h4>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="displayName">Отображаемое имя</label>
+              <input 
+                id="displayName" 
+                type="text" 
+                formControlName="displayName"
+                placeholder="Как вас зовут на сайте"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="optionalEmail">Доп. email</label>
+              <input 
+                id="optionalEmail" 
+                type="email" 
+                formControlName="optionalEmail"
+                placeholder="Дополнительный email"
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">Имя</label>
+              <input 
+                id="firstName" 
+                type="text" 
+                formControlName="firstName"
+                placeholder="Ваше имя"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Фамилия</label>
+              <input 
+                id="lastName" 
+                type="text" 
+                formControlName="lastName"
+                placeholder="Ваша фамилия"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Контакты -->
+        <div class="form-section">
+          <h4>Контакты</h4>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Телефон</label>
+              <input 
+                id="phone" 
+                type="tel" 
+                formControlName="phone"
+                placeholder="+7 (999) 123-45-67"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="location">Местоположение</label>
+              <input 
+                id="location" 
+                type="text" 
+                formControlName="location"
+                placeholder="Город, страна"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- О себе -->
+        <div class="form-section">
+          <h4>О себе</h4>
+
+          <div class="form-group">
+            <label for="bio">Биография</label>
+            <textarea 
+              id="bio" 
+              formControlName="bio"
+              placeholder="Расскажите о себе..."
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Действия -->
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            [disabled]="profileForm.invalid || isLoading()"
+            class="btn-primary"
+          >
+            @if (isLoading()) {
+              <span class="spinner"></span>
+              Сохранение...
+            } @else {
+              Сохранить изменения
+            }
+          </button>
+
+          <a routerLink="/" class="btn-secondary">Отмена</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div><p>user-profile works!</p>
