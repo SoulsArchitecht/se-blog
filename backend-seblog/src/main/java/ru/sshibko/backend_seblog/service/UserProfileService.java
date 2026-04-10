@@ -11,6 +11,8 @@ import ru.sshibko.backend_seblog.model.entity.User;
 import ru.sshibko.backend_seblog.model.entity.UserProfile;
 import ru.sshibko.backend_seblog.model.repository.UserProfileRepository;
 
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class UserProfileService {
 
     private final FileStorageService fileStorageService;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public UserProfileDto getCurrentUserProfile() {
         User user = userService.getCurrentUser();
         UserProfile userProfile = userProfileRepository.findByUserId(user.getId());
@@ -36,15 +38,57 @@ public class UserProfileService {
     }
 
     private UserProfile createDefaultProfile(User user) {
-        UserProfile userProfile = new UserProfile();
-        userProfile.setUser(user);
+/*        UserProfile userProfile = new UserProfile();
+        userProfile.setUser(user);*/
+        UserProfile userProfile = UserProfile.builder()
+                .id(user.getId())
+                .user(user)
+                .build();
 
         return userProfileRepository.save(userProfile);
     }
 
     @Transactional
     public UserProfileDto updateCurrentUserProfile(UserProfileDto userProfileDto) {
-        return userProfileMapper.mapToDto(userProfileRepository.save(userProfileMapper.mapToEntity(userProfileDto)));
+        User currentUser = userService.getCurrentUser();
+        UUID userId = currentUser.getId();
+
+        UserProfile userProfile = userProfileRepository.findByUserId(userId);
+        if (userProfile == null) {
+            userProfile = createDefaultProfile(currentUser);
+        }
+
+        if (userProfileDto.getDisplayName() != null) {
+            userProfile.setDisplayName(userProfileDto.getDisplayName());
+        }
+        if (userProfileDto.getFirstName() != null) {
+            userProfile.setFirstName(userProfileDto.getFirstName());
+        }
+        if (userProfileDto.getLastName() != null) {
+            userProfile.setLastName(userProfileDto.getLastName());
+        }
+        if (userProfileDto.getBirthDate() != null) {
+            userProfile.setBirthDate(userProfileDto.getBirthDate());
+        }
+        if (userProfileDto.getPhone() != null) {
+            userProfile.setPhone(userProfileDto.getPhone());
+        }
+        if (userProfileDto.getAvatarUrl() != null) {
+            userProfile.setAvatarUrl(userProfileDto.getAvatarUrl());
+        }
+        if (userProfileDto.getBio() != null) {
+            userProfile.setBio(userProfileDto.getBio());
+        }
+        if (userProfileDto.getLocation() != null) {
+            userProfile.setLocation(userProfileDto.getLocation());
+        }
+        if (userProfileDto.getOptionalEmail() != null) {
+            userProfile.setOptionalEmail(userProfileDto.getOptionalEmail());
+        }
+
+        UserProfile updatedUserProfile = userProfileRepository.save(userProfile);
+
+        return userProfileMapper.mapToDto(updatedUserProfile);
     }
 
     @Transactional
