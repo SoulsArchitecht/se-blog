@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
@@ -17,7 +19,7 @@ import java.util.UUID;
 @Slf4j
 public class FileStorageService {
 
-    @Value("/app/uploads")
+    @Value("${file.upload-dir}")
     private String uploadDir;
 
     public void init() {
@@ -28,14 +30,24 @@ public class FileStorageService {
         }
     }
 
+    //TODO Custom Exception
     public String store(MultipartFile file) {
-        String fileName = UUID.randomUUID().toString() + "_"
-                + FilenameUtils.getExtension(file.getOriginalFilename());
         try {
-            Files.copy(file.getInputStream(), Paths.get(uploadDir).resolve(fileName));
+            Path path = Paths.get(uploadDir);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+                log.info("Created upload directory: {}", uploadDir);
+            }
+            String fileName = UUID.randomUUID().toString() + "."
+                    + FilenameUtils.getExtension(file.getOriginalFilename());
+            Path filePath = path.resolve(fileName);
+
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            log.info("Uploaded file: {}", filePath.toAbsolutePath());
             return fileName;
         } catch (IOException e) {
-            throw new RuntimeException("Could not store file " + fileName, e);
+            log.error("Could not store file {}. Error: {}", file.getOriginalFilename(), e.getMessage());
+            throw new RuntimeException("Could not store file " + file.getOriginalFilename(), e);
         }
     }
 }

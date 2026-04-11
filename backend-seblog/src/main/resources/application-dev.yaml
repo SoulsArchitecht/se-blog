@@ -97,3 +97,6 @@ jwt:
 #      resourceserver:
 #        jwt:
 #          secret-value: ${jwt.secret}
+
+file:
+  upload-dir: uploads
