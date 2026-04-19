@@ -3,6 +3,7 @@ import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { ApiResponse } from '../models/api-response.model';
 import { UserProfile, UserProfileUpdate } from '../models/user-profile.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root'})
 export class UserProfileService {
@@ -67,6 +68,7 @@ export class UserProfileService {
                                 avatarUrl: response.data
                             });
                         }
+                        this.getProfile().subscribe();
                     }
                     this.loadingSignal.set(false);
                 },
@@ -79,5 +81,13 @@ export class UserProfileService {
 
     clearProfile(): void {
         this.profileSignal.set(null);
+    }
+
+    getAvatarUrl(avatarFilename: string | null | undefined): string {
+        if (!avatarFilename) {
+            return '/assets/default-avatar.png';
+        }
+        //return `${environment.apiUrl}/uploads/${avatarFilename}`;
+        return `/api/v1/uploads/${avatarFilename}`;
     }
 }

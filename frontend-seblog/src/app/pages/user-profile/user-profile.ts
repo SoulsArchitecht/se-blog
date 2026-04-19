@@ -37,6 +37,7 @@ export class ProfileComponent implements OnInit {
       firstName: [''],
       lastName: [''],
       birthDate: [''],
+      avatarUrl: [''],
       phone: [''],
       bio: [''],
       location: [''],
@@ -57,6 +58,7 @@ export class ProfileComponent implements OnInit {
             firstName: response.data.firstName || '',
             lastName: response.data.lastName || '',
             birthDate: response.data.birthDate || '',
+            avatarUrl: response.data.avatarUrl || '',
             phone: response.data.phone || '',
             bio: response.data.bio || '',
             location: response.data.locationAt || '',
@@ -116,6 +118,7 @@ export class ProfileComponent implements OnInit {
           if (response.success) {
             this.successMessage.set('Аватар успешно загружен');
             setTimeout(() => this.successMessage.set(''), 3000);
+            this.loadProfile();
           }
         },
         error: (err) => {
@@ -138,6 +141,8 @@ export class ProfileComponent implements OnInit {
   get profile() {
     return this.userProfileService.profile();
   }
+
+  getAvatarUrl = this.userProfileService.getAvatarUrl.bind(this.userProfileService);
 
 
   

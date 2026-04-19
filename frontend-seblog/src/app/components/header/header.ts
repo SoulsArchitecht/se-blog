@@ -18,6 +18,7 @@ export class Header {
 
   profileMenuOpen = signal(false);
   isDropdownVisible = signal(false);
+  menuCloseDelay: ReturnType<typeof setTimeout> | null = null;
 
   readonly isAuthenticated = this.authService.isAuthenticated;
   readonly user = this.authService.user;
@@ -30,12 +31,12 @@ export class Header {
 
   readonly isModerator = computed(() => {
     const user = this.authService.user();
-    return user?.role === 'MODERATOR';
+    return user?.role === 'ROLE_MODERATOR';
   });
 
   readonly isUser = computed(() => {
     const user = this.authService.user();
-    return user?.role === 'USER';
+    return user?.role === 'ROLE_USER';
   });
 
   constructor() {
@@ -45,17 +46,26 @@ export class Header {
   }
 
   toggleProfileMenu(): void {
+    if (this.menuCloseDelay) {
+      clearTimeout(this.menuCloseDelay);
+      this.menuCloseDelay = null;
+    }
     this.profileMenuOpen.update(v => !v);
   }
 
   closeProfileMenu(): void {
-    this.profileMenuOpen.set(false);
+    this.menuCloseDelay = setTimeout(() => {
+      this.profileMenuOpen.set(false);
+      this.menuCloseDelay = null;
+    }, 5000)
   }
 
   logout(): void {
     this.authService.logout();
     this.UserProfileService.clearProfile();
   }
+
+  getAvatarUrl = this.UserProfileService.getAvatarUrl.bind(this.UserProfileService);
 
   //TODO
   // // проверка роли для отображения админки 

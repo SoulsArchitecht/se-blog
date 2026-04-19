@@ -1,7 +1,10 @@
 {
-  "/api": {
+  "/api/v1": {
     "target": "http://localhost:8080",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/v1/uploads": "/api/v1/uploads"
+    }
   }
 }

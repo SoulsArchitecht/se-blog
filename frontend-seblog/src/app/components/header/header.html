@@ -21,7 +21,7 @@
         <div class="profile-dropdown" (click)="toggleProfileMenu()" (mouseleave)="closeProfileMenu()">
           <div class="profile-trigger">
             <img 
-              [src]="profile()?.avatarUrl || '/assets/default-avatar.png'" 
+              [src]="getAvatarUrl(profile()?.avatarUrl)"
               [alt]="user()?.username || 'User'"
               class="avatar"
               onerror="this.src='/assets/default-avatar.png'"
@@ -33,7 +33,13 @@
           @if (profileMenuOpen()) {
             <div class="dropdown-menu">
               <div class="dropdown-header">
-                <img [src]="profile()?.avatarUrl || '/assets/default-avatar.png'" class="dropdown-avatar">
+                <!-- <img [src]="profile()?.avatarUrl || '/assets/default-avatar.png'" class="dropdown-avatar"> -->
+                 <img 
+                  [src]="getAvatarUrl(profile()?.avatarUrl)" 
+                  [alt]="user()?.username || 'User'"
+                  class="avatar"
+                  onerror="this.src='/assets/default-avatar.png'"
+                >
                 <div>
                   <div class="dropdown-username">{{ user()?.username }}</div>
                   <div class="dropdown-email">{{ profile()?.user?.email }}</div>

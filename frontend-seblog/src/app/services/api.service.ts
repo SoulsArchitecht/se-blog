@@ -19,8 +19,22 @@ export class ApiService {
             .pipe(catchError(this.handleError));
     }
 
-    post<T>(endpoint: string, body: any): Observable<ApiResponse<T>> {
-        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    // post<T>(endpoint: string, body: any): Observable<ApiResponse<T>> {
+    //     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    //     return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, body, { headers })
+    //         .pipe(catchError(this.handleError));
+    // }
+
+    post<T>(endpoint: string, body: any, options?: { headers?: HttpHeaders }): Observable<ApiResponse<T>> {
+        if (body instanceof FormData) {
+            return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, body, {
+                headers: options?.headers || new HttpHeaders()
+            });
+        }
+
+        const headers = (options?.headers || new HttpHeaders())
+            .set('Content-Type', 'application/json');
+
         return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, body, { headers })
             .pipe(catchError(this.handleError));
     }

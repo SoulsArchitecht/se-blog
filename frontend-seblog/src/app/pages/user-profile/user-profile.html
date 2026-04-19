@@ -5,12 +5,18 @@
 
       <div class="profile-header">
         <div class="avatar-upload">
-          <img 
+          <!-- <img 
             [src]="profile?.avatarUrl || '/assets/default-avatar.png'" 
             alt="Аватар"
             class="profile-avatar"
             onerror="this.src='/assets/default-avatar.png'"
-          >
+          > -->
+          <img 
+            [src]="getAvatarUrl(profile?.avatarUrl)" 
+            alt="Аватар"
+            class="profile-avatar"
+            onerror="this.src='/assets/default-avatar.png'"
+            >
           <label class="upload-btn">
             <input type="file" accept="image/*" (change)="onAvatarUpload($event)" hidden>
             📷 Загрузить фото
