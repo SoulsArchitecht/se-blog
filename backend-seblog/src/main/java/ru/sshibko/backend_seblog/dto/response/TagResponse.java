@@ -3,6 +3,7 @@ package ru.sshibko.backend_seblog.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -28,5 +29,4 @@ public record TagResponse(
         @Schema(description = "Количество постов",
                 example = "42")
         Integer postCount
-) {
-}
+) implements Serializable {}

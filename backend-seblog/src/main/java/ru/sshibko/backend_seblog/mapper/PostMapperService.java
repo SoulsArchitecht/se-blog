@@ -32,11 +32,10 @@ public class PostMapperService {
         log.info("post not null checked");
 
         PostTypeResponse typeResponse = postTypeService.getPostTypeById(post.getType().getId());
-
-        log.info("before userresponse");
         UserSummaryResponse authorResponse = userMapper.mapToUserSummaryResponse(post.getAuthor());
-
-        Integer postCount = 1;
+        VoteType currentUserVote = postVoteService.getCurrentUserVoteForPost(post.getId());
+        Integer likeCount = postVoteService.getPostLikeCount(post.getId());
+        Integer dislikeCount = postVoteService.getPostDislikeCount(post.getId());
 
         log.info("before tagResponse");
 
@@ -46,15 +45,9 @@ public class PostMapperService {
                         .name(tag.getName())
                         //.slug(slugService.generateSlug(tag.getName()))
                         .createdAt(tag.getCreatedAt())
-                        .postCount(postCount)
+                        .postCount(1)
                         .build())
                 .collect(Collectors.toSet());
-
-        log.info("tags not null checked");
-        
-        VoteType currentUserVote = postVoteService.getCurrentUserVoteForPost(post.getId());
-        Integer likeCount = postVoteService.getPostLikeCount(post.getId());
-        Integer dislikeCount = postVoteService.getPostDislikeCount(post.getId());
 
         log.info("Starting to map post response");
 
@@ -71,8 +64,18 @@ public class PostMapperService {
                 .author(authorResponse)
                 .type(typeResponse)
                 .tags(tagResponses)
-                //TODO add entity field
-                //.commentCount(post.getComments().size())
+                .commentCount(post.getComments().size())
+                .comments(post.getComments().stream()
+                        .map(comment -> CommentResponse.builder()
+                                .id(comment.getId())
+                                .content(comment.getContent())
+                                .author(userMapper.mapToUserSummaryResponse(comment.getAuthor()))
+                                .createdAt(comment.getCreatedAt())
+                                .updatedAt(comment.getUpdatedAt())
+                                //.parentId(comment.getParent().getId())
+                                //.postId(comment.getPost().getId())
+                                .build())
+                        .collect(Collectors.toList()))
                 .likeCount(likeCount)
                 .dislikeCount(dislikeCount)
                 .currentUserVote(currentUserVote)

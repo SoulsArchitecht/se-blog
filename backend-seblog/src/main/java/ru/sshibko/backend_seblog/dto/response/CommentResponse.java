@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import ru.sshibko.backend_seblog.model.entity.enums.VoteType;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -56,5 +57,4 @@ public record CommentResponse(
 
         @Schema(description = "Дочерние комментарии")
         List<CommentResponse> replies
-) {
-}
+) implements Serializable {}

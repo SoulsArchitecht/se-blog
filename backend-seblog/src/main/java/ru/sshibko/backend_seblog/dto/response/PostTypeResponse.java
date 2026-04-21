@@ -2,6 +2,7 @@ package ru.sshibko.backend_seblog.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -30,4 +31,4 @@ public record PostTypeResponse(
         @Schema(description = "Дата создания",
                 example = "2024-01-15T10:00:00")
         LocalDateTime createdAt
-) {}
+) implements Serializable {}

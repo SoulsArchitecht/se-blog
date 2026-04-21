@@ -5,7 +5,9 @@ import lombok.Builder;
 import ru.sshibko.backend_seblog.model.entity.enums.PostStatus;
 import ru.sshibko.backend_seblog.model.entity.enums.VoteType;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -58,9 +60,12 @@ public record PostResponse(
         Set<TagResponse> tags,
 
         //TODO add Entity field
-/*        @Schema(description = "Количество комментариев",
+        @Schema(description = "Количество комментариев",
                 example = "12")
-        Integer commentCount,*/
+        Integer commentCount,
+
+        @Schema(description = "Список комментариев")
+        List<CommentResponse> comments,
 
         @Schema(description = "Количество лайков",
                 example = "45")
@@ -73,4 +78,4 @@ public record PostResponse(
         @Schema(description = "Голос текущего пользователя",
                 example = "LIKE")
         VoteType currentUserVote
-) {}
+) implements Serializable {}

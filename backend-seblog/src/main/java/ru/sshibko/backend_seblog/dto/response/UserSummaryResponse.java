@@ -2,6 +2,7 @@ package ru.sshibko.backend_seblog.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Schema(description = "Public user info")
@@ -20,4 +21,4 @@ public record UserSummaryResponse(
 
         @Schema(description = "Registration date (simple year)", example = "2025")
         Integer registrationYear
-) {}
+) implements Serializable {}
