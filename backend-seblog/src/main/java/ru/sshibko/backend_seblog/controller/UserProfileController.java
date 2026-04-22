@@ -18,6 +18,7 @@ import ru.sshibko.backend_seblog.service.MessageService;
 import ru.sshibko.backend_seblog.service.UserProfileService;
 
 import java.util.Locale;
+import java.util.UUID;
 
 @CrossOrigin(origins = "http:/localhost:4200", allowCredentials = "true")
 @RestController
@@ -38,6 +39,16 @@ public class UserProfileController {
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN, ROLE_MODERATOR')")
     public ApiResponse<UserProfileDto> getCurrentUserProfile() {
         UserProfileDto userProfileDto = userProfileService.getCurrentUserProfile();
+        String message = messageService.getSuccessMessage(SuccessCode.USER_PROFILE_RECEIVED, locale);
+
+        return ApiResponse.success(userProfileDto, message);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Getting user details by id")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN, ROLE_MODERATOR')")
+    public ApiResponse<UserProfileDto> getUserProfileById(@PathVariable UUID id) {
+        UserProfileDto userProfileDto = userProfileService.getUserProfileById(id);
         String message = messageService.getSuccessMessage(SuccessCode.USER_PROFILE_RECEIVED, locale);
 
         return ApiResponse.success(userProfileDto, message);

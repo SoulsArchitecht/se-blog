@@ -37,6 +37,13 @@ public class UserProfileService {
         return userProfileMapper.mapToDto(userProfile);
     }
 
+    @Transactional(readOnly = true)
+    public UserProfileDto getUserProfileById(UUID id) {
+        UserProfile userProfile = userProfileRepository.findByUserId(id);
+
+        return userProfileMapper.mapToDto(userProfile);
+    }
+
     private UserProfile createDefaultProfile(User user) {
 /*        UserProfile userProfile = new UserProfile();
         userProfile.setUser(user);*/
