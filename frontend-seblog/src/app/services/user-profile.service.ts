@@ -4,6 +4,7 @@ import { ApiService } from './api.service';
 import { ApiResponse } from '../models/api-response.model';
 import { UserProfile, UserProfileUpdate } from '../models/user-profile.model';
 import { environment } from '../../environments/environment';
+import { User } from '../models/user.model';
 
 @Injectable({ providedIn: 'root'})
 export class UserProfileService {
@@ -89,5 +90,9 @@ export class UserProfileService {
         }
         //return `${environment.apiUrl}/uploads/${avatarFilename}`;
         return `/api/v1/uploads/${avatarFilename}`;
+    }
+
+    getUserProfile(userId: string): Observable<ApiResponse<UserProfile>> {
+        return this.apiService.get<UserProfile>(`/users/profile/${userId}`)
     }
 }

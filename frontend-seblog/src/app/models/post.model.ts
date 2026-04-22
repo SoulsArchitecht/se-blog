@@ -28,6 +28,7 @@ export interface Post {
   createdAt: Date;
   updatedAt: Date;
   publishedAt?: Date;
+  comments: Comment[];
 }
 
 export interface PostCreate {

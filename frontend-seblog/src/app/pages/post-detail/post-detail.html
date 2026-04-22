@@ -1,1 +1,113 @@
-<p>post-detail works!</p>
+<div class="post-detail-container">
+  @if (isLoading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Загрузка поста...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-alert">
+      <h3>Ошибка загрузки</h3>
+      <p>{{ error() }}</p>
+      <button (click)="router.navigate(['/'])" class="btn-secondary">
+        Вернуться на главную
+      </button>
+    </div>
+  } @else if (post()) {
+    <article class="post-detail">
+      <header class="post-header">
+        <h1 class="post-title">{{ post()!.title }}</h1>
+        
+        <div class="post-meta">
+          <div class="author-info">
+            <img 
+              [src]="getAvatarUrl(post()!.author.avatar)" 
+              [alt]="post()!.author.username"
+              class="author-avatar"
+              onerror="this.src='/assets/default-avatar.png'"
+            >
+            <span class="author-name">{{ post()!.author.username }}</span>
+          </div>
+          
+          <div class="post-dates">
+            <span class="published-date">
+              Опубликовано: {{ post()!.createdAt | date:'dd.MM.yyyy HH:mm' }}
+            </span>
+          </div>
+        </div>
+
+        @if (canEdit) {
+          <div class="post-actions">
+            <button 
+              (click)="deletePost()" 
+              class="btn-danger"
+            >
+              Удалить
+            </button>
+          </div>
+        }
+      </header>
+
+      <div class="post-content">
+        <div class="post-body">{{ post()!.content }}</div>
+      </div>
+
+      <div class="post-stats">
+        <div class="stat-item">
+          <i class="stat-icon">👁️</i>
+          <span>{{ post()!.viewsCount }} просмотров</span>
+        </div>
+        <div class="stat-item">
+          <i class="stat-icon">💬</i>
+          <span>{{ post()!.commentsCount }} комментариев</span>
+        </div>
+        <div class="stat-item">
+          <i class="stat-icon">👍</i>
+          <span>{{ post()!.likesCount }} лайков</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Форма комментария -->
+    <section class="comment-form-section">
+      <h3>Оставить комментарий</h3>
+      <form [formGroup]="commentForm" (ngSubmit)="addComment()" class="comment-form">
+        <textarea 
+          formControlName="content"
+          placeholder="Напишите ваш комментарий..."
+          rows="4"
+          [disabled]="isSubmittingComment()"
+        ></textarea>
+        
+        @if (commentForm.get('content')?.invalid && commentForm.get('content')?.touched) {
+          <div class="form-error">
+            @if (commentForm.get('content')?.errors?.['required']) {
+              <span>Комментарий обязателен</span>
+            }
+            @if (commentForm.get('content')?.errors?.['minlength']) {
+              <span>Минимум 5 символов</span>
+            }
+          </div>
+        }
+        
+        <button 
+          type="submit" 
+          [disabled]="commentForm.invalid || isSubmittingComment()"
+          class="btn-primary"
+        >
+          @if (isSubmittingComment()) {
+            <span class="spinner"></span>
+            Отправка...
+          } @else {
+            Отправить комментарий
+          }
+        </button>
+      </form>
+    </section>
+
+    <!-- Комментарии (заглушка - пока нет API) -->
+    <section class="comments-section">
+      <h3>Комментарии ({{ post()!.commentsCount }})</h3>
+      <p class="no-comments">Комментарии пока не реализованы</p>
+    </section>
+  }
+</div>

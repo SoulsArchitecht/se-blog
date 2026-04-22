@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
 import { Post, Comment } from '../../models/post.model';
+import { UserProfileService } from '../../services/user-profile.service';
 
 @Component({
   selector: 'app-post-detail',
@@ -15,9 +16,10 @@ import { Post, Comment } from '../../models/post.model';
 })
 export class PostDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  router = inject(Router);
   private postService = inject(PostService);
   private authService = inject(AuthService);
+  private userProfileService = inject(UserProfileService);
   private fb = inject(FormBuilder);
   
   post = signal<Post | null>(null);
@@ -46,6 +48,21 @@ export class PostDetailComponent implements OnInit {
       next: (response) => {
         this.post.set(response.data);
         this.isLoading.set(false);
+
+        if (this.post()?.author.id) {
+          this.userProfileService.getUserProfile(this.post()!.author.id).subscribe({
+            next: (profileResponse) => {
+              const avatarUrl = profileResponse.data?.avatarUrl ?? undefined;
+              this.post.update(p => ({
+                ...p!,
+                author: {
+                  ...p!.author,
+                  avatar: avatarUrl
+                }
+              }));
+            }
+          })
+        }
       },
       error: (error) => {
         this.error.set(error.message || 'Пост не найден');
@@ -103,4 +120,11 @@ export class PostDetailComponent implements OnInit {
   get canEdit(): boolean {
     return this.isAuthor || this.authService.user()?.username === 'admin';
   }
+
+    getAvatarUrl(avatarFilename?: string | null): string {
+      if (!avatarFilename) {
+        return '/assets/default-avatar.png';
+      }
+      return `/api/v1/uploads/${avatarFilename}`;
+    }
 }
