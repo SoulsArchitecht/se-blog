@@ -30,6 +30,7 @@ public enum SuccessCode {
     COMMENT_ADDED("MSG-0301", "Комментарий добавлен"),
     COMMENT_UPDATED("MSG-0302", "Комментарий обновлён"),
     COMMENT_DELETED("MSG-0303", "Комментарий удалён"),
+    COMMENTS_RECEIVED("MSG-0304", "Комментарии к посту получены"),
 
     // Голосование
     VOTE_CAST("MSG-0401", "Голос учтён"),
