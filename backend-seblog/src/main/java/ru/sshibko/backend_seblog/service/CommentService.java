@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.request.CommentCreateRequest;
+import ru.sshibko.backend_seblog.dto.request.CommentUpdateRequest;
 import ru.sshibko.backend_seblog.dto.response.CommentResponse;
 import ru.sshibko.backend_seblog.exception.ErrorCode;
 import ru.sshibko.backend_seblog.exception.NotFoundException;
@@ -131,7 +132,7 @@ public class CommentService {
 
     @PreAuthorize("@commentService.canEditComment(#commentId)")
     @CacheEvict(value = {"commentsByPost", "commentTree"}, key = "#postId")
-    public CommentResponse updateComment(UUID postId, UUID commentId, CommentCreateRequest request) {
+    public CommentResponse updateComment(UUID postId, UUID commentId, CommentUpdateRequest request) {
         log.info("Update comment for post: {}, commentId: {}", postId, commentId);
 
         Comment comment = commentRepository.findByIdAndPostId(commentId, postId)
