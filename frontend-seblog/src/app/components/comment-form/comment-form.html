@@ -1,0 +1,43 @@
+@if (form) {
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="comment-form">
+    <textarea
+      formControlName="content"
+      [placeholder]="placeholder()"
+      [rows]="rows()"
+      class="form-control"
+      [class.error]="form.get('content')?.invalid && form.get('content')?.touched"
+      [disabled]="isSubmitting()"
+    ></textarea>
+
+    @if (form.get('content')?.invalid && form.get('content')?.touched) {
+      <div class="form-error">
+        @if (form.get('content')?.errors?.['required']) {
+          <span>Комментарий обязателен</span>
+        }
+        @if (form.get('content')?.errors?.['minlength']) {
+          <span>Минимум {{ form.get('content')?.errors?.['minlength'].requiredLength }} символов</span>
+        }
+      </div>
+    }
+
+    <div class="form-actions">
+      @if (cancelLabel()) {
+        <button type="button" (click)="cancel.emit()" class="btn-secondary" [disabled]="isSubmitting()">
+          {{ cancelLabel() }}
+        </button>
+      }
+      <button 
+        type="submit" 
+        [disabled]="form.invalid || isSubmitting()"
+        class="btn-primary"
+      >
+        @if (isSubmitting()) {
+          <span class="spinner"></span>
+          {{ submitLabel() }}
+        } @else {
+          {{ submitLabel() }}
+        }
+      </button>
+    </div>
+  </form>
+}
