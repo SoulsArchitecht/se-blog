@@ -1,0 +1,80 @@
+<article class="comment-item" [class.deleted]="comment().isDeleted">
+      <div class="comment-header">
+        <img 
+          [src]="avatarUrl()" 
+          [alt]="comment().author.username"
+          class="comment-avatar"
+          onerror="this.src='/assets/default-avatar.png'"
+        >
+        <div class="comment-author">
+          <strong>{{ comment().author.username }}</strong>
+          <time class="comment-date" [attr.datetime]="comment().createdAt">
+            {{ comment().createdAt | date:'dd.MM.yyyy HH:mm' }}
+          </time>
+        </div>
+        
+        @if (canEdit() || canDelete()) {
+          <div class="comment-actions">
+            @if (canEdit()) {
+              <button (click)="toggleEdit()" class="btn-outline btn-sm">
+                {{ isEditing() ? 'Отмена' : 'Редактировать' }}
+              </button>
+            }
+            @if (canDelete()) {
+              <button (click)="delete.emit(comment().id)" class="btn-danger btn-sm">
+                Удалить
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      @if (isEditing()) {
+        <app-comment-form
+          [initialContent]="comment().content"
+          submitLabel="Сохранить"
+          cancelLabel="Отмена"
+          (submit)="onEditSubmit($event)"
+          (cancel)="toggleEdit()"
+        />
+      } @else {
+        <p class="comment-content">
+          {{ comment().isDeleted ? '[Комментарий удалён]' : comment().content }}
+        </p>
+      }
+
+      @if (!comment().isDeleted && !isReply()) {
+        <div class="comment-actions">
+          <button (click)="toggleReply()" class="btn-outline btn-sm">
+            {{ showReplyForm() ? 'Отмена' : 'Ответить' }}
+          </button>
+        </div>
+      }
+
+      @if (showReplyForm()) {
+        <div class="reply-form">
+          <app-comment-form
+            placeholder="Написать ответ..."
+            submitLabel="Ответить"
+            [isReply]="true"
+            (submit)="onReplySubmit($event)"
+            (cancel)="toggleReply()"
+          />
+        </div>
+      }
+
+      @if (comment().replies?.length && !isReply()) {
+        <div class="replies">
+          @for (reply of comment().replies; track reply.id) {
+            <app-comment-item
+              [comment]="reply"
+              [postId]="postId()"
+              [depth]="depth() + 1"
+              [isReply]="true"
+              (edit)="edit.emit($event)"
+              (delete)="delete.emit($event)"
+            />
+          }
+        </div>
+      }
+    </article>
