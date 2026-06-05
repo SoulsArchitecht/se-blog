@@ -67,47 +67,11 @@
       </div>
     </article>
 
-    <!-- Форма комментария -->
-    <section class="comment-form-section">
-      <h3>Оставить комментарий</h3>
-      <form [formGroup]="commentForm" (ngSubmit)="addComment()" class="comment-form">
-        <textarea 
-          formControlName="content"
-          placeholder="Напишите ваш комментарий..."
-          rows="4"
-          [disabled]="isSubmittingComment()"
-        ></textarea>
-        
-        @if (commentForm.get('content')?.invalid && commentForm.get('content')?.touched) {
-          <div class="form-error">
-            @if (commentForm.get('content')?.errors?.['required']) {
-              <span>Комментарий обязателен</span>
-            }
-            @if (commentForm.get('content')?.errors?.['minlength']) {
-              <span>Минимум 5 символов</span>
-            }
-          </div>
-        }
-        
-        <button 
-          type="submit" 
-          [disabled]="commentForm.invalid || isSubmittingComment()"
-          class="btn-primary"
-        >
-          @if (isSubmittingComment()) {
-            <span class="spinner"></span>
-            Отправка...
-          } @else {
-            Отправить комментарий
-          }
-        </button>
-      </form>
-    </section>
-
-    <!-- Комментарии (заглушка - пока нет API) -->
-    <section class="comments-section">
-      <h3>Комментарии ({{ post()!.commentsCount }})</h3>
-      <p class="no-comments">Комментарии пока не реализованы</p>
-    </section>
+    <app-comment-list
+      [postId]="post()!.id"
+      (commentAdded)="onCommentAdded($event)"
+      (commentUpdated)="onCommentUpdated($event)"
+      (commentDeleted)="onCommentDeleted($event)"
+    />
   }
 </div>

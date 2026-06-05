@@ -4,13 +4,19 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
-import { Post, Comment } from '../../models/post.model';
+import { Post } from '../../models/post.model';
+import { Comment } from '../../models/comment.model';
 import { UserProfileService } from '../../services/user-profile.service';
+import { CommentList } from '../../components/comment-list/comment-list';
 
 @Component({
   selector: 'app-post-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    ReactiveFormsModule,
+    CommentList],
   templateUrl: './post-detail.html',
   styleUrls: ['./post-detail.scss']
 })
@@ -39,6 +45,27 @@ export class PostDetailComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.loadPost(String(params['id']));
     });
+  }
+
+  onCommentAdded(comment: Comment): void {
+    this.post.update(p => p ? {
+      ...p,
+      commentsCount: (p.commentsCount || 0) + 1
+    } : p);
+  }
+
+  onCommentUpdated(event: { id:string; content: string }): void {
+    this.post.update(p => p ? {
+      ...p,
+      commentsCount: Math.max(0, (p.commentsCount || 0) - 1)
+    } : p);
+  }
+
+  onCommentDeleted(commentId: string ): void {
+    this.post.update(p => p ? {
+      ...p,
+      commentsCount: Math.max(0, (p.commentsCount || 0) - 1)
+    } : p);
   }
   
   loadPost(id: string): void {
@@ -71,34 +98,34 @@ export class PostDetailComponent implements OnInit {
     });
   }
   
-  addComment(): void {
-    if (this.commentForm.invalid || !this.post()) return;
+  // addComment(): void {
+  //   if (this.commentForm.invalid || !this.post()) return;
     
-    this.isSubmittingComment.set(true);
+  //   this.isSubmittingComment.set(true);
     
-    // Здесь будет логика добавления комментария через API
-    setTimeout(() => {
-      const newComment: Comment = {
-        //id: Math.random(),
-        id: "1",
-        content: this.commentForm.value.content,
-        author: {
-          id: this.authService.user()?.id || "0",
-          username: this.authService.user()?.username || 'Аноним'
-        },
-        createdAt: new Date()
-      };
+  //   // Здесь будет логика добавления комментария через API
+  //   setTimeout(() => {
+  //     const newComment: Comment = {
+  //       //id: Math.random(),
+  //       id: "1",
+  //       content: this.commentForm.value.content,
+  //       author: {
+  //         id: this.authService.user()?.id || "0",
+  //         username: this.authService.user()?.username || 'Аноним'
+  //       },
+  //       createdAt: new Date()
+  //     };
       
-      // Обновляем пост с новым комментарием
-      this.post.set({
-        ...this.post()!,
-        commentsCount: this.post()!.commentsCount + 1
-      });
+  //     // Обновляем пост с новым комментарием
+  //     this.post.set({
+  //       ...this.post()!,
+  //       commentsCount: this.post()!.commentsCount + 1
+  //     });
       
-      this.commentForm.reset();
-      this.isSubmittingComment.set(false);
-    }, 1000);
-  }
+  //     this.commentForm.reset();
+  //     this.isSubmittingComment.set(false);
+  //   }, 1000);
+  // }
   
   deletePost(): void {
     if (!this.post() || !confirm('Удалить этот пост?')) return;

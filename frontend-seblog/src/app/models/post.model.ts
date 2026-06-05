@@ -4,12 +4,12 @@ export interface Author {
   avatar?: string;
 }
 
-export interface Comment {
-  id: string;
-  content: string;
-  author: Author;
-  createdAt: Date;
-}
+// export interface Comment {
+//   id: string;
+//   content: string;
+//   author: Author;
+//   createdAt: Date;
+// }
 
 export interface Post {
   id: string;
