@@ -1,0 +1,100 @@
+    <section class="comments-section">
+      <div class="comments-header">
+        <h3>Комментарии ({{ totalComments() }})</h3>
+        @if (viewMode() === 'tree') {
+          <button (click)="toggleView()" class="btn-outline btn-sm">
+            Показать списком
+          </button>
+        } @else {
+          <button (click)="toggleView()" class="btn-outline btn-sm">
+            Показать деревом
+          </button>
+        }
+      </div>
+
+      <!-- Форма нового комментария -->
+      @if (authService.isAuthenticated()) {
+        <div class="new-comment-form">
+          <app-comment-form
+            placeholder="Напишите комментарий..."
+            submitLabel="Опубликовать"
+            (submit)="createComment($event)"
+          />
+        </div>
+      } @else {
+        <div class="auth-prompt">
+          <p>
+            <a routerLink="/auth/login">Войдите</a> или 
+            <a routerLink="/auth/register">зарегистрируйтесь</a>, 
+            чтобы оставить комментарий
+          </p>
+        </div>
+      }
+
+      <!-- Загрузка -->
+      @if (isLoading()) {
+        <div class="loading-comments">
+          <div class="spinner"></div>
+          <span>Загрузка комментариев...</span>
+        </div>
+      }
+
+      <!-- Пустой список -->
+      @if (!isLoading() && comments().length === 0) {
+        <p class="no-comments">Пока нет комментариев. Будьте первым!</p>
+      }
+
+      <!-- Список комментариев -->
+      @if (!isLoading() && comments().length > 0) {
+        @if (viewMode() === 'list') {
+          <div class="comments-list">
+            @for (comment of comments(); track comment.id) {
+              <app-comment-item
+                [comment]="comment"
+                [postId]="postId()"
+                (edit)="handleEdit($event)"
+                (delete)="handleDelete($event)"
+              />
+            }
+          </div>
+        } @else {
+          <div class="comments-tree">
+            @for (rootComment of rootComments(); track rootComment.id) {
+              <app-comment-item
+                [comment]="rootComment"
+                [postId]="postId()"
+                [depth]="0"
+                (edit)="handleEdit($event)"
+                (delete)="handleDelete($event)"
+              />
+            }
+          </div>
+        }
+
+        <!-- Пагинация -->
+        @if (viewMode() === 'list' && !lastPage()) {
+          <button 
+            (click)="loadMore()" 
+            [disabled]="loadingMore()"
+            class="btn-load-more"
+          >
+            @if (loadingMore()) {
+              <span class="spinner"></span>
+              Загрузка...
+            } @else {
+              Загрузить ещё
+            }
+          </button>
+        }
+      }
+
+      <!-- Ошибка -->
+      @if (error()) {
+        <div class="error-alert">
+          <p>{{ error() }}</p>
+          <button (click)="reload()" class="btn-secondary btn-sm">
+            Повторить
+          </button>
+        </div>
+      }
+    </section><p>comment-list works!</p>
