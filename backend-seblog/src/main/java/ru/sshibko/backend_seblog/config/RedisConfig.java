@@ -1,5 +1,8 @@
 package ru.sshibko.backend_seblog.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +21,27 @@ import java.time.Duration;
 @EnableCaching
 public class RedisConfig {
 
+    /**
+     * Создаёт ObjectMapper с поддержкой Java 8 date/time типов (LocalDateTime и т.д.)
+     */
+    private ObjectMapper createRedisObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        // Регистрируем модуль для работы с Java 8 датами
+        mapper.registerModule(new JavaTimeModule());
+
+        // Сериализуем даты как ISO-строки, а не как timestamps
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        // Для GenericJackson2JsonRedisSerializer нужно сохранять информацию о типах
+        mapper.activateDefaultTyping(
+                mapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL
+        );
+
+        return mapper;
+    }
+
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
@@ -26,7 +50,9 @@ public class RedisConfig {
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
 
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
+        // Используем кастомный ObjectMapper
+        GenericJackson2JsonRedisSerializer serializer =
+                new GenericJackson2JsonRedisSerializer(createRedisObjectMapper());
         template.setValueSerializer(serializer);
         template.setHashValueSerializer(serializer);
 
@@ -36,13 +62,17 @@ public class RedisConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+        // Создаём единый сериализатор с поддержкой Java 8 дат
+        GenericJackson2JsonRedisSerializer serializer =
+                new GenericJackson2JsonRedisSerializer(createRedisObjectMapper());
+
         RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(1))
                 .disableCachingNullValues()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
-                        .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+                        .fromSerializer(serializer));  // Используем кастомный сериализатор
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(cacheConfig)

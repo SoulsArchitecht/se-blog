@@ -17,6 +17,7 @@ import ru.sshibko.backend_seblog.dto.ApiResponse;
 import ru.sshibko.backend_seblog.dto.request.CommentCreateRequest;
 import ru.sshibko.backend_seblog.dto.request.CommentUpdateRequest;
 import ru.sshibko.backend_seblog.dto.response.CommentResponse;
+import ru.sshibko.backend_seblog.dto.response.PagedResponse;
 import ru.sshibko.backend_seblog.exception.ErrorCode;
 import ru.sshibko.backend_seblog.exception.SuccessCode;
 import ru.sshibko.backend_seblog.exception.ValidationException;
@@ -59,14 +60,14 @@ public class CommentController {
                     Показывает все комментарии для существующего указанного поста постранично.
                     Доступно для USER, MODERATOR, ADMIN и для неавтаризованных пользователей
                     """)
-    public ApiResponse<List<CommentResponse>> getCommentsByPost(
+    public ApiResponse<PagedResponse<CommentResponse>> getCommentsByPost(
             @PathVariable UUID postId,
             @ParameterObject @PageableDefault(page = 0, size = 20, sort = "createdAt",
                     direction = Sort.Direction.ASC) Pageable pageable) {
-            Page<CommentResponse> comments = commentService.getCommentsByPost(postId, pageable);
+            PagedResponse<CommentResponse> comments = commentService.getCommentsByPost(postId, pageable);
             String message = messageService.getSuccessMessage(SuccessCode.COMMENTS_RECEIVED, locale);
 
-            return ApiResponse.success(comments.getContent(), message);
+            return ApiResponse.success(comments, message);
     }
 
     @GetMapping("/tree")

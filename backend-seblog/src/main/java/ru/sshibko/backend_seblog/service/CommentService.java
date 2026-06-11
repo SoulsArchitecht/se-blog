@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.request.CommentCreateRequest;
 import ru.sshibko.backend_seblog.dto.request.CommentUpdateRequest;
 import ru.sshibko.backend_seblog.dto.response.CommentResponse;
+import ru.sshibko.backend_seblog.dto.response.PagedResponse;
 import ru.sshibko.backend_seblog.exception.ErrorCode;
 import ru.sshibko.backend_seblog.exception.NotFoundException;
 import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
@@ -97,12 +98,14 @@ public class CommentService {
     @Transactional(readOnly = true)
     @Cacheable(value = "commentsByPost",
             key = "#postId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
-    public Page<CommentResponse> getCommentsByPost(UUID postId, Pageable pageable) {
+    public PagedResponse<CommentResponse> getCommentsByPost(UUID postId, Pageable pageable) {
         log.debug("Get comments for post: {}: page {}, size {}",
                 postId, pageable.getPageNumber(), pageable.getPageSize());
 
-        return commentRepository.findAllByPostIdAndStatus(postId, CommentStatus.ACTIVE, pageable)
+        Page<CommentResponse> page = commentRepository.findAllByPostIdAndStatus(postId, CommentStatus.ACTIVE, pageable)
                 .map(commentMapper::mapToResponse);
+
+        return PagedResponse.of(page);
     }
 
     @Transactional(readOnly = true)
