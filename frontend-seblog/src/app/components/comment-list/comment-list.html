@@ -72,7 +72,7 @@
         }
 
         <!-- Пагинация -->
-        @if (viewMode() === 'list' && !lastPage()) {
+        @if (viewMode() === 'list' && lastPage()) {
           <button 
             (click)="loadMore()" 
             [disabled]="loadingMore()"

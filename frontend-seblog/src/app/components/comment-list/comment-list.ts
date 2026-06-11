@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { CommentService } from '../../services/comment.service';
 import { Comment, CommentCreateRequest } from '../../models/comment.model';
-import { PagedResponse } from '../../models/paged-response.model';
+//import { PagedResponse } from '../../models/paged-response.model';
+import { PaginatedResponse } from '../../models/api-response.model';
 import { CommentItem } from '../comment-item/comment-item';
 import { CommentForm } from '../comment-form/comment-form';
 import { AuthService } from '../../services/auth.service';
@@ -67,16 +68,21 @@ export class CommentList {
         this.commentService.getCommentsByPost(this.postId(), page, 20)
       );
 
-      if (response.content) {
+      if (response?.content) {
         if(page === 0) {
           this.comments.set(response.content);
         } else {
           this.comments.update(prev => [...prev, ...response.content]);
         }
-        this.currentPage.set(response.page);
+        this.currentPage.set(page);
         this.lastPage.set(response.last);
         this.totalComments.set(response.totalElements);
+      } else if (page === 0) {
+        this.comments.set([]);
+        this.totalComments.set(0);
       }
+
+      
     } catch (err: any) {
       this.error.set(err.message || 'Не удалось загрузить комментарии');
     } finally {
@@ -110,7 +116,7 @@ export class CommentList {
   }
 
   loadMore(): void {
-    if (this.lastPage() || this.loadMore()) return;
+    if (this.lastPage() || this.loadingMore()) return;
     this.loadingMore.set(true);
     this.loadComments(this.currentPage() + 1);
   }

@@ -2,10 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { ApiResponse } from '../models/api-response.model';
-import { PagedResponse } from '../models/paged-response.model';
+//import { PagedResponse } from '../models/paged-response.model';
+import { PaginatedResponse } from '../models/api-response.model';
 import { Comment } from '../models/comment.model';
 import { map } from 'rxjs/operators';
 import { CommentCreateRequest } from '../models/comment.model';
+import { HttpParams } from '@angular/common/http';
 
 
 @Injectable({ providedIn: 'root' })
@@ -18,11 +20,14 @@ export class CommentService {
         page = 0,
         size = 20,
         sort = 'createdAt,asc'
-    ): Observable<PagedResponse<Comment>> {
-        const params = { page, size, sort };
+    ): Observable<PaginatedResponse<Comment>> {
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('size', size.toString())
+            .set('sort', sort);
 
         return this.apiService
-            .get<PagedResponse<Comment>>(`/posts/${postId}/comments`, params)
+            .get<PaginatedResponse<Comment>>(`/posts/${postId}/comments`, { params })
             .pipe(map(response => response.data));
     }
 
