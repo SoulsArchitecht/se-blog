@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.sshibko.backend_seblog.dto.VoteStats;
 import ru.sshibko.backend_seblog.dto.request.VoteRequest;
 import ru.sshibko.backend_seblog.exception.*;
 import ru.sshibko.backend_seblog.model.entity.Post;
@@ -79,7 +80,6 @@ public class PostVoteService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "postVoteStats", key = "#postId")
     public VoteType getCurrentUserVoteForPost(UUID postId) {
         User currentUser = userService.getCurrentUserOrNull();
 
@@ -118,5 +118,18 @@ public class PostVoteService {
 
         postVoteRepository.delete(postVote);
         log.info("Vote removed for post {}, user: {}", postId, currentUser.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public VoteStats getVoteStats(UUID postId) {
+        Integer likes = getPostLikeCount(postId);
+        Integer dislikes = getPostDislikeCount(postId);
+        VoteType userVote = getCurrentUserVoteForPost(postId);
+
+        return VoteStats.of(
+                likes !=null ? likes : 0,
+                dislikes !=null ? dislikes : 0,
+                userVote
+        );
     }
 }

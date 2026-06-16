@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.sshibko.backend_seblog.dto.VoteStats;
 import ru.sshibko.backend_seblog.dto.request.VoteRequest;
 import ru.sshibko.backend_seblog.exception.ErrorCode;
 import ru.sshibko.backend_seblog.exception.NotFoundException;
@@ -82,7 +83,6 @@ public class CommentVoteService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "commentVoteStats", key = "#commentId")
     public VoteType getCurrentUserVoteForComment(UUID commentId) {
         User currentUser = userService.getCurrentUserOrNull();
 
@@ -121,5 +121,18 @@ public class CommentVoteService {
 
         commentVoteRepository.delete(vote);
         log.info("Vote deleted: user {}, comment {}", currentUser.getId(), commentId);
+    }
+
+    @Transactional(readOnly = true)
+    public VoteStats getVoteStats(UUID commentId) {
+        Integer likes = getCommentLikeCount(commentId);
+        Integer dislikes = getCommentDislikeCount(commentId);
+        VoteType userVote = getCurrentUserVoteForComment(commentId);
+
+        return VoteStats.of(
+                likes != null ? likes : 0,
+                dislikes != null ? dislikes : 0,
+                userVote
+        );
     }
 }
