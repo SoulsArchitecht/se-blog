@@ -25,12 +25,18 @@ public enum SuccessCode {
     POSTS_PUBLISHED_LIST_RECEIVED("MSG-0208", "Опубликованные посты получены"),
     POSTS_BY_TAG_RECEIVED("MSG-0209", "Посты по указанному тэгу получены"),
     POSTS_BY_TYPE_RECEIVED("MSG-0210", "Посты с указанным типом получены"),
+    POST_VOTED("MSG-0211", "Голос за пост отдан"),
+    POST_VOTE_REMOVED("MSG-0212", "Голос за пост удален"),
+    POST_VOTE_STATS_RECEIVED("MSG-0213", "Статистика за пост получена"),
 
     // Комментарии
     COMMENT_ADDED("MSG-0301", "Комментарий добавлен"),
     COMMENT_UPDATED("MSG-0302", "Комментарий обновлён"),
     COMMENT_DELETED("MSG-0303", "Комментарий удалён"),
     COMMENTS_RECEIVED("MSG-0304", "Комментарии к посту получены"),
+    COMMENT_VOTED("MSG-0305", "Голос за комментарий отдан"),
+    COMMENT_VOTE_REMOVED("MSG-0306", "Голос за комментарий удален"),
+    COMMENT_VOTE_STATS_RECEIVED("MSG-0307", "Статистика за комментарий получена"),
 
     // Голосование
     VOTE_CAST("MSG-0401", "Голос учтён"),
