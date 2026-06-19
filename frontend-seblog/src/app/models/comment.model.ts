@@ -16,6 +16,9 @@ export interface Comment {
     canDeleted?: boolean;
     canEdit?: boolean;
     canDelete?: boolean;
+    likesCount?: number;
+    dislikesCount?: number;
+    userVote?: 'LIKE' | 'DISLIKE' | null;
 }
 
 export interface CommentCreateRequest {
@@ -31,4 +34,11 @@ export interface CommentPage {
     number: number;
     first: boolean;
     last: boolean;
+}
+
+export interface CommentVoteStats {
+    likesCount: number,
+    dislikesCount: number,
+    totalScore: number,
+    userVote: 'LIKE' | 'DISLIKE' | null;
 }

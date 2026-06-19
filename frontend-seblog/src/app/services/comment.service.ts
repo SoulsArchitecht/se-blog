@@ -4,10 +4,11 @@ import { ApiService } from './api.service';
 import { ApiResponse } from '../models/api-response.model';
 //import { PagedResponse } from '../models/paged-response.model';
 import { PaginatedResponse } from '../models/api-response.model';
-import { Comment } from '../models/comment.model';
+import { Comment, CommentVoteStats } from '../models/comment.model';
 import { map } from 'rxjs/operators';
 import { CommentCreateRequest } from '../models/comment.model';
 import { HttpParams } from '@angular/common/http';
+import { VoteRequest } from '../models/vote.model';
 
 
 @Injectable({ providedIn: 'root' })
@@ -65,6 +66,24 @@ export class CommentService {
     deleteComment(postId: string, commentId: string): Observable<void> {
         return this.apiService
             .delete<void>(`/posts/${postId}/comments/${commentId}`)
+            .pipe(map(response => response.data));
+    }
+
+    voteComment(commentId: string, request: VoteRequest): Observable<CommentVoteStats> {
+        return this.apiService
+            .post<CommentVoteStats>(`/api/v1/posts/comments/${commentId}/vote`, request)
+            .pipe(map(response => response.data));
+    }
+
+    getCommentVoteStats(commentId: string): Observable<CommentVoteStats> {
+        return this.apiService
+            .get<CommentVoteStats>(`/api/v1/posts/comments/${commentId}/vote/stats`)
+            .pipe(map(response => response.data));
+    }
+
+    removeCommentVote(commentId: string): Observable<CommentVoteStats> {
+        return this.apiService
+            .delete<CommentVoteStats>(`/api/v1/posts/comments/${commentId}/vote`)
             .pipe(map(response => response.data));
     }
 

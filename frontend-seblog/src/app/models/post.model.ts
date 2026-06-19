@@ -43,3 +43,10 @@ export interface PostCreate {
 export interface PostUpdate extends Partial<PostCreate> {
   isPublished?: boolean;
 }
+
+export interface PostVoteStats {
+  likesCount: number,
+  dislikeCount: number,
+  totalScore: number,
+  userVote: 'LIKE' | 'DISLIKE' | null;
+}
