@@ -69,25 +69,6 @@ export class CommentService {
             .pipe(map(response => response.data));
     }
 
-    voteComment(commentId: string, request: VoteRequest): Observable<CommentVoteStats> {
-        return this.apiService
-            .post<CommentVoteStats>(`/api/v1/posts/comments/${commentId}/vote`, request)
-            .pipe(map(response => response.data));
-    }
-
-    getCommentVoteStats(commentId: string): Observable<CommentVoteStats> {
-        return this.apiService
-            .get<CommentVoteStats>(`/api/v1/posts/comments/${commentId}/vote/stats`)
-            .pipe(map(response => response.data));
-    }
-
-    removeCommentVote(commentId: string): Observable<CommentVoteStats> {
-        return this.apiService
-            .delete<CommentVoteStats>(`/api/v1/posts/comments/${commentId}/vote`)
-            .pipe(map(response => response.data));
-    }
-
-
     // getComments(postId: string, page: number = 1): Observable <ApiResponse<PagedResponse<Comment>>> {
     //     return this.apiService.get<PagedResponse<Comment>>(
     //         `/posts/${postId}/comments`,

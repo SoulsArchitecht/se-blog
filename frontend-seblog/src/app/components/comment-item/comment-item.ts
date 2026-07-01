@@ -1,8 +1,10 @@
 import { Component, inject, input, output, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Comment } from '../../models/comment.model';
+import { Comment, CommentVoteStats } from '../../models/comment.model';
 import { AuthService } from '../../services/auth.service';
 import { CommentForm } from '../comment-form/comment-form';
+import { VoteButtons } from '../vote-buttons/vote-buttons';
+import { CommentVoteService } from '../../services/comment-vote.service';
 
 @Component({
   selector: 'app-comment-item',
@@ -10,7 +12,8 @@ import { CommentForm } from '../comment-form/comment-form';
   imports: [
     CommonModule,
     DatePipe,
-    CommentForm
+    CommentForm,
+    VoteButtons
   ],
   templateUrl: './comment-item.html',
   styleUrl: './comment-item.scss',
@@ -20,6 +23,7 @@ import { CommentForm } from '../comment-form/comment-form';
 })
 export class CommentItem {
   private authService = inject(AuthService);
+  private commentVoteService = inject(CommentVoteService);
 
   comment = input.required<Comment>();
   postId = input.required<string>();
@@ -28,9 +32,12 @@ export class CommentItem {
 
   edit = output<{ id: string, content: string }>();
   delete = output<string>();
+  voteChanged = output<{ commentId: string; stats: CommentVoteStats} >();
 
   isEditing = signal(false);
   showReplyForm = signal(false);
+  isVoting = signal(false);
+  voteStats = signal<CommentVoteStats | null>(null);
 
   avatarUrl = computed(() => {
     const avatar = this.comment().author.avatar;
@@ -51,6 +58,48 @@ export class CommentItem {
     if (user.role === 'ROLE_MODERATOR') return true;
     return this.comment().author.id === user.id;
   });
+
+  ngOnInit(): void {
+    this.loadVoteStats();
+  }
+
+  loadVoteStats(): void {
+    this.commentVoteService.getCommentVoteStats(this.comment().id).subscribe({
+      next: (stats) => {
+        this.voteStats.set(stats);
+      },
+      error: (error) => {
+        console.error('Error loading comment vote stats', error);
+      }
+    });
+  }
+
+  handleVote(voteType: 'LIKE' | 'DISLIKE' | 'REMOVE'): void {
+    this.isVoting.set(true);
+    
+    const request = voteType === 'REMOVE' 
+      ? null 
+      : { type: voteType };
+
+    const request$ = voteType === 'REMOVE'
+      ? this.commentVoteService.removeCommentVote(this.comment().id)
+      : this.commentVoteService.voteComment(this.comment().id, request!);
+
+    request$.subscribe({
+      next: (stats) => {
+        this.voteStats.set(stats);
+        this.voteChanged.emit({ 
+          commentId: this.comment().id, 
+          stats: stats
+        });
+        this.isVoting.set(false);
+      },
+      error: (error) => {
+        console.error('Error voting comment:', error);
+        this.isVoting.set(false);
+      }
+    });
+  }
 
   toggleEdit(): void {
     if (!this.canEdit()) return;

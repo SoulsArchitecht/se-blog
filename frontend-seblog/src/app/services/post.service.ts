@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
-import { Post, PostCreate, PostUpdate, PostVoteStats } from '../models/post.model';
+import { Post, PostCreate, PostUpdate } from '../models/post.model';
 import { ApiResponse } from '../models/api-response.model';
 import { PagedResponse } from '../models/paged-response.model';
 import { VoteRequest } from '../models/vote.model'
@@ -73,23 +73,5 @@ export class PostService {
 
   clearPosts(): void {
     this.postsSignal.set([]);
-  }
-
-  votePost(postId: string, request: VoteRequest): Observable<PostVoteStats> {
-    return this.apiService
-      .post<PostVoteStats>(`/api/v1/posts/${postId}/vote`, request)
-      .pipe(map(response => response.data));
-  }
-
-  getPostVoteStats(postId: string): Observable<PostVoteStats> {
-    return this.apiService
-      .get<PostVoteStats>(`/api/v1/posts/${postId}/vote/stats`)
-      .pipe(map(response => response.data));
-  }
-
-  removePostVote(postId: string): Observable<PostVoteStats> {
-    return this.apiService
-      .delete<PostVoteStats>(`/api/v1/posts/${postId}/vote`)
-      .pipe(map(response => response.data));
   }
 }
