@@ -1,0 +1,29 @@
+    <div class="vote-buttons">
+      <button 
+        (click)="vote('LIKE')" 
+        [class.active]="isLiked()"
+        [class.disabled]="isVoting() || !authService.isAuthenticated()"
+        class="btn-vote btn-like"
+        title="Лайк"
+      >
+        <span class="vote-icon">👍</span>
+        <span class="vote-count">{{ stats()?.likesCount || 0 }}</span>
+      </button>
+      
+      <button 
+        (click)="vote('DISLIKE')" 
+        [class.active]="isDisliked()"
+        [class.disabled]="isVoting() || !authService.isAuthenticated()"
+        class="btn-vote btn-dislike"
+        title="Дизлайк"
+      >
+        <span class="vote-icon">👎</span>
+        <span class="vote-count">{{ stats()?.dislikesCount || 0 }}</span>
+      </button>
+    </div>
+    
+    @if (!authService.isAuthenticated()) {
+      <p class="vote-hint">
+        <a routerLink="/auth/login">Войдите</a>, чтобы проголосовать
+      </p>
+    }<p>vote-buttons works!</p>
