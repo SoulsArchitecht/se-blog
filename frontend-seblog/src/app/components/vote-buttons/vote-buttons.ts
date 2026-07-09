@@ -16,6 +16,10 @@ export class VoteButtons {
   stats = input.required<VoteStats | null>();
   isVoting = input<boolean>(false);
 
+  orientation = input<'horizontal' | 'vertical'>('horizontal');
+  showCounts = input<boolean>(false);
+  showLoginHint = input<boolean>(false);
+
   voteAction = output<'LIKE' | 'DISLIKE'| 'REMOVE'> ();
 
   isLiked(): boolean {
