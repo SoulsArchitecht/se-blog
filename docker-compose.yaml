@@ -1,0 +1,53 @@
+services:
+  # ==========================================
+  # База данных PostgreSQL
+  # ==========================================
+  db-seblog:
+    container_name: seblog-db
+    image: postgres:15
+    environment:
+      POSTGRES_DB: seblog
+      POSTGRES_USER: seblog
+      POSTGRES_PASSWORD: seblogpass
+    ports:
+      - "5433:5432"   # На хост-машине доступно по порту 5433
+    volumes:
+      - ./infrastructure/db/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
+      - postgres-data-seblog:/var/lib/postgresql/data
+    networks:
+      - blog-network
+    restart: unless-stopped
+
+  # ==========================================
+  # pgAdmin 
+  # ==========================================
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4:7
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data-seblog:/var/lib/pgadmin
+    networks:
+      - blog-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - blog-network
+    restart: unless-stopped
+
+volumes:
+  postgres-data-seblog:
+  pgadmin-data-seblog:
+
+networks:
+  blog-network:
+    name: seblog-network
+    driver: bridge
