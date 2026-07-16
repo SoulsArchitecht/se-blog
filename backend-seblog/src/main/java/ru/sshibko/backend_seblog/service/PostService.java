@@ -78,7 +78,7 @@ public class PostService {
 
         String slug;
         if (request.customSlug() != null && !request.customSlug().isBlank()) {
-            slug = request.customSlug().trim();
+            slug = slugService.generateSlug(request.customSlug().trim());
             if (!slugService.isValidSlug(slug)) {
                 throw new ValidationException(
                         ErrorCode.INVALID_SLUG_FORMAT,

@@ -99,6 +99,10 @@ public class SlugService {
 
     public String generateUniqueSlug(String text, Function<String, Boolean> existenceChecker) {
         String baseSlug = generateSlug(text);
+
+        if (baseSlug == null || baseSlug.isBlank()) {
+            baseSlug = "post";
+        }
         String slug = baseSlug;
         int counter = 1;
 
