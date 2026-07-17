@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.sshibko.backend_seblog.dto.response.*;
+import ru.sshibko.backend_seblog.model.entity.Comment;
 import ru.sshibko.backend_seblog.model.entity.Post;
+import ru.sshibko.backend_seblog.model.entity.Tag;
 import ru.sshibko.backend_seblog.model.entity.enums.VoteType;
 import ru.sshibko.backend_seblog.service.PostTypeService;
 import ru.sshibko.backend_seblog.service.PostVoteService;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,12 +28,9 @@ public class PostMapperService {
 
     public PostResponse mapToResponse(Post post) {
 
-        log.info("enter to mapper");
         if (post == null) {
             return null;
         }
-
-        log.info("post not null checked");
 
         PostTypeResponse typeResponse = postTypeService.getPostTypeById(post.getType().getId());
         UserSummaryResponse authorResponse = userMapper.mapToUserSummaryResponse(post.getAuthor());
@@ -39,7 +40,8 @@ public class PostMapperService {
 
         log.info("before tagResponse");
 
-        Set<TagResponse> tagResponses = post.getTags().stream()
+        //TODO clean mapper
+/*        Set<TagResponse> tagResponses = post.getTags().stream()
                 .map(tag -> TagResponse.builder()
                         .id(tag.getId())
                         .name(tag.getName())
@@ -47,9 +49,12 @@ public class PostMapperService {
                         .createdAt(tag.getCreatedAt())
                         .postCount(1)
                         .build())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet());*/
 
         log.info("Starting to map post response");
+
+        List<Comment> comments = post.getComments() != null ? post.getComments() : Collections.emptyList();
+        Set<Tag> tags = post.getTags() != null ? post.getTags() : Collections.emptySet();
 
         return PostResponse.builder()
                 .id(post.getId())
@@ -63,9 +68,13 @@ public class PostMapperService {
                 .viewCount(post.getViewCount())
                 .author(authorResponse)
                 .type(typeResponse)
-                .tags(tagResponses)
-                .commentCount(post.getComments().size())
-                .comments(post.getComments().stream()
+                .tags(tags.stream()
+                        .map(this::mapTagToResponse)
+                        .collect(Collectors.toSet()))
+                .commentCount(comments.size())
+                //.tags(tagResponses)
+                //.commentCount(post.getComments().size())
+/*                .comments(post.getComments().stream()
                         .map(comment -> CommentResponse.builder()
                                 .id(comment.getId())
                                 .content(comment.getContent())
@@ -75,10 +84,18 @@ public class PostMapperService {
                                 //.parentId(comment.getParent().getId())
                                 //.postId(comment.getPost().getId())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toList()))*/
                 .likeCount(likeCount)
                 .dislikeCount(dislikeCount)
                 .currentUserVote(currentUserVote)
+                .build();
+    }
+
+    private TagResponse mapTagToResponse(Tag tag) {
+        return TagResponse.builder()
+                .id(tag.getId())
+                .name(tag.getName())
+                .createdAt(tag.getCreatedAt())
                 .build();
     }
 }
