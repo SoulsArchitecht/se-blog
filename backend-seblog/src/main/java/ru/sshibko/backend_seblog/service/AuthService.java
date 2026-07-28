@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.UserDto;
 import ru.sshibko.backend_seblog.dto.security.AuthRequest;
 import ru.sshibko.backend_seblog.dto.security.AuthResponse;
@@ -32,7 +33,10 @@ public class AuthService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
     private final UserMapperService userMapperService;
+
+    private final UserProfileService userProfileService;
 
     public AuthResponse login(AuthRequest authRequest) {
         try {
@@ -100,8 +104,9 @@ public class AuthService {
         }
     }
 
+    @Transactional
     public AuthResponse register(RegisterRequest registerRequest) {
-        if (userRepository.findByUsername(registerRequest.getEmail()).isPresent()) {
+        if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(
                     ErrorCode.USER_ALREADY_EXISTS,
                     "Пользователь с данным именем уже существует",
@@ -124,6 +129,8 @@ public class AuthService {
         user.setRole(UserRole.ROLE_USER);
         user.setStatus(UserStatus.ACTIVE);
         User savedUser = userRepository.save(user);
+
+        userProfileService.createDefaultProfile(savedUser);
 
         UserDetails userDetails = savedUser.toUserDetails();
         String accessToken = jwtUtils.generateToken(userDetails);

@@ -17,6 +17,7 @@ public enum ErrorCode {
     TAG_NOT_FOUND("ERR-0103", "Тег не найден"),
     COMMENT_NOT_FOUND("ERR-0104", "Комментарий не найден"),
     USER_NOT_FOUND("ERR-0105", "Пользователь не найден"),
+    USER_PROFILE_NOT_FOUND("ERR-0106", "Профиль пользователя не найден"),
 
     // Валидация данных
     INVALID_SLUG_FORMAT("ERR-0201", "Некорректный формат slug"),
