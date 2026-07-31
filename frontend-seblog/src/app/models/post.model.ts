@@ -46,7 +46,7 @@ export interface PostUpdate extends Partial<PostCreate> {
 
 export interface PostVoteStats {
   likesCount: number,
-  dislikeCount: number,
+  dislikesCount: number,
   totalScore: number,
   userVote: 'LIKE' | 'DISLIKE' | null;
 }
