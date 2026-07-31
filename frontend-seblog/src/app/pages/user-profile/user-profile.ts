@@ -53,11 +53,19 @@ export class ProfileComponent implements OnInit {
     this.userProfileService.getProfile().subscribe({
       next: (response) => {
         if (response.success && response.data) {
+          let formattedDate = '';
+          if (response.data.birthDate) {
+            const d = new Date(response.data.birthDate);
+            formattedDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000))
+              .toISOString()
+              .split('T')[0];
+          }
+
           this.profileForm.patchValue({
             displayName: response.data.displayName || '',
             firstName: response.data.firstName || '',
             lastName: response.data.lastName || '',
-            birthDate: response.data.birthDate || '',
+            birthDate: formattedDate,
             avatarUrl: response.data.avatarUrl || '',
             phone: response.data.phone || '',
             bio: response.data.bio || '',
@@ -81,7 +89,13 @@ export class ProfileComponent implements OnInit {
     this.errorMessage.set('');
     this.successMessage.set('');
 
-    const formData: UserProfileUpdate = this.profileForm.value;
+    //const formData: UserProfileUpdate = this.profileForm.value;
+    const formValue = this.profileForm.value;
+
+    const formData: UserProfileUpdate = {
+      ...formValue,
+      birthDate: formValue.birthDate ? new Date(formValue.birthDate) : null
+    };
 
     this.userProfileService.updateProfile(formData).subscribe({
       next: (response) => {
@@ -142,8 +156,14 @@ export class ProfileComponent implements OnInit {
     return this.userProfileService.profile();
   }
 
-  getAvatarUrl = this.userProfileService.getAvatarUrl.bind(this.userProfileService);
+  //getAvatarUrl = this.userProfileService.getAvatarUrl.bind(this.userProfileService);
 
+  getAvatarUrl(avatarFilename?: string | null): string {
+    if (!avatarFilename) {
+      return '/assets/default-avatar.png';
+    }
+    return `/api/v1/uploads/${avatarFilename}`;
+  }
 
   
 

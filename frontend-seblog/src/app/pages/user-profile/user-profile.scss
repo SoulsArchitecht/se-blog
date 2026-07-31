@@ -242,3 +242,24 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.form-group input[type="date"] {
+  cursor: pointer;
+  color: #374151; /* Цвет текста, чтобы отличался от плейсхолдера */
+  
+  /* Стилизация иконки календаря в Chrome/Safari/Edge */
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  /* Если дата не выбрана, делаем текст чуть бледнее (как placeholder) */
+  &:invalid {
+    color: #9ca3af;
+  }
+}
