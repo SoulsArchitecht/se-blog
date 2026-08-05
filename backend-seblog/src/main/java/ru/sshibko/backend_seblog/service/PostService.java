@@ -253,7 +253,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "postsByTag", key = "#tagId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    //@Cacheable(value = "postsByTag", key = "#tagId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<PostResponse> getPostsByTag(UUID tagId, Pageable pageable) {
         log.debug("Getting posts by tag {}: page {}, size {}",
                 tagId, pageable.getPageNumber(), pageable.getPageSize());
@@ -263,7 +263,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "postsByType", key = "#typeName + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    //@Cacheable(value = "postsByType", key = "#typeName + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<PostResponse> getPostsByTypeName(String typeName, Pageable pageable) {
         log.debug("Getting post by type {}: page {}, size {}",
                 typeName, pageable.getPageNumber(), pageable.getPageSize());
@@ -273,7 +273,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "postsByAuthor", key = "#authorId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    //@Cacheable(value = "postsByAuthor", key = "#authorId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<PostResponse> getPostsByAuthor(UUID authorId, Pageable pageable) {
         log.debug("Getting post by author {}: page {}, size {}",
                 authorId, pageable.getPageNumber(), pageable.getPageSize());

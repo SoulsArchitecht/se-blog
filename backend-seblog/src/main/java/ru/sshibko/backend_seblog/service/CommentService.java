@@ -96,8 +96,8 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "commentsByPost",
-            key = "#postId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+/*    @Cacheable(value = "commentsByPost",
+            key = "#postId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")*/
     public PagedResponse<CommentResponse> getCommentsByPost(UUID postId, Pageable pageable) {
         log.debug("Get comments for post: {}: page {}, size {}",
                 postId, pageable.getPageNumber(), pageable.getPageSize());
@@ -109,7 +109,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "commentTree", key = "#postId")
+    //@Cacheable(value = "commentTree", key = "#postId")
     public List<CommentResponse> getCommentTree(UUID postId) {
         log.debug("Get comments for post: {}", postId);
 
