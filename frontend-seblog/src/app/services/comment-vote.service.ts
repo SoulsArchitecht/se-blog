@@ -11,19 +11,19 @@ export class CommentVoteService {
 
     voteComment(commentId: string, request: VoteRequest): Observable<VoteStats> {
         return this.apiService
-            .post<VoteStats>(`/api/v1/posts/comments/${commentId}/vote`, request)
+            .post<VoteStats>(`/comments/${commentId}/vote`, request)
             .pipe(map(response => response.data));
     }
 
     getCommentVoteStats(commentId: string): Observable<VoteStats> {
         return this.apiService
-            .get<VoteStats>(`/api/v1/posts/comments/${commentId}/vote/stats`)
+            .get<VoteStats>(`/comments/${commentId}/vote/stats`)
             .pipe(map(response => response.data));
     }
 
     removeCommentVote(commentId: string): Observable<VoteStats> {
         return this.apiService
-            .delete<VoteStats>(`/api/v1/posts/comments/${commentId}/vote`)
+            .delete<VoteStats>(`/comments/${commentId}/vote`)
             .pipe(map(response => response.data));
     }    
 }

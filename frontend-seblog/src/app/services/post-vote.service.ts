@@ -12,19 +12,19 @@ export class PostVoteService {
 
     votePost(postId: string, request: VoteRequest): Observable<VoteStats> {
         return this.apiService
-        .post<VoteStats>(`/api/v1/posts/${postId}/vote`, request)
+        .post<VoteStats>(`/posts/${postId}/vote`, request)
         .pipe(map(response => response.data));
     }
 
     getPostVoteStats(postId: string): Observable<VoteStats> {
         return this.apiService
-        .get<VoteStats>(`/api/v1/posts/${postId}/vote/stats`)
+        .get<VoteStats>(`/posts/${postId}/vote/stats`)
         .pipe(map(response => response.data));
     }
 
     removePostVote(postId: string): Observable<VoteStats> {
         return this.apiService
-        .delete<VoteStats>(`/api/v1/posts/${postId}/vote`)
+        .delete<VoteStats>(`/posts/${postId}/vote`)
         .pipe(map(response => response.data));
     }
 }  
