@@ -2,21 +2,23 @@
   <button 
     (click)="vote('LIKE')" 
     [class.active]="isLiked()"
-    [class.disabled]="isVoting() || !authService.isAuthenticated()"
+    [disabled]="isVoting() || !authService.isAuthenticated()"
     class="btn-vote btn-like"
+    type="button"
     title="Лайк"
   >
-    <span class="vote-icon"></span>
+    <span class="vote-icon">👍</span>
     @if (showCounts()) {
-      <span class="vote-count">{{ stats()?.likesCount || 0 }}</span>
+      <span class="vote-count">{{ stats()?.likesCount ?? 0 }}</span>
     }
   </button>
   
   <button 
     (click)="vote('DISLIKE')" 
     [class.active]="isDisliked()"
-    [class.disabled]="isVoting() || !authService.isAuthenticated()"
+    [disabled]="isVoting() || !authService.isAuthenticated()"
     class="btn-vote btn-dislike"
+    type="button"
     title="Дизлайк"
   >
     <span class="vote-icon">👎</span>

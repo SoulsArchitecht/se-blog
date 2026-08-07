@@ -11,16 +11,16 @@ import { VoteStats } from '../../models/vote.model';
   styleUrl: './vote-buttons.scss'
 })
 export class VoteButtons {
-  protected authService = inject(AuthService);
+  authService = inject(AuthService);
 
   stats = input.required<VoteStats | null>();
   isVoting = input<boolean>(false);
 
   orientation = input<'horizontal' | 'vertical'>('horizontal');
-  showCounts = input<boolean>(false);
+  showCounts = input<boolean>(true);
   showLoginHint = input<boolean>(false);
 
-  voteAction = output<'LIKE' | 'DISLIKE'| 'REMOVE'> ();
+  voteAction = output<'LIKE' | 'DISLIKE'| 'REMOVE'>();
 
   isLiked(): boolean {
     return this.stats()?.userVote === 'LIKE';
