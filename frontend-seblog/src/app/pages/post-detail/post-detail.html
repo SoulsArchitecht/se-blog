@@ -51,6 +51,14 @@
         <div class="post-body">{{ post()!.content }}</div>
       </div>
 
+      <div class="post-voting">
+        <app-vote-buttons
+          [stats]="postVoteStats()"
+          [isVoting]="isVoting()"
+          (voteAction)="handlePostVote($event)"
+        />  
+      </div>
+
       <div class="post-stats">
         <div class="stat-item">
           <i class="stat-icon">👁️</i>

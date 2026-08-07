@@ -8,6 +8,9 @@ import { Post } from '../../models/post.model';
 import { Comment } from '../../models/comment.model';
 import { UserProfileService } from '../../services/user-profile.service';
 import { CommentList } from '../../components/comment-list/comment-list';
+import { PostVoteService } from '../../services/post-vote.service';
+import { VoteStats } from '../../models/vote.model';
+import { VoteButtons } from '../../components/vote-buttons/vote-buttons';
 
 @Component({
   selector: 'app-post-detail',
@@ -16,7 +19,9 @@ import { CommentList } from '../../components/comment-list/comment-list';
     CommonModule,
     RouterLink,
     ReactiveFormsModule,
-    CommentList],
+    CommentList,
+    VoteButtons
+  ],
   templateUrl: './post-detail.html',
   styleUrls: ['./post-detail.scss']
 })
@@ -27,6 +32,9 @@ export class PostDetailComponent implements OnInit {
   private authService = inject(AuthService);
   private userProfileService = inject(UserProfileService);
   private fb = inject(FormBuilder);
+  private postVoteService = inject(PostVoteService);
+  postVoteStats = signal<VoteStats | null>(null);
+  isVoting = signal(false);
   
   post = signal<Post | null>(null);
   isLoading = signal(true);
@@ -75,6 +83,7 @@ export class PostDetailComponent implements OnInit {
       next: (response) => {
         this.post.set(response.data);
         this.isLoading.set(false);
+        this.loadPostVoteStats();
 
         if (this.post()?.author.id) {
           this.userProfileService.getUserProfile(this.post()!.author.id).subscribe({
@@ -88,7 +97,7 @@ export class PostDetailComponent implements OnInit {
                 }
               }));
             }
-          })
+          });
         }
       },
       error: (error) => {
@@ -148,10 +157,41 @@ export class PostDetailComponent implements OnInit {
     return this.isAuthor || this.authService.user()?.username === 'admin';
   }
 
-    getAvatarUrl(avatarFilename?: string | null): string {
-      if (!avatarFilename) {
-        return '/assets/default-avatar.png';
-      }
-      return `/api/v1/uploads/${avatarFilename}`;
+  getAvatarUrl(avatarFilename?: string | null): string {
+    if (!avatarFilename) {
+      return '/assets/default-avatar.png';
     }
+    return `/api/v1/uploads/${avatarFilename}`;
+  }
+
+  loadPostVoteStats(): void {
+    if (!this.post()) return;
+
+    this.postVoteService.getPostVoteStats(this.post()!.id).subscribe({
+      next: (stats) => this.postVoteStats.set(stats),
+      error: (error) => console.error('Error loading post vote ststs: ', error)
+    });
+  }
+
+  handlePostVote(voteType: 'LIKE' | 'DISLIKE' | 'REMOVE'): void {
+    if (!this.post()) return;
+
+    this.isVoting.set(true);
+
+    const request$ = voteType === 'REMOVE'
+    ? this.postVoteService.removePostVote(this.post()!.id)
+    : this.postVoteService.votePost(this.post()!.id, { type: voteType });
+
+    request$.subscribe ({
+      next: (stats) => {
+        this.postVoteStats.set(stats);
+        this.post.update(p => p ? { ...p, likesCount: stats.likesCount } : p);
+        this.isVoting.set(false);
+      },
+      error: (error) => {
+        console.error('Error voting post:', error);
+        this.isVoting.set(false);
+      }
+    });
+  }
 }

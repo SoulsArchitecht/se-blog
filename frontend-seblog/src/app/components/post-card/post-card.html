@@ -1,1 +1,38 @@
-<p>post-card works!</p>
+<article class="post-card">
+  <div class="post-header">
+    <div class="post-author">
+      <img 
+        [src]="getAvatarUrl(post().author.avatar)" 
+        [alt]="post().author.username || 'Автор'"
+        class="avatar"
+        onerror="this.src='/assets/default-avatar.png'"
+      >
+      <div class="author-info">
+        <span class="author-name">{{ post().author.username || 'Аноним' }}</span>
+        <span class="post-date">{{ post().createdAt | date:'dd.MM.yyyy' }}</span>
+      </div>
+    </div>
+    <span class="post-category">{{ post().postType || 'Без категории' }}</span>
+  </div>
+  
+  <h3 class="post-title">
+    <a [routerLink]="['/post', post().id]">{{ post().title || 'Без заголовка' }}</a>
+  </h3>
+  
+  <div class="post-footer">
+    <div class="post-stats">
+      <span class="stat">👁️ {{ post().viewsCount || 0 }}</span>
+      <span class="stat">💬 {{ post().commentsCount || 0 }}</span>
+      <span class="stat">👍 {{ post().likesCount || 0 }}</span>
+    </div>
+    
+    <app-vote-buttons
+      [stats]="voteStats()"
+      [isVoting]="isVoting()"
+      [orientation]="'horizontal'"
+      [showCounts]="true"
+      [showLoginHint]="false"
+      (voteAction)="handleVote($event)"
+    />
+  </div>
+</article>
