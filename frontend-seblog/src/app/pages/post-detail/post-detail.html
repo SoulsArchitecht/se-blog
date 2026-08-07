@@ -55,6 +55,8 @@
         <app-vote-buttons
           [stats]="postVoteStats()"
           [isVoting]="isVoting()"
+          [orientation]="'horizontal'"
+          [showCounts]="true"
           (voteAction)="handlePostVote($event)"
         />  
       </div>

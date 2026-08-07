@@ -58,6 +58,14 @@
       padding: 0.375rem 0.75rem;
       font-size: 0.875rem;
     }
+
+    .comment-voting {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+    }
     // Ограничение глубины вложенности
     :host-context([depth="3"]) .replies,
     :host-context([depth="4"]) .replies {

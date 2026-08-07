@@ -29,6 +29,16 @@
         }
       </div>
 
+      <div class="comment-voting">
+        <app-vote-buttons
+          [stats]="voteStats()"
+          [isVoting]="isVoting()"
+          [orientation]="'horizontal'"
+          [showCounts]="true"
+          (voteAction)="handleVote($event)"
+        />
+      </div>
+
       @if (isEditing()) {
         <app-comment-form
           [initialContent]="comment().content"

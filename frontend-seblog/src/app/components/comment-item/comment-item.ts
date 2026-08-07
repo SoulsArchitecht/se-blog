@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { CommentForm } from '../comment-form/comment-form';
 import { VoteButtons } from '../vote-buttons/vote-buttons';
 import { CommentVoteService } from '../../services/comment-vote.service';
+import { VoteStats } from '../../models/vote.model';
 
 @Component({
   selector: 'app-comment-item',
@@ -13,7 +14,7 @@ import { CommentVoteService } from '../../services/comment-vote.service';
     CommonModule,
     DatePipe,
     CommentForm,
-    VoteButtons
+    VoteButtons,
   ],
   templateUrl: './comment-item.html',
   styleUrl: './comment-item.scss',
@@ -37,7 +38,7 @@ export class CommentItem {
   isEditing = signal(false);
   showReplyForm = signal(false);
   isVoting = signal(false);
-  voteStats = signal<CommentVoteStats | null>(null);
+  voteStats = signal<VoteStats | null>(null);
 
   avatarUrl = computed(() => {
     const avatar = this.comment().author.avatar;
@@ -76,14 +77,10 @@ export class CommentItem {
 
   handleVote(voteType: 'LIKE' | 'DISLIKE' | 'REMOVE'): void {
     this.isVoting.set(true);
-    
-    const request = voteType === 'REMOVE' 
-      ? null 
-      : { type: voteType };
 
     const request$ = voteType === 'REMOVE'
       ? this.commentVoteService.removeCommentVote(this.comment().id)
-      : this.commentVoteService.voteComment(this.comment().id, request!);
+      : this.commentVoteService.voteComment(this.comment().id, { type: voteType });
 
     request$.subscribe({
       next: (stats) => {
