@@ -50,4 +50,25 @@ public class CommentVoteController {
 
         return ApiResponse.success(stats, message);
     }
+
+    @GetMapping("/stats")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Получить статистику голосования за комментарий")
+    public ApiResponse<VoteStats> getVoteStats(
+            @Parameter(description = "ID комментария") @PathVariable UUID commentId) {
+        VoteStats stats = commentVoteService.getVoteStats(commentId);
+        String message = messageService.getSuccessMessage(SuccessCode.COMMENT_VOTED, locale);
+        return ApiResponse.success(stats, message);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Удалить голос за комментарий")
+    public ApiResponse<VoteStats> removeComment(
+            @Parameter(description = "ID комментария") @PathVariable UUID commentId) {
+        commentVoteService.removeCommentVote(commentId);
+        VoteStats stats = commentVoteService.getVoteStats(commentId);
+        String message = messageService.getSuccessMessage(SuccessCode.COMMENT_VOTED, locale);
+        return ApiResponse.success(stats, message);
+    }
 }
