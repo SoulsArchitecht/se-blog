@@ -240,6 +240,10 @@ public class PostService {
                         "Post",
                         id,
                         "Post not found with ID: " + id));
+
+        postRepository.incrementViewCount(post.getId());
+        post.incrementViewCount();
+
         return postMapper.mapToResponse(post);
     }
 
