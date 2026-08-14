@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.VoteStats;
 import ru.sshibko.backend_seblog.dto.request.VoteRequest;
-import ru.sshibko.backend_seblog.exception.ErrorCode;
-import ru.sshibko.backend_seblog.exception.NotFoundException;
-import ru.sshibko.backend_seblog.exception.ResourceNotFoundException;
+import ru.sshibko.backend_seblog.exception.*;
 import ru.sshibko.backend_seblog.model.entity.Comment;
 import ru.sshibko.backend_seblog.model.entity.CommentVote;
 import ru.sshibko.backend_seblog.model.entity.User;
@@ -123,7 +121,7 @@ public class CommentVoteService {
         log.info("Vote deleted: user {}, comment {}", currentUser.getId(), commentId);
     }
 
-    @Transactional(readOnly = true)
+/*    @Transactional(readOnly = true)
     public VoteStats getVoteStats(UUID commentId) {
         Integer likes = getCommentLikeCount(commentId);
         Integer dislikes = getCommentDislikeCount(commentId);
@@ -134,5 +132,31 @@ public class CommentVoteService {
                 dislikes != null ? dislikes : 0,
                 userVote
         );
+    }*/
+
+    @Transactional(readOnly = true)
+    public VoteStats getVoteStats(UUID commentId) {
+        long likesCount = commentVoteRepository.countByCommentIdAndType(commentId, VoteType.LIKE);
+        long dislikesCount = commentVoteRepository.countByCommentIdAndType(commentId, VoteType.DISLIKE);
+
+        VoteType userVote = null;
+        try {
+            User currentUser = userService.getCurrentUser();
+            Optional<CommentVote> userVoteOpt =
+                    commentVoteRepository.findByUserIdAndCommentId(currentUser.getId(), commentId);
+            userVote = userVoteOpt.map(CommentVote::getType).orElse(null);
+        } catch (BadCredentialsException ex) {
+            throw new AuthenticationException(
+                    ErrorCode.ACCESS_DENIED,
+                    "Вы не авторизованы для данного действия",
+                    "Войдите в систему, чтобы получить эти возможности");
+        }
+
+        return VoteStats.builder()
+                .likesCount((int) likesCount)
+                .dislikesCount((int) dislikesCount)
+                .totalScore((int) (likesCount - dislikesCount))
+                .userVote(userVote)
+                .build();
     }
 }

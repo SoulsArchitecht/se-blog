@@ -120,7 +120,7 @@ public class PostVoteService {
         log.info("Vote removed for post {}, user: {}", postId, currentUser.getId());
     }
 
-    @Transactional(readOnly = true)
+/*    @Transactional(readOnly = true)
     public VoteStats getVoteStats(UUID postId) {
         Integer likes = getPostLikeCount(postId);
         Integer dislikes = getPostDislikeCount(postId);
@@ -131,5 +131,30 @@ public class PostVoteService {
                 dislikes !=null ? dislikes : 0,
                 userVote
         );
+    }*/
+
+    @Transactional(readOnly = true)
+    public VoteStats getVoteStats(UUID postId) {
+        long likesCount = postVoteRepository.countByPostIdAndType(postId, VoteType.LIKE);
+        long dislikesCount = postVoteRepository.countByPostIdAndType(postId, VoteType.DISLIKE);
+
+        VoteType userVote = null;
+        try {
+            User currentUser = userService.getCurrentUser();
+            Optional<PostVote> userVoteOpt = postVoteRepository.findByUserIdAndPostId(currentUser.getId(), postId);
+            userVote = userVoteOpt.map(PostVote::getType).orElse(null);
+        } catch (BadCredentialsException ex) {
+            throw new AuthenticationException(
+                    ErrorCode.ACCESS_DENIED,
+                    "Вы не авторизованы для данного действия",
+                    "Войдите в систему, чтобы получить эти возможности");
+        }
+
+        return VoteStats.builder()
+                .likesCount((int) likesCount)
+                .dislikesCount((int)  dislikesCount)
+                .totalScore((int) (likesCount + dislikesCount))
+                .userVote(userVote)
+                .build();
     }
 }

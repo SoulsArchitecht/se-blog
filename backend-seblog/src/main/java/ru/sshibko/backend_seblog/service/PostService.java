@@ -229,7 +229,7 @@ public class PostService {
         return postMapper.mapToResponse(post);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Cacheable(value = "posts", key = "#id")
     public PostResponse getPostById(UUID id) {
         log.debug("Getting post by id: {}", id);
