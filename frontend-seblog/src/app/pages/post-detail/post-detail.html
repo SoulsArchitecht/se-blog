@@ -63,16 +63,12 @@
 
       <div class="post-stats">
         <div class="stat-item">
-          <i class="stat-icon">👁️</i>
-          <span>{{ post()!.viewsCount }} просмотров</span>
+          <span class="stat-icon">👁️</span>
+          <span>{{ post()?.viewCount ?? 0 }} просмотров</span>
         </div>
         <div class="stat-item">
-          <i class="stat-icon">💬</i>
-          <span>{{ post()!.commentsCount }} комментариев</span>
-        </div>
-        <div class="stat-item">
-          <i class="stat-icon">👍</i>
-          <span>{{ post()!.likesCount }} лайков</span>
+          <span class="stat-icon">💬</span>
+          <span>{{ post()?.commentCount ?? 0 }} комментариев</span>
         </div>
       </div>
     </article>

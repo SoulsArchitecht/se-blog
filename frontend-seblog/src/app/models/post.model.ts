@@ -21,9 +21,9 @@ export interface Post {
   author: Author;
   postType: string;
   tags: string[];
-  commentsCount: number;
-  likesCount: number;
-  viewsCount: number;
+  commentCount: number;
+  likeCount: number;
+  viewCount: number;
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -45,8 +45,8 @@ export interface PostUpdate extends Partial<PostCreate> {
 }
 
 export interface PostVoteStats {
-  likesCount: number,
-  dislikesCount: number,
+  likeCount: number,
+  dislikeCount: number,
   totalScore: number,
   userVote: 'LIKE' | 'DISLIKE' | null;
 }

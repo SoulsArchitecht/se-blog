@@ -58,21 +58,21 @@ export class PostDetailComponent implements OnInit {
   onCommentAdded(comment: Comment): void {
     this.post.update(p => p ? {
       ...p,
-      commentsCount: (p.commentsCount || 0) + 1
+      commentsCount: (p.commentCount || 0) + 1
     } : p);
   }
 
   onCommentUpdated(event: { id:string; content: string }): void {
     this.post.update(p => p ? {
       ...p,
-      commentsCount: Math.max(0, (p.commentsCount || 0) - 1)
+      commentsCount: Math.max(0, (p.commentCount || 0) - 1)
     } : p);
   }
 
   onCommentDeleted(commentId: string ): void {
     this.post.update(p => p ? {
       ...p,
-      commentsCount: Math.max(0, (p.commentsCount || 0) - 1)
+      commentsCount: Math.max(0, (p.commentCount || 0) - 1)
     } : p);
   }
   
