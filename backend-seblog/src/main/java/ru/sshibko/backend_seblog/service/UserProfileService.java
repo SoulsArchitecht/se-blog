@@ -6,12 +6,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.sshibko.backend_seblog.dto.UserProfileDto;
+import ru.sshibko.backend_seblog.dto.UserPublicProfileDto;
 import ru.sshibko.backend_seblog.exception.ErrorCode;
 import ru.sshibko.backend_seblog.exception.NotFoundException;
 import ru.sshibko.backend_seblog.mapper.UserProfileMapperService;
 import ru.sshibko.backend_seblog.model.entity.User;
 import ru.sshibko.backend_seblog.model.entity.UserProfile;
+import ru.sshibko.backend_seblog.model.repository.CommentRepository;
+import ru.sshibko.backend_seblog.model.repository.PostRepository;
 import ru.sshibko.backend_seblog.model.repository.UserProfileRepository;
+import ru.sshibko.backend_seblog.model.repository.UserRepository;
 
 import java.util.UUID;
 
@@ -27,6 +31,12 @@ public class UserProfileService {
     private final UserProfileMapperService  userProfileMapper;
 
     private final FileStorageService fileStorageService;
+
+    private final UserRepository userRepository;
+
+    private final PostRepository postRepository;
+
+    private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
     public UserProfileDto getCurrentUserProfile() {
@@ -131,5 +141,33 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
 
         return userProfile.getAvatarUrl();
+    }
+
+    @Transactional(readOnly = true)
+    public UserPublicProfileDto getUserPublicProfile(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorCode.USER_NOT_FOUND,
+                        "User",
+                        userId,
+                        "User not found with id: " + userId));
+        UserProfile profile = userProfileRepository.findByUserId(userId)
+                .orElseGet(() -> createDefaultProfile(user));
+
+        long postCount = postRepository.countPublishedPostsByAuthor(userId);
+        long commentCount = commentRepository.countVisibleCommentsByAuthor(userId);
+
+        return UserPublicProfileDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .displayName(profile.getDisplayName())
+                .location(profile.getLocation())
+                .avatarUrl(profile.getAvatarUrl())
+                .bio(profile.getBio())
+                .memberSince(user.getCreatedAt())
+                .postCount(postCount)
+                .commentCount(commentCount)
+                .rating(profile.getRating() != null ? profile.getRating() : 0)
+                .build();
     }
 }

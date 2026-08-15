@@ -82,6 +82,9 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")
     void incrementViewCount(@Param("postId") UUID postId);
 
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.author.id = :authorId AND p.status = 'PUBLISHED'")
+    long countPublishedPostsByAuthor(@Param("authorId") UUID authorId);
+
     //TODO Resolve below
 
     //TODO write query

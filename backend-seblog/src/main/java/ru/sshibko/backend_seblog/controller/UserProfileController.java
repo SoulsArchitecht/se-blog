@@ -7,12 +7,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.sshibko.backend_seblog.dto.ApiResponse;
 import ru.sshibko.backend_seblog.dto.UserProfileDto;
+import ru.sshibko.backend_seblog.dto.UserPublicProfileDto;
 import ru.sshibko.backend_seblog.exception.SuccessCode;
 import ru.sshibko.backend_seblog.service.MessageService;
 import ru.sshibko.backend_seblog.service.UserProfileService;
@@ -74,5 +76,16 @@ public class UserProfileController {
         String message = messageService.getSuccessMessage(SuccessCode.AVATAR_UPLOADED, locale);
 
         return ApiResponse.success(uploadedAvatar, message);
+    }
+
+    @GetMapping("/public/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Публичный профиль пользователя")
+    public ApiResponse<UserPublicProfileDto> getUserPublicProfile(
+            @Parameter(description = "ID пользователя")
+            @PathVariable UUID userId) {
+        UserPublicProfileDto profileDto = userProfileService.getUserPublicProfile(userId);
+
+        return ApiResponse.success(profileDto, "Public profile retrieved");
     }
 }

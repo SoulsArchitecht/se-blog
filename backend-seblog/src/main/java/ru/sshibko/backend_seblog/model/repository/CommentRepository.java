@@ -43,4 +43,7 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
     @Query("SELECT COUNT(c) FROM Comment c WHERE c.post.id = :postId AND c.status = :status")
     Integer countByPostId(@Param("postId") UUID postId,  @Param("status") CommentStatus status);
+
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.author.id = :authorId AND c.status NOT IN ('HIDDEN', 'DELETED')")
+    long countVisibleCommentsByAuthor(@Param("authorId") UUID authorId);
 }
