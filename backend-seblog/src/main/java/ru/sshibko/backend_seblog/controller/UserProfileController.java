@@ -78,7 +78,7 @@ public class UserProfileController {
         return ApiResponse.success(uploadedAvatar, message);
     }
 
-    @GetMapping("/public/{userId}")
+    @GetMapping("/{userId}/public")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Публичный профиль пользователя")
     public ApiResponse<UserPublicProfileDto> getUserPublicProfile(
