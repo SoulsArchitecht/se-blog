@@ -38,5 +38,11 @@ export const routes: Routes = [
       .then(m => m.ProfileComponent),
     canActivate: [authGuard],
     title: 'Профиль'
+  },
+  {
+    path: 'users/profile/:userId',
+    loadComponent: () => import('./components/user-public-profile/user-public-profile')
+      .then(m => m.UserPublicProfileComponent),
+    title: 'Профиль пользователя'
   }
 ];

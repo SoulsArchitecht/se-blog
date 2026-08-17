@@ -1,0 +1,62 @@
+<div class="public-profile-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Загрузка профиля...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <h3>Ошибка</h3>
+      <p>{{ error() }}</p>
+      <a routerLink="/" class="btn-primary">На главную</a>
+    </div>
+  } @else if (profile()) {
+    <!-- Шапка -->
+    <div class="profile-header">
+      <img 
+        [src]="getAvatarUrl(profile()!.avatarUrl)" 
+        [alt]="profile()!.username"
+        class="profile-avatar"
+        onerror="this.src='/assets/default-avatar.png'"
+      >
+      <div class="profile-info">
+        <h2>{{ profile()!.displayName || profile()!.username }}</h2>
+        <p class="username">@{{ profile()!.username }}</p>
+        <p class="member-since">
+          На сайте с {{ profile()!.memberSince | date:'MMMM yyyy' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="profile-stats">
+      <div class="stat-card">
+        <span class="stat-value">{{ profile()!.postCount }}</span>
+        <span class="stat-label">постов</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ profile()!.commentCount }}</span>
+        <span class="stat-label">комментариев</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ profile()!.rating }}</span>
+        <span class="stat-label">рейтинг</span>
+      </div>
+    </div>
+
+    <!-- О себе -->
+    <div class="profile-bio">
+      @if (profile()!.bio) {
+        <h3>О себе</h3>
+        <p>{{ profile()!.bio }}</p>
+      }
+      @if (profile()!.location) {
+        <h3>Местоположение</h3>
+        <p> {{ profile()!.location }}</p>
+      }
+      @if (!profile()!.bio && !profile()!.location) {
+        <p class="empty-state">Пользователь еще не заполнил информацию о себе</p>
+      }
+    </div>
+  }
+</div>
