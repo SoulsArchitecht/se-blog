@@ -2,17 +2,27 @@
   <div class="post-header">
     <div class="post-author">
       <img 
-        [src]="getAvatarUrl(post().author.avatar)" 
-        [alt]="post().author.username || 'Автор'"
+        [src]="getAvatarUrl(post()!.author.avatar)" 
+        [alt]="post()!.author.username || 'Автор'"
         class="avatar"
         onerror="this.src='/assets/default-avatar.png'"
       >
-      <div class="author-info">
+      <!-- <div class="author-info">
         <span class="author-name">{{ post().author.username || 'Аноним' }}</span>
+        <span class="post-date">{{ post().createdAt | date:'dd.MM.yyyy' }}</span>
+      </div> -->
+      <div class="author-info">
+        <a [routerLink]="['/users/profile', post()?.author?.id]" class="author-name">
+          {{ post().author.username }}
+        </a>
         <span class="post-date">{{ post().createdAt | date:'dd.MM.yyyy' }}</span>
       </div>
     </div>
-    <span class="post-category">{{ post().postType || 'Без категории' }}</span>
+    <span 
+      class="post-category"
+      [style.backgroundColor]="post()?.type?.colorHex || '#e0e7ff'"
+      [style.color]="'#4f46e5'"
+      >{{ post()?.type?.name || 'Без категории' }}</span>
   </div>
   
   <h3 class="post-title">

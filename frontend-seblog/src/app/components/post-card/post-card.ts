@@ -1,4 +1,4 @@
-import { Component, inject, input, signal,OnInit } from '@angular/core';
+import { Component, inject, input, signal, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Post } from '../../models/post.model';
@@ -10,7 +10,9 @@ import { VoteButtons } from '../vote-buttons/vote-buttons';
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, VoteButtons],
+  imports: [
+    CommonModule, DatePipe, RouterLink, VoteButtons
+  ],
   templateUrl: './post-card.html',
   styleUrl: './post-card.scss'
 })
@@ -56,8 +58,19 @@ export class PostCard implements OnInit {
     });
   }
   
-  getAvatarUrl(avatar?: string | null): string {
-    if (!avatar) return '/assets/defalut-avatar.png';
-    return `/api/v1/uploads/${avatar}`;
+  // getAvatarUrl(avatar?: string | null): string {
+  //   if (!avatar) return '/assets/defalut-avatar.png';
+  //   return `/api/v1/uploads/${avatar}`;
+  // }
+
+  getAvatarUrl(avatarFilename?: string | null): string {
+    if (!avatarFilename) {
+      return '/assets/default-avatar.png';
+    }
+    return `/api/v1/uploads/${avatarFilename}`;
+  }
+
+  get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
   }
 }

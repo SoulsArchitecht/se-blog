@@ -19,7 +19,7 @@ export interface Post {
   slug: string;
   status: string;
   author: Author;
-  postType: string;
+  type: PostType;
   tags: string[];
   commentCount: number;
   likeCount: number;
@@ -49,4 +49,13 @@ export interface PostVoteStats {
   dislikeCount: number,
   totalScore: number,
   userVote: 'LIKE' | 'DISLIKE' | null;
+}
+
+export interface PostType {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+  colorHex: string;
+  createdAt: string;
 }
