@@ -3,6 +3,7 @@ import { provideRouter, withComponentInputBinding, withRouterConfig } from '@ang
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { httpErrorInterceptor } from './interceptors/http-error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,7 +26,7 @@ export const appConfig: ApplicationConfig = {
     // HTTP клиент с интерсепторами
     provideHttpClient(
       //withFetch(),
-      withInterceptors([authInterceptor])
+      withInterceptors([authInterceptor, httpErrorInterceptor])
     )
   ]
 };
