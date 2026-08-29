@@ -1,19 +1,21 @@
-    <div class="app-container">
-      <app-header />
-      
-      <div class="main-layout">
-        <aside class="sidebar-container">
-          <app-sidebar />
-        </aside>
-        
-        <main class="content-container">
-          <router-outlet />
-        </main>
-        
-        <aside class="news-container">
-          <app-news-panel />
-        </aside>
-      </div>
-      
-      <app-footer />
-    </div>
+<div class="app-container">
+  <app-header />
+  
+  <div class="main-layout">
+    <aside class="sidebar-container">
+      <app-sidebar />
+    </aside>
+    
+    <main class="content-container">
+      <router-outlet />
+    </main>
+    
+    <aside class="news-container">
+      <app-news-panel />
+    </aside>
+  </div>
+  
+  <app-footer />
+</div>
+
+<app-toast-containter/>

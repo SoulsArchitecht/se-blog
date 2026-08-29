@@ -7,6 +7,7 @@ import { NewsPanel } from './components/news-panel/news-panel';
 import { Footer } from './components/footer/footer';
 import { AuthService } from './services/auth.service';
 import { UserProfileService } from './services/user-profile.service';
+import { ToastContainter } from './components/toast-containter/toast-containter';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,8 @@ import { UserProfileService } from './services/user-profile.service';
     Header,
     Sidebar,
     NewsPanel,
-    Footer
+    Footer,
+    ToastContainter
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.scss']
