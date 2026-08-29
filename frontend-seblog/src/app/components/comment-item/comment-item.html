@@ -31,11 +31,12 @@
 
       <div class="comment-voting">
         <app-vote-buttons
+          entityType="comment"
+          [entityId]="comment().id"
           [stats]="voteStats()"
           [isVoting]="isVoting()"
           [orientation]="'horizontal'"
           [showCounts]="true"
-          (voteAction)="handleVote($event)"
         />
       </div>
 

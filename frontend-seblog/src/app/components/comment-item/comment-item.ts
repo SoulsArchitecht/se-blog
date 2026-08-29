@@ -6,6 +6,7 @@ import { CommentForm } from '../comment-form/comment-form';
 import { VoteButtons } from '../vote-buttons/vote-buttons';
 import { CommentVoteService } from '../../services/comment-vote.service';
 import { VoteStats } from '../../models/vote.model';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-comment-item',
@@ -25,6 +26,7 @@ import { VoteStats } from '../../models/vote.model';
 export class CommentItem {
   private authService = inject(AuthService);
   private commentVoteService = inject(CommentVoteService);
+  notificationService = inject(NotificationService);
 
   comment = input.required<Comment>();
   postId = input.required<string>();
@@ -66,8 +68,8 @@ export class CommentItem {
 
   loadVoteStats(): void {
     this.commentVoteService.getCommentVoteStats(this.comment().id).subscribe({
-      next: (stats) => {
-        this.voteStats.set(stats);
+      next: (response) => {
+        this.voteStats.set(response.data);
       },
       error: (error) => {
         console.error('Error loading comment vote stats', error);
@@ -83,12 +85,13 @@ export class CommentItem {
       : this.commentVoteService.voteComment(this.comment().id, { type: voteType });
 
     request$.subscribe({
-      next: (stats) => {
-        this.voteStats.set(stats);
-        this.voteChanged.emit({ 
-          commentId: this.comment().id, 
-          stats: stats
-        });
+      next: (response) => {
+        this.voteStats.set(response.data);
+        this.notificationService.show(response.message || 'Голос учтен', 'success', 200)
+        // this.voteChanged.emit({ 
+        //   commentId: this.comment().id, 
+        //   stats: stats
+        // });
         this.isVoting.set(false);
       },
       error: (error) => {

@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
 import { VoteRequest, VoteStats } from '../models/vote.model';
+import { ApiResponse } from '../models/api-response.model';
 
 @Injectable({ providedIn: 'root'})
 export class PostVoteService {
@@ -10,21 +11,18 @@ export class PostVoteService {
     private apiService = inject(ApiService);
 
 
-    votePost(postId: string, request: VoteRequest): Observable<VoteStats> {
+    votePost(postId: string, request: VoteRequest): Observable<ApiResponse<VoteStats>> {
         return this.apiService
-        .post<VoteStats>(`/posts/${postId}/vote`, request)
-        .pipe(map(response => response.data));
+        .post<VoteStats>(`/posts/${postId}/vote`, request);
     }
 
-    getPostVoteStats(postId: string): Observable<VoteStats> {
+    getPostVoteStats(postId: string): Observable<ApiResponse<VoteStats>> {
         return this.apiService
-        .get<VoteStats>(`/posts/${postId}/vote/stats`)
-        .pipe(map(response => response.data));
+        .get<VoteStats>(`/posts/${postId}/vote/stats`);
     }
 
-    removePostVote(postId: string): Observable<VoteStats> {
+    removePostVote(postId: string): Observable<ApiResponse<VoteStats>> {
         return this.apiService
-        .delete<VoteStats>(`/posts/${postId}/vote`)
-        .pipe(map(response => response.data));
+        .delete<VoteStats>(`/posts/${postId}/vote`);
     }
 }  

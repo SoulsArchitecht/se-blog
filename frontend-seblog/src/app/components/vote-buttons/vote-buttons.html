@@ -9,7 +9,7 @@
   >
     <span class="vote-icon">👍</span>
     @if (showCounts()) {
-      <span class="vote-count">{{ stats()?.likesCount ?? 0 }}</span>
+      <span class="vote-count">{{ currentStats()?.likesCount ?? 0 }}</span>
     }
   </button>
   
@@ -23,13 +23,13 @@
   >
     <span class="vote-icon">👎</span>
     @if (showCounts()) {
-      <span class="vote-count">{{ stats()?.dislikesCount || 0 }}</span>
+      <span class="vote-count">{{ currentStats()?.dislikesCount ?? 0 }}</span>
     }
   </button>
 </div>
 
 @if (!authService.isAuthenticated() && showLoginHint()) {
   <p class="vote-hint">
-    <a routerLink="/auth/login">Войдите</a>, чтобы проголосовать
+    <a routerLink="/login">Войдите</a>, чтобы проголосовать
   </p>
 }

@@ -168,7 +168,7 @@ export class PostDetailComponent implements OnInit {
     if (!this.post()) return;
 
     this.postVoteService.getPostVoteStats(this.post()!.id).subscribe({
-      next: (stats) => this.postVoteStats.set(stats),
+      next: (response) => this.postVoteStats.set(response.data),
       error: (error) => console.error('Error loading post vote ststs: ', error)
     });
   }
@@ -183,9 +183,9 @@ export class PostDetailComponent implements OnInit {
     : this.postVoteService.votePost(this.post()!.id, { type: voteType });
 
     request$.subscribe ({
-      next: (stats) => {
-        this.postVoteStats.set(stats);
-        this.post.update(p => p ? { ...p, likesCount: stats.likesCount } : p);
+      next: (response) => {
+        this.postVoteStats.set(response.data);
+        this.post.update(p => p ? { ...p, likesCount: response.data.likesCount } : p);
         this.isVoting.set(false);
       },
       error: (error) => {

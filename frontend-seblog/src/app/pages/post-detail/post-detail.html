@@ -53,11 +53,12 @@
 
       <div class="post-voting">
         <app-vote-buttons
+          entityType="post"
+          [entityId]="post()!.id"
           [stats]="postVoteStats()"
           [isVoting]="isVoting()"
           [orientation]="'horizontal'"
           [showCounts]="true"
-          (voteAction)="handlePostVote($event)"
         />  
       </div>
 

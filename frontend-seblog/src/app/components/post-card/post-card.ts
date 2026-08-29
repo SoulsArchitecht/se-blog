@@ -30,8 +30,8 @@ export class PostCard implements OnInit {
 
   loadVoteStats(): void {
     this.PostVoteService.getPostVoteStats(this.post().id).subscribe({
-      next: (stats) => {
-        this.voteStats.set(stats);
+      next: (response) => {
+        this.voteStats.set(response.data);
       },
       error: (error) => {
         console.error('Error loading post vote stats:', error);
@@ -47,8 +47,8 @@ export class PostCard implements OnInit {
     : this.PostVoteService.votePost(this.post().id, { type: voteType });
 
     request$.subscribe({
-      next: (stats) => {
-        this.voteStats.set(stats);
+      next: (response) => {
+        this.voteStats.set(response.data);
         this.isVoting.set(false);
       },
       error: (error) => {
