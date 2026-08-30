@@ -5,35 +5,65 @@
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  pointer-events: none; // Чтобы клики проходили сквозь пустые области
+  gap: 12px;
+  max-width: 400px;
+  pointer-events: none; // Контейнер не блокирует клики
 
   .toast {
-    pointer-events: auto;
+    pointer-events: auto; // Но сами тосты кликабельны
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
-    padding: 12px 16px;
+    padding: 16px;
     border-radius: 8px;
     background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    min-width: 300px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    min-width: 320px;
     max-width: 400px;
-    animation: slideIn 0.3s ease-out;
-    border-left: 4px solid transparent;
+    border-left: 4px solid;
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
 
-    &.toast-info { border-left-color: #3b82f6; }
-    &.toast-success { border-left-color: #10b981; }
-    &.toast-warning { border-left-color: #f59e0b; }
-    &.toast-error { border-left-color: #ef4444; }
+    &.toast-success { 
+      border-left-color: #10b981;
+      background: linear-gradient(to right, #f0fdf4, white);
+    }
+    &.toast-error { 
+      border-left-color: #ef4444;
+      background: linear-gradient(to right, #fef2f2, white);
+    }
+    &.toast-warning { 
+      border-left-color: #f59e0b;
+      background: linear-gradient(to right, #fffbeb, white);
+    }
+    &.toast-info { 
+      border-left-color: #3b82f6;
+      background: linear-gradient(to right, #eff6ff, white);
+    }
 
-    .toast-icon { font-size: 1.25rem; }
-    
-    .toast-message {
+    .toast-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .toast-content {
       flex: 1;
-      font-size: 0.875rem;
-      color: #1f2937;
-      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .toast-message {
+        font-size: 0.875rem;
+        color: #1f2937;
+        line-height: 1.5;
+        font-weight: 500;
+      }
+
+      .toast-timestamp {
+        font-size: 0.75rem;
+        color: #9ca3af;
+      }
     }
 
     .toast-close {
@@ -44,19 +74,54 @@
       cursor: pointer;
       padding: 0;
       line-height: 1;
-      
-      &:hover { color: #4b5563; }
+      flex-shrink: 0;
+      transition: color 0.2s;
+
+      &:hover {
+        color: #4b5563;
+      }
+    }
+
+    // Анимация исчезновения
+    &.removing {
+      animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+  }
+
+  // Мобильная адаптация
+  @media (max-width: 768px) {
+    top: auto;
+    bottom: 20px;
+    right: 50%;
+    transform: translateX(50%);
+    max-width: calc(100% - 40px);
+    width: 100%;
+
+    .toast {
+      min-width: auto;
+      width: 100%;
     }
   }
 }
 
 @keyframes slideIn {
   from {
-    transform: translateX(100%);
+    transform: translateX(120%);
     opacity: 0;
   }
   to {
     transform: translateX(0);
     opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%);
+    opacity: 0;
   }
 }

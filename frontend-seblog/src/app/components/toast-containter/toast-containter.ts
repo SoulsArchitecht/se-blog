@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
+import { Notification } from '../../models/notification.model';
 
 @Component({
   selector: 'app-toast-containter',
@@ -19,5 +20,9 @@ export class ToastContainter {
       case 'warning': return '⚠️';
       default: return 'ℹ️';
     }
+  }
+
+  removeWithAnimation(notification: Notification): void {
+    this.notificationService.remove(notification.id);
   }
 }
