@@ -19,7 +19,11 @@ export class AuthService {
 
     readonly user = this.userSignal.asReadonly();
     readonly token = this.tokenSignal.asReadonly();
-    readonly isAuthenticated = () => !!this.tokenSignal();
+    readonly isAuthenticated = () => {
+        const token = this.tokenSignal();
+        if (!token) return false;
+        return !this.isTokenExpired(token);
+    }
 
     private BASE_URL = environment.apiUrl;
 
@@ -27,26 +31,41 @@ export class AuthService {
         this.loadUserFromStorage();
     }
 
+    private isTokenExpired(token: string): boolean {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const expiration = payload.exp * 1000;
+            return Date.now() >= expiration;
+        } catch {
+            return true;
+        }
+    }
+
     private loadUserFromStorage(): void {
         const userJson = localStorage.getItem('user');
         const token = localStorage.getItem('token');
 
         if (userJson && token) {
-            try {
-                const user = JSON.parse(userJson);
-                this.userSignal.set(user);
-                this.tokenSignal.set(token);
-            } catch {
+            if (this.isTokenExpired(token)) {
                 this.clearSession();
+            } else {
+                try {
+                    const user = JSON.parse(userJson);
+                    this.userSignal.set(user);
+                    this.tokenSignal.set(token);
+                } catch {
+                    this.clearSession();
+                }
             }
         }
     }
 
-    private clearSession(): void {
+    public clearSession(): void {
         this.userSignal.set(null);
         this.tokenSignal.set(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
     }
 
     private setSession(authResponse: AuthResponse): void {
@@ -55,6 +74,9 @@ export class AuthService {
 
         localStorage.setItem('user', JSON.stringify(authResponse.user));
         localStorage.setItem('token', authResponse.accessToken);
+        if (authResponse.refreshToken) {
+            localStorage.setItem('refreshToken', authResponse.refreshToken);
+        }
     }
 
     register(data: RegisterRequest): Observable<ApiResponse<AuthResponse>> {
