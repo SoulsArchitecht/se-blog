@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.sshibko.backend_seblog.dto.ApiResponse;
 import ru.sshibko.backend_seblog.dto.VoteStats;
@@ -33,6 +34,7 @@ public class PostVoteController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Проголосовать за пост",
                 description = """
                     Голосует за пост (LIKE или DISLIKE). 
@@ -46,7 +48,7 @@ public class PostVoteController {
             @PathVariable UUID postId,
             @Valid @RequestBody VoteRequest request) {
         postVoteService.voteForPost(postId, request);
-        VoteStats stats = postVoteService.getVoteStats(postId);
+        VoteStats stats = postVoteService.getPostVoteStats(postId);
         String message = messageService.getSuccessMessage(SuccessCode.POST_VOTED, locale);
 
         return ApiResponse.success(stats, message);
@@ -54,6 +56,7 @@ public class PostVoteController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Удалить голос за пост",
                 description = """
                     Удаляет голос текущего пользователя за пост.
@@ -63,7 +66,7 @@ public class PostVoteController {
             @Parameter(description = "ID поста", example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID postId) {
         postVoteService.removePostVote(postId);
-        VoteStats stats = postVoteService.getVoteStats(postId);
+        VoteStats stats = postVoteService.getPostVoteStats(postId);
         String message = messageService.getSuccessMessage(SuccessCode.POST_VOTE_REMOVED, locale);
 
         return ApiResponse.success(stats, message);
@@ -80,7 +83,7 @@ public class PostVoteController {
     public ApiResponse<VoteStats> getVoteStatsForPost(
             @Parameter(description = "ID поста", example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID postId) {
-        VoteStats stats = postVoteService.getVoteStats(postId);
+        VoteStats stats = postVoteService.getPostVoteStats(postId);
         String message = messageService.getSuccessMessage(SuccessCode.POST_VOTE_STATS_RECEIVED, locale);
 
         return ApiResponse.success(stats, message);

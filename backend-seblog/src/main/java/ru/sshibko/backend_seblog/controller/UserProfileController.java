@@ -22,7 +22,7 @@ import ru.sshibko.backend_seblog.service.UserProfileService;
 import java.util.Locale;
 import java.util.UUID;
 
-@CrossOrigin(origins = "http:/localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 @RequestMapping(value = "/api/v1/users/profile", produces = "application/json")
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class UserProfileController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Getting user details by id")
-    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN, ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ApiResponse<UserProfileDto> getUserProfileById(@PathVariable UUID id) {
         UserProfileDto userProfileDto = userProfileService.getUserProfileById(id);
         String message = messageService.getSuccessMessage(SuccessCode.USER_PROFILE_RECEIVED, locale);
@@ -80,6 +80,7 @@ public class UserProfileController {
 
     @GetMapping("/{userId}/public")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Публичный профиль пользователя")
     public ApiResponse<UserPublicProfileDto> getUserPublicProfile(
             @Parameter(description = "ID пользователя")

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.sshibko.backend_seblog.dto.ApiResponse;
 import ru.sshibko.backend_seblog.dto.VoteStats;
@@ -32,6 +33,7 @@ public class CommentVoteController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Проголосовать за комментарий",
                 description = """
                     Голосует за комментарий (LIKE или DISLIKE).
@@ -45,7 +47,7 @@ public class CommentVoteController {
             @PathVariable UUID commentId,
             @Valid @RequestBody VoteRequest request) {
         commentVoteService.voteForComment(commentId, request);
-        VoteStats stats = commentVoteService.getVoteStats(commentId);
+        VoteStats stats = commentVoteService.getCommentVoteStats(commentId);
         String message = messageService.getSuccessMessage(SuccessCode.COMMENT_VOTED, locale);
 
         return ApiResponse.success(stats, message);
@@ -56,18 +58,19 @@ public class CommentVoteController {
     @Operation(summary = "Получить статистику голосования за комментарий")
     public ApiResponse<VoteStats> getVoteStats(
             @Parameter(description = "ID комментария") @PathVariable UUID commentId) {
-        VoteStats stats = commentVoteService.getVoteStats(commentId);
+        VoteStats stats = commentVoteService.getCommentVoteStats(commentId);
         String message = messageService.getSuccessMessage(SuccessCode.COMMENT_VOTED, locale);
         return ApiResponse.success(stats, message);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Удалить голос за комментарий")
     public ApiResponse<VoteStats> removeComment(
             @Parameter(description = "ID комментария") @PathVariable UUID commentId) {
         commentVoteService.removeCommentVote(commentId);
-        VoteStats stats = commentVoteService.getVoteStats(commentId);
+        VoteStats stats = commentVoteService.getCommentVoteStats(commentId);
         String message = messageService.getSuccessMessage(SuccessCode.COMMENT_VOTED, locale);
         return ApiResponse.success(stats, message);
     }

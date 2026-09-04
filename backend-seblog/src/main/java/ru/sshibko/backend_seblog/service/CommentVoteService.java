@@ -7,6 +7,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.VoteStats;
@@ -121,6 +123,35 @@ public class CommentVoteService {
         log.info("Vote deleted: user {}, comment {}", currentUser.getId(), commentId);
     }
 
+    @Transactional(readOnly = true)
+    public VoteStats getCommentVoteStats(UUID commentId) {
+        long likesCount = commentVoteRepository.countByCommentIdAndType(commentId, VoteType.LIKE);
+        long dislikesCount = commentVoteRepository.countByCommentIdAndType(commentId, VoteType.DISLIKE);
+
+        VoteType userVote = null;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()
+            && !"anonymousUser".equals(authentication.getName())) {
+            try {
+                User currentUser = userService.getCurrentUser();
+                Optional<CommentVote> userVoteOpt =
+                        commentVoteRepository.findByUserIdAndCommentId(currentUser.getId(), commentId);
+                userVote = userVoteOpt.map(CommentVote::getType).orElse(null);
+            } catch (Exception e) {
+                log.warn("Не удалось получить голос пользователя для комментария {}: {}", commentId, e.getMessage());
+            }
+        }
+
+        return VoteStats.builder()
+                .likesCount((int) likesCount)
+                .dislikesCount((int) dislikesCount)
+                .totalScore((int) (likesCount - dislikesCount))
+                .userVote(userVote)
+                .build();
+    }
+
 /*    @Transactional(readOnly = true)
     public VoteStats getVoteStats(UUID commentId) {
         Integer likes = getCommentLikeCount(commentId);
@@ -134,7 +165,7 @@ public class CommentVoteService {
         );
     }*/
 
-    @Transactional(readOnly = true)
+/*    @Transactional(readOnly = true)
     public VoteStats getVoteStats(UUID commentId) {
         long likesCount = commentVoteRepository.countByCommentIdAndType(commentId, VoteType.LIKE);
         long dislikesCount = commentVoteRepository.countByCommentIdAndType(commentId, VoteType.DISLIKE);
@@ -158,5 +189,5 @@ public class CommentVoteService {
                 .totalScore((int) (likesCount - dislikesCount))
                 .userVote(userVote)
                 .build();
-    }
+    }*/
 }

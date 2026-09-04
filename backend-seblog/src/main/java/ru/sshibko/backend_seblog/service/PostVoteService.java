@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.VoteStats;
@@ -120,6 +122,34 @@ public class PostVoteService {
         log.info("Vote removed for post {}, user: {}", postId, currentUser.getId());
     }
 
+    @Transactional(readOnly = true)
+    public VoteStats getPostVoteStats(UUID postId) {
+        long likesCount = postVoteRepository.countByPostIdAndType(postId, VoteType.LIKE);
+        long dislikesCount = postVoteRepository.countByPostIdAndType(postId, VoteType.DISLIKE);
+
+        VoteType userVote = null;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()
+            && !"anonymousUser".equals(authentication.getName())) {
+            try {
+                User currentUser = userService.getCurrentUser();
+                Optional<PostVote> userVoteOpt = postVoteRepository.findByUserIdAndPostId(currentUser.getId(), postId);
+                userVote = userVoteOpt.map(PostVote::getType).orElse(null);
+            } catch (Exception e) {
+                log.warn("Не удалось получить голос пользователя для поста {}: {}", postId, e.getMessage());
+            }
+        }
+
+        return VoteStats.builder()
+                .likesCount((int) likesCount)
+                .dislikesCount((int) dislikesCount)
+                .totalScore((int) (likesCount - dislikesCount))
+                .userVote(userVote)
+                .build();
+    }
+
 /*    @Transactional(readOnly = true)
     public VoteStats getVoteStats(UUID postId) {
         Integer likes = getPostLikeCount(postId);
@@ -133,7 +163,7 @@ public class PostVoteService {
         );
     }*/
 
-    @Transactional(readOnly = true)
+/*    @Transactional(readOnly = true)
     public VoteStats getVoteStats(UUID postId) {
         long likesCount = postVoteRepository.countByPostIdAndType(postId, VoteType.LIKE);
         long dislikesCount = postVoteRepository.countByPostIdAndType(postId, VoteType.DISLIKE);
@@ -156,5 +186,5 @@ public class PostVoteService {
                 .totalScore((int) (likesCount + dislikesCount))
                 .userVote(userVote)
                 .build();
-    }
+    }*/
 }

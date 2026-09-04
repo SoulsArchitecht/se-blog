@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -23,6 +25,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.sshibko.backend_seblog.security.JwtAuthenticationFilter;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Configuration
@@ -57,13 +60,57 @@ public class SecurityConfig {
                                 "/api/v1/posts/**",
                                 "/api/v1/post-types/**",
                                 "/api/v1/tags/**",
-                                "/api/v1/posts/*/comments/**"
+                                "/api/v1/posts/*/comments/**",
+                                "/api/v1/posts/*/vote/stats",
+                                "/api/v1/comments/*/vote/stats",
+                                "/api/v1/users/profile/*/public",
+                                "/api/v1/users/profile/*/avatar"
                         ).permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         // All another need to be authenticated
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(
+                                (request,
+                                 response,
+                                 authException) -> {
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.getWriter().write("""
+                                    {
+                                        "timestamp": "%s"",
+                                        "status": 401,
+                                        "errorCode": "ERR-0004",
+                                        "userMessage": "Требуется авторизация",
+                                        "developerMessage": "Authentication required!",
+                                        "path": "%s"
+                                    }
+                                   """.formatted(LocalDateTime.now(), request.getRequestURI())
+                            );
+                        })
+                        .accessDeniedHandler(
+                                (request,
+                                 response,
+                                 accessDeniedException) -> {
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.getWriter().write("""
+                                    {
+                                        "timestamp": "%s",
+                                        "status": 403,
+                                        "errorCode": "ERR-0003",
+                                        "userMessage": "Доступ запрещен",
+                                        "developerMessage": "Access denied",
+                                        "path": "%s"
+                                    }
+                                    """.formatted(LocalDateTime.now(), request.getRequestURI())
+                            );
+                        })
+                );
 
         return http.build();
     }
