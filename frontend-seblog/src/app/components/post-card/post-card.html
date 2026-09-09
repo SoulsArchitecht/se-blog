@@ -2,7 +2,7 @@
   <div class="post-header">
     <div class="post-author">
       <img 
-        [src]="getAvatarUrl(post()!.author.avatar)" 
+        [src]="getAvatarUrl(post()!.author.avatarUrl)" 
         [alt]="post()!.author.username || 'Автор'"
         class="avatar"
         onerror="this.src='/assets/default-avatar.png'"
