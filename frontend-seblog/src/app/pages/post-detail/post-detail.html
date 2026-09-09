@@ -20,12 +20,18 @@
         <div class="post-meta">
           <div class="author-info">
             <img 
-              [src]="getAvatarUrl(post()!.author.avatar)" 
+              [src]="getAvatarUrl(post()!.author.avatarUrl)" 
               [alt]="post()!.author.username"
               class="author-avatar"
               onerror="this.src='/assets/default-avatar.png'"
             >
-            <span class="author-name">{{ post()!.author.username }}</span>
+            @if (authService.isAuthenticated()) {
+              <a [routerLink]="['/users/profile', post()!.author.id]" class="author-name">
+                {{ post()!.author.username }}
+              </a>
+            } @else {
+              <span class="author-name">{{ post()!.author.username }}</span>
+            }            
           </div>
           
           <div class="post-dates">

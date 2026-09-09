@@ -29,7 +29,7 @@ export class PostDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   router = inject(Router);
   private postService = inject(PostService);
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
   private userProfileService = inject(UserProfileService);
   private fb = inject(FormBuilder);
   private postVoteService = inject(PostVoteService);
@@ -85,20 +85,20 @@ export class PostDetailComponent implements OnInit {
         this.isLoading.set(false);
         this.loadPostVoteStats();
 
-        if (this.post()?.author.id) {
-          this.userProfileService.getUserProfile(this.post()!.author.id).subscribe({
-            next: (profileResponse) => {
-              const avatarUrl = profileResponse.data?.avatarUrl ?? undefined;
-              this.post.update(p => ({
-                ...p!,
-                author: {
-                  ...p!.author,
-                  avatar: avatarUrl
-                }
-              }));
-            }
-          });
-        }
+        // if (this.post()?.author.id) {
+        //   this.userProfileService.getUserProfile(this.post()!.author.id).subscribe({
+        //     next: (profileResponse) => {
+        //       const avatarUrl = profileResponse.data?.avatarUrl ?? undefined;
+        //       this.post.update(p => ({
+        //         ...p!,
+        //         author: {
+        //           ...p!.author,
+        //           avatar: avatarUrl
+        //         }
+        //       }));
+        //     }
+        //   });
+        // }
       },
       error: (error) => {
         this.error.set(error.message || 'Пост не найден');

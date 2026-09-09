@@ -9,6 +9,7 @@ import { CommentItem } from '../comment-item/comment-item';
 import { CommentForm } from '../comment-form/comment-form';
 import { AuthService } from '../../services/auth.service';
 import { firstValueFrom } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-comment-list',
@@ -16,7 +17,8 @@ import { firstValueFrom } from 'rxjs';
   imports: [
     CommonModule,
     CommentItem,
-    CommentForm
+    CommentForm,
+    RouterLink
   ],
   templateUrl: './comment-list.html',
   styleUrl: './comment-list.scss'
@@ -206,5 +208,9 @@ export class CommentList {
     
     this.comments.update(comments => removeFromArray(comments));
     this.rootComments.update(comments => removeFromArray(comments));
-  }  
+  }
+  
+  get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
 }

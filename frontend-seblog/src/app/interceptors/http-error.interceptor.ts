@@ -8,12 +8,17 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
     
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {
+            if (error.status === 401 && req.url.includes('/users/profile/')) {
+                console.warn(' Profile not available (unauthorized)');
+                return throwError(() => error);
+            }
+
             if (error.error && error.error.userMessage) {
-                notificationService.show(error.error.userMessage, 'error');
+                notificationService.show(error.error.userMessage, 'error', 500);
             }
 
             else {
-                notificationService.show('Произошла непредвиденная ошибка сети', 'error');
+                notificationService.show('Произошла непредвиденная ошибка сети', 'error', 500);
             }
 
             return throwError(() => error);

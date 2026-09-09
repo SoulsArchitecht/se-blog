@@ -1,7 +1,9 @@
 export interface Author {
   id: string;
   username: string;
-  avatar?: string;
+  avatarUrl?: string;
+  displayName: string;
+  registrationDate: number;
 }
 
 // export interface Comment {

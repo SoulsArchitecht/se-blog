@@ -104,6 +104,12 @@
     .author-name {
       font-weight: 600;
       color: #374151;
+      cursor: pointer;
+
+      &:hover {
+        color:#4338ca;
+        text-decoration: underline;
+      }
     }
 
     .post-dates {

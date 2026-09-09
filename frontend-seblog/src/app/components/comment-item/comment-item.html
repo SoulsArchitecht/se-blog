@@ -56,9 +56,16 @@
 
       @if (!comment().isDeleted && !isReply()) {
         <div class="comment-actions">
-          <button (click)="toggleReply()" class="btn-outline btn-sm">
-            {{ showReplyForm() ? 'Отмена' : 'Ответить' }}
-          </button>
+          @if (isAuthenticated) {
+            <button (click)="toggleReply()" class="btn-outline btn-sm">
+              {{ showReplyForm() ? 'Отмена' : 'Ответить' }}
+            </button>
+          } @else {
+            <span class = "login-promt-text">
+              <a routerLink="/login" class="login-link">Войдите</a>, чтобы ответить
+            </span>
+          }
+
         </div>
       }
 

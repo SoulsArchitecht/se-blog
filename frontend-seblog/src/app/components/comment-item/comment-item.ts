@@ -7,6 +7,7 @@ import { VoteButtons } from '../vote-buttons/vote-buttons';
 import { CommentVoteService } from '../../services/comment-vote.service';
 import { VoteStats } from '../../models/vote.model';
 import { NotificationService } from '../../services/notification.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-comment-item',
@@ -16,6 +17,7 @@ import { NotificationService } from '../../services/notification.service';
     DatePipe,
     CommentForm,
     VoteButtons,
+    RouterLink
   ],
   templateUrl: './comment-item.html',
   styleUrl: './comment-item.scss',
@@ -121,5 +123,9 @@ export class CommentItem {
   onReplySubmit(event: { content: string }): void {
     this.edit.emit({ id: this.comment().id, content: event.content });
     this.showReplyForm.set(false);
+  }
+
+  get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
   }
 }
