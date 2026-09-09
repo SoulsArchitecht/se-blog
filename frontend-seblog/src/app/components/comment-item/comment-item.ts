@@ -45,7 +45,7 @@ export class CommentItem {
   voteStats = signal<VoteStats | null>(null);
 
   avatarUrl = computed(() => {
-    const avatar = this.comment().author.avatar;
+    const avatar = this.comment().author.avatarUrl;
     return avatar ? `/api/v1/uploads/${avatar}` : '/assets/default-avatar.png';
   });
 
@@ -127,5 +127,12 @@ export class CommentItem {
 
   get isAuthenticated(): boolean {
     return this.authService.isAuthenticated();
+  }
+
+  getAvatarUrl(avatarFilename?: string | null): string {
+    if (!avatarFilename) {
+      return '/assets/default-avatar.png';
+    }
+    return `/api/v1/uploads/${avatarFilename}`;
   }
 }

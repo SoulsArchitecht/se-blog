@@ -7,7 +7,13 @@
           onerror="this.src='/assets/default-avatar.png'"
         >
         <div class="comment-author">
-          <strong>{{ comment().author.username }}</strong>
+          @if (isAuthenticated) {
+            <a [routerLink]="['/users/profile', comment().author.id]" class="author-link">
+              <strong>{{ comment().author.username }}</strong>
+            </a>
+          } @else {
+            <strong>{{ comment().author.username }}</strong>
+          }
           <time class="comment-date" [attr.datetime]="comment().createdAt">
             {{ comment().createdAt | date:'dd.MM.yyyy HH:mm' }}
           </time>
