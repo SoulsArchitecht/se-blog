@@ -17,7 +17,7 @@ import { VoteButtons } from '../vote-buttons/vote-buttons';
   styleUrl: './post-card.scss'
 })
 export class PostCard implements OnInit {
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
   private PostVoteService = inject(PostVoteService);
 
   post = input.required<Post>();
@@ -72,5 +72,31 @@ export class PostCard implements OnInit {
 
   get isAuthenticated(): boolean {
     return this.authService.isAuthenticated();
+  }
+
+  getTextColor(backgroundColor?: string): string {
+    if (!backgroundColor) return '#1f2937';
+    
+    const hex = backgroundColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128 ? '#1f2937' : '#ffffff';
+  }
+
+  getCategoryIcon(iconName?: string): string {
+    const iconMap: { [key: string]: string } = {
+      'cpu': '💻',
+      'code': '⌨️',
+      'music-note': '🎵',
+      'laugh': '😄',
+      'poem': '✍️',
+      'book-open': '📖',
+      'default': '📌'
+    };
+    
+    return iconName ? (iconMap[iconName] || iconMap['default']) : iconMap['default'];
   }
 }

@@ -2,27 +2,32 @@
   <div class="post-header">
     <div class="post-author">
       <img 
-        [src]="getAvatarUrl(post()!.author.avatarUrl)" 
-        [alt]="post()!.author.username || 'Автор'"
-        class="avatar"
-        onerror="this.src='/assets/default-avatar.png'"
+        [src]="getAvatarUrl(post()?.author?.avatarUrl)" 
+        [alt]="post()?.author?.username || 'Автор'"
+        class="author-avatar"
       >
-      <!-- <div class="author-info">
-        <span class="author-name">{{ post().author.username || 'Аноним' }}</span>
-        <span class="post-date">{{ post().createdAt | date:'dd.MM.yyyy' }}</span>
-      </div> -->
       <div class="author-info">
-        <a [routerLink]="['/users/profile', post()?.author?.id]" class="author-name">
-          {{ post().author.username }}
-        </a>
-        <span class="post-date">{{ post().createdAt | date:'dd.MM.yyyy' }}</span>
+        @if (authService.isAuthenticated()) {
+          <a [routerLink]="['/users/profile', post()?.author?.id]" class="author-name">
+            {{ post()?.author?.username }}
+          </a>
+        } @else {
+          <span class="author-name">{{ post()?.author?.username }}</span>
+        }
+        <span class="post-date">{{ post()?.createdAt | date:'dd.MM.yyyy' }}</span>
       </div>
     </div>
-    <span 
-      class="post-category"
-      [style.backgroundColor]="post()?.type?.colorHex || '#e0e7ff'"
-      [style.color]="'#4f46e5'"
-      >{{ post()?.type?.name || 'Без категории' }}</span>
+    
+    @if (post()?.type) {
+      <span 
+        class="post-category"
+        [style.backgroundColor]="post()?.type?.colorHex || '#e0e7ff'"
+        [style.color]="getTextColor(post()?.type?.colorHex)"
+      >
+        <i class="category-icon">{{ getCategoryIcon(post()?.type?.icon) }}</i>
+        {{ post()?.type?.name }}
+      </span>
+    }
   </div>
   
   <h3 class="post-title">
