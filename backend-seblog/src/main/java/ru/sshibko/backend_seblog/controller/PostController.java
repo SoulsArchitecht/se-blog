@@ -127,7 +127,7 @@ public class PostController {
         return ApiResponse.success(pagedResponse, message);
     }
 
-    @GetMapping("/type/{postTypeName}")
+/*    @GetMapping("/type/{postTypeName}")
     @Operation(summary = "Get post by type name", description = "Returns post by type name. Access for all")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<PagedResponse<PostResponse>> getPostsByTypeName(
@@ -142,6 +142,25 @@ public class PostController {
         PagedResponse<PostResponse> pagedResponse = PagedResponse.of(posts);
 
         String message = messageService.getSuccessMessage(SuccessCode.POSTS_BY_TYPE_RECEIVED, locale);
+
+        return ApiResponse.success(pagedResponse, message);
+    }*/
+
+    @GetMapping("/type/{slug}")
+    @Operation(summary = "Get all posts by slug", description = "Returns all post with pointed slug. Access for all")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<PagedResponse<PostResponse>> getPostsBySlug(
+            @Parameter(description = "post slug", example = "hardware")
+            @PathVariable String slug,
+
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Page<PostResponse> posts = postService.getPostsByTypeSlug(slug, pageable);
+        PagedResponse<PostResponse> pagedResponse = PagedResponse.of(posts);
+
+        String message = messageService.getSuccessMessage(SuccessCode.POSTS_BY_TYPE_SLUG_RECEIVED, locale);
 
         return ApiResponse.success(pagedResponse, message);
     }

@@ -28,6 +28,7 @@ public enum SuccessCode {
     POST_VOTED("MSG-0211", "Голос за пост отдан"),
     POST_VOTE_REMOVED("MSG-0212", "Голос за пост удален"),
     POST_VOTE_STATS_RECEIVED("MSG-0213", "Статистика за пост получена"),
+    POSTS_BY_TYPE_SLUG_RECEIVED("MSG-0214", "Посты по слагу типа получены"),
 
     // Комментарии
     COMMENT_ADDED("MSG-0301", "Комментарий добавлен"),

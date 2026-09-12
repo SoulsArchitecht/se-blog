@@ -25,6 +25,7 @@ import ru.sshibko.backend_seblog.model.repository.PostRepository;
 import ru.sshibko.backend_seblog.model.repository.PostTypeRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -227,6 +228,15 @@ public class PostService {
         post.incrementViewCount();
 
         return postMapper.mapToResponse(post);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getPostsByTypeSlug(String slug, Pageable pageable) {
+        log.debug("Getting all posts by slug: {}, page: {}, size: {}",
+                slug, pageable.getPageNumber(), pageable.getPageSize());
+
+        return postRepository.findAllByTypeSlug(slug, pageable)
+                .map(postMapper::mapToResponse);
     }
 
     @Transactional

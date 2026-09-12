@@ -57,6 +57,12 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
             "WHERE p.type.name = :typeName AND p.status = 'PUBLISHED'")
     Page<Post> findAllByTypeName(@Param("typeName") String typeName, Pageable pageable);
 
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "LEFT JOIN FETCH p.author " +
+            "LEFT JOIN FETCH p.tags " +
+            "WHERE p.type.slug = :slug AND p.status = 'PUBLISHED'")
+    Page<Post> findAllByTypeSlug(@Param("slug") String slug, Pageable pageable);
+
     @Query("SELECT p FROM Post p " +
             "LEFT JOIN FETCH p.author " +
             "LEFT JOIN FETCH p.tags " +
