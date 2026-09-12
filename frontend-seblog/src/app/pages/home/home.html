@@ -1,6 +1,20 @@
 <div class="home-page">
   <div class="page-header">
-    <h1>Последние посты</h1>
+    <div class="title-with-type">
+      <h1>
+        @if (currentType() && currentTypeData()) {
+          <span 
+            class="type-badge"
+            [style.backgroundColor]="currentTypeData()!.colorHex"
+            [style.color]="currentTypeData()!.colorHex | contrastColor">
+            <span class="type-icon">{{ currentTypeData()!.icon | categoryIcon }}</span>
+            {{ currentTypeData()!.name }}
+          </span>
+        } @else {
+          Последние посты
+        }
+      </h1>
+    </div>
     
     @if (isAuthenticated) {
       <a routerLink="/create-post" class="create-post-btn">+ Создать пост</a>
@@ -26,8 +40,7 @@
         <button 
           (click)="loadMore()" 
           [disabled]="isLoading()"
-          class="load-more-btn"
-        >
+          class="load-more-btn">
           @if (isLoading()) {
             <span class="spinner-small"></span>
             Загрузка...

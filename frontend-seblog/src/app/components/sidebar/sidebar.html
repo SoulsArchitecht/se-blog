@@ -1,39 +1,66 @@
-<div class="sidebar">
+<aside class="sidebar">
   <!-- Категории -->
-  <nav class="categories-nav">
-    <h3 class="nav-title">Категории</h3>
-    <ul class="nav-list">
-      @for (cat of categories; track cat.path) {
-        <li>
-          <a
-            [routerLink]="cat.path"
+  <div class="sidebar-section">
+    <h3 class="section-title">Категории</h3>
+    
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Загрузка категорий...</span>
+      </div>
+    } @else {
+      <nav class="category-list">
+        <!-- Все посты -->
+        <a 
+          routerLink="/" 
+          routerLinkActive="active" 
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="category-item"
+        >
+          <span class="category-icon">📋</span>
+          <span class="category-name">Все посты</span>
+        </a>
+        
+        <!-- Категории из БД -->
+        @for (type of postTypes(); track type.id) {
+          <a 
+            [routerLink]="['/type', type.slug]" 
             routerLinkActive="active"
-            class="nav-link"
+            class="category-item"
+            [style.borderLeftColor]="type.colorHex"
           >
-            {{ cat.name }}
-          </a>
-        </li>
-      }
-    </ul>
-  </nav>
-
-  <!-- Пользовательское меню (только для авторизованных) -->
-  @if (authService.isAuthenticated()) {
-    <nav class="user-nav">
-      <h3 class="nav-title">Личный кабинет</h3>
-      <ul class="nav-list">
-        @for (item of userMenu; track item.path) {
-          <li>
-            <a
-              [routerLink]="item.path"
-              routerLinkActive="active"
-              class="nav-link"
+            <span 
+              class="category-icon-badge"
+              [style.backgroundColor]="type.colorHex"
+              [style.color]="type.colorHex | contrastColor"
             >
-              {{ item.name }}
-            </a>
-          </li>
+              {{ type.icon | categoryIcon }}
+            </span>
+            <span class="category-name">{{ type.name }}</span>
+          </a>
         }
-      </ul>
-    </nav>
+      </nav>
+    }
+  </div>
+
+  <!-- Личный кабинет (только для авторизованных) -->
+  @if (isAuthenticated) {
+    <div class="sidebar-section">
+      <h3 class="section-title">Личный кабинет</h3>
+      <nav class="user-menu">
+        <!-- <a routerLink="/my-posts" routerLinkActive="active" class="menu-item">
+          <span class="menu-icon"></span>
+          <span>Мои посты</span>
+        </a>
+        <a routerLink="/favorites" routerLinkActive="active" class="menu-item">
+          <span class="menu-icon">⭐</span>
+          <span>Избранное</span>
+        </a>
+        <a routerLink="/settings" routerLinkActive="active" class="menu-item">
+          <span class="menu-icon">⚙️</span>
+          <span>Настройки</span>
+        </a> -->
+      </nav>
+    </div>
   }
-</div>
+</aside>

@@ -74,4 +74,46 @@ export class PostService {
   clearPosts(): void {
     this.postsSignal.set([]);
   }
+
+  getPostsByType(typeName: string, page: number = 0, size: number = 10): Observable<PagedResponse<Post>> {
+    return this.apiService.get<PagedResponse<Post>>(
+      `/posts/type/${typeName}`, { page, size }).pipe(
+        map(response => response.data)
+    );
+  }
+
+  getPostsByTypeSlug(slug: string, page: number = 1, size: number = 10): Observable<ApiResponse<PagedResponse<Post>>> {
+    this.loadingSignal.set(true);
+    
+    return this.apiService.get<PagedResponse<Post>>(`/posts/type/${slug}`, { page: page - 1, size }).pipe(
+      tap({
+        next: (response) => {
+          if (!response.success) return;
+
+          const paged = response.data;
+          this.totalPagesSignal.set(paged.totalPages);
+          this.hasMoreSignal.set(page < paged.totalPages);
+
+          if (page === 1) {
+            this.postsSignal.set(paged.content);
+          } else {
+            this.postsSignal.set([...this.postsSignal(), ...paged.content]);
+          }
+          this.currentPageSignal.set(page);
+        },
+        complete: () => this.loadingSignal.set(false),
+        error: () => {
+          this.loadingSignal.set(false);
+          this.postsSignal.set([]);
+        }
+      })
+    );
+  }
+
+  // Упрощённый метод без сигналов (для прямого вызова)
+  fetchPostsByTypeSlug(slug: string, page: number = 0, size: number = 10): Observable<PagedResponse<Post>> {
+    return this.apiService.get<PagedResponse<Post>>(`/posts/type/${slug}`, { page, size }).pipe(
+      map(response => response.data)
+    );
+  }
 }

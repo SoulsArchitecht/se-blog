@@ -9,6 +9,12 @@ export const routes: Routes = [
     title: 'Главная'
   },
   {
+    path: 'type/:typeName', 
+    loadComponent: () => import('./pages/home/home')
+      .then(m => m.HomeComponent),
+    title: 'Категория'
+  },
+  {
     path: 'login',
     loadComponent: () => import('./pages/login/login')
       .then(m => m.LoginComponent),
