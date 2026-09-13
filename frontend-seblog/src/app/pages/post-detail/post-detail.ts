@@ -11,6 +11,8 @@ import { CommentList } from '../../components/comment-list/comment-list';
 import { PostVoteService } from '../../services/post-vote.service';
 import { VoteStats } from '../../models/vote.model';
 import { VoteButtons } from '../../components/vote-buttons/vote-buttons';
+import { ContrastColorPipe } from '../../pipes/contrast-color.pipe';
+import { CategoryIconPipe } from '../../pipes/category-icon.pipe';
 
 @Component({
   selector: 'app-post-detail',
@@ -20,7 +22,9 @@ import { VoteButtons } from '../../components/vote-buttons/vote-buttons';
     RouterLink,
     ReactiveFormsModule,
     CommentList,
-    VoteButtons
+    VoteButtons,
+    ContrastColorPipe,
+    CategoryIconPipe
   ],
   templateUrl: './post-detail.html',
   styleUrls: ['./post-detail.scss']
