@@ -1,14 +1,18 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { PostService } from '../../services/post.service';
 import { PostCreate } from '../../models/post.model';
 
 @Component({
   selector: 'app-post-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule,
+    RouterLink
+  ],
   templateUrl: './post-create.html',
   styleUrls: ['./post-create.scss']
 })
@@ -55,7 +59,7 @@ export class PostCreateComponent {
       content: formValue.content,
       postTypeName: formValue.postType,
       title: formValue.title,
-      status: 'DRAFT',
+      status: formValue.isPublished ? 'PUBLISHED' : 'DRAFT',
       tagNames: formValue.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
       customSlug: formValue.customSlug || undefined,
     };
@@ -65,9 +69,12 @@ export class PostCreateComponent {
     
     this.postService.createPost(postData).subscribe({
       next: (response) => {
-        this.router.navigate(['/posts', response.data.id]);
+        console.log('Post created successfully:', response);
+        this.isLoading.set(false);
+        this.router.navigate(['/post', response.data.id]);
       },
       error: (error) => {
+        console.error('Error creating post', error);
         this.errorMessage.set(error.message);
         this.isLoading.set(false);
       }
