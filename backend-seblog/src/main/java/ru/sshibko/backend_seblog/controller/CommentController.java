@@ -1,6 +1,7 @@
 package ru.sshibko.backend_seblog.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -141,5 +142,18 @@ public class CommentController {
         String message = messageService.getSuccessMessage(SuccessCode.COMMENTS_RECEIVED, locale);
 
         return ApiResponse.success(message);
+    }
+
+    @GetMapping("/recent")
+    @Operation(summary = "Get recent comments", description = " Returns recent comments. Public Access")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<PagedResponse<CommentResponse>> getRecentComments(
+            @Parameter(description = "Limit", example = "5")
+            @RequestParam(defaultValue = "5") int limit) {
+        Page<CommentResponse> commentsPage = commentService.getRecentComments(limit);
+        PagedResponse<CommentResponse> pagedCommentResponse = PagedResponse.of(commentsPage);
+        String message = messageService.getSuccessMessage(SuccessCode.OPERATION_SUCCESSFUL, locale);
+
+        return ApiResponse.success(pagedCommentResponse, message);
     }
 }

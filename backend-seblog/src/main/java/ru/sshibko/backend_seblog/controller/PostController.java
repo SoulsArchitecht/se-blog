@@ -165,6 +165,21 @@ public class PostController {
         return ApiResponse.success(pagedResponse, message);
     }
 
+    @GetMapping("/popular")
+    @Operation(summary = "Get popular posts", description = "Returns top posts by view count")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<PagedResponse<PostResponse>> getPopularPosts(
+            @Parameter(description = "Limit", example = "5")
+            @RequestParam(defaultValue = "5") int limit) {
+
+        Page<PostResponse> postsPage = postService.getPopularPosts(limit);
+
+        PagedResponse<PostResponse> pagedResponse = PagedResponse.of(postsPage);
+        String message = messageService.getSuccessMessage(SuccessCode.OPERATION_SUCCESSFUL, locale);
+
+        return ApiResponse.success(pagedResponse, message);
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("@postService.canEditPost(#id)")
     @Operation(summary = "Обновить пост",

@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -401,5 +403,15 @@ public class PostService {
                 );
 
         return post.getAuthor().getId().equals(currentUser.getId());
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "popularPosts", key = "#limit")
+    public Page<PostResponse> getPopularPosts(int limit) {
+        log.debug("Getting popular posts with limit: {}", limit);
+
+        Pageable pageable = PageRequest.of(0, limit, Sort.by("viewCount").descending());
+        return postRepository.findAllByStatus(PostStatus.PUBLISHED, pageable)
+                .map(postMapper::mapToResponse);
     }
 }

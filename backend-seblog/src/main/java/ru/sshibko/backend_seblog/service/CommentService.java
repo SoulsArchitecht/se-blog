@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,6 +108,16 @@ public class CommentService {
                 .map(commentMapper::mapToResponse);
 
         return PagedResponse.of(page);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "recentComments", key = "#limit")
+    public Page<CommentResponse> getRecentComments(int limit) {
+        log.debug("Getting recent comments with limit: {}", limit);
+
+        Pageable pageable = PageRequest.of(0, limit, Sort.by("createdAt").descending());
+        return commentRepository.findAll(pageable)
+                .map(commentMapper::mapToResponse);
     }
 
     @Transactional(readOnly = true)
