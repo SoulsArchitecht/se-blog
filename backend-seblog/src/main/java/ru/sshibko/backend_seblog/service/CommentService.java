@@ -111,7 +111,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "recentComments", key = "#limit")
+    //@Cacheable(value = "recentComments", key = "#limit") только List иначе проблемы с Redis и Page
     public Page<CommentResponse> getRecentComments(int limit) {
         log.debug("Getting recent comments with limit: {}", limit);
 

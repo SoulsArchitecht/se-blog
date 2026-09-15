@@ -62,6 +62,8 @@ public class SecurityConfig {
                                 "/api/v1/tags/**",
                                 "/api/v1/posts/*/comments/**",
                                 "/api/v1/posts/*/vote/stats",
+                                "/api/v1/posts/popular",
+                                "/api/v1/comments/recent",
                                 "/api/v1/comments/*/vote/stats",
                                 "/api/v1/users/profile/*/public",
                                 "/api/v1/users/profile/*/avatar"

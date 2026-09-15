@@ -406,7 +406,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "popularPosts", key = "#limit")
+    //@Cacheable(value = "popularPosts", key = "#limit") // только List иначе проблемы с Redis и Page
     public Page<PostResponse> getPopularPosts(int limit) {
         log.debug("Getting popular posts with limit: {}", limit);
 
