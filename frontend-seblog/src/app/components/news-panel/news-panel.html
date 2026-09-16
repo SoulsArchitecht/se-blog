@@ -1,32 +1,69 @@
-<div class="news-panel">
-  <!-- Трендовые посты -->
-  <section class="trending-section">
+<aside class="news-panel">
+  <!-- Популярные посты -->
+  <div class="panel-section">
     <h3 class="section-title">Популярное</h3>
-    <ul class="trending-list">
-      @for (post of trendingPosts; track post.title) {
-        <li class="trending-item">
-          <a routerLink="/post/slug" class="trending-link">
-            <span class="trending-title">{{ post.title }}</span>
-            <span class="trending-views">{{ post.views | number }} просмотров</span>
-          </a>
-        </li>
-      }
-    </ul>
-  </section>
+    
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner-small"></div>
+        <span>Загрузка...</span>
+      </div>
+    } @else if (error()) {
+      <div class="error-state">
+        <span>Ошибка загрузки</span>
+      </div>
+    } @else if (popularPosts().length > 0) {
+      <ul class="popular-list">
+        @for (post of popularPosts(); track post.id) {
+          <li>
+            <a [routerLink]="['/post', post.id]" class="popular-item">
+              <span class="post-title">{{ post.title }}</span>
+              <span class="post-views">
+                <span class="views-icon">👁</span>
+                {{ post.viewCount }} {{ getViewText(post.viewCount) }}
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="empty-state">
+        <span>Популярных постов пока нет</span>
+      </div>
+    }
+  </div>
 
   <!-- Недавние комментарии -->
-  <section class="comments-section">
+  <div class="panel-section">
     <h3 class="section-title">Недавние комментарии</h3>
-    <ul class="comments-list">
-      @for (comment of recentComments; track comment.user + comment.time) {
-        <li class="comment-item">
-          <div class="comment-user">{{ comment.user }}</div>
-          <div class="comment-meta">
-            <a routerLink="/post/slug" class="comment-post-link">{{ comment.post }}</a>
-            <time class="comment-time">{{ comment.time }}</time>
-          </div>
-        </li>
-      }
-    </ul>
-  </section>
-</div>
+    
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner-small"></div>
+        <span>Загрузка...</span>
+      </div>
+    } @else if (error()) {
+      <div class="error-state">
+        <span>Ошибка загрузки</span>
+      </div>
+    } @else if (recentComments().length > 0) {
+      <ul class="comments-list">
+        @for (comment of recentComments(); track comment.id) {
+          <li>
+            <a [routerLink]="['/post', comment.postId]" class="comment-item">
+              <div class="comment-header">
+                <span class="comment-author">{{ comment.author.username }}</span>
+                <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
+              </div>
+              <p class="comment-preview">{{ truncateText(comment.content, 60) }}</p>
+            </a>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="empty-state">
+        <span>Комментариев пока нет</span>
+      </div>
+    }
+  </div>
+</aside>
