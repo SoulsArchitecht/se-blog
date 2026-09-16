@@ -166,6 +166,12 @@
             }
           </button>
 
+          @if (successMessage()) {
+            <a [routerLink] ="['/users/profile', user?.id]" class="btn-secondary">
+              👁 Перейти к профилю
+            </a>
+          }
+
           <a routerLink="/" class="btn-secondary">Отмена</a>
         </div>
       </form>

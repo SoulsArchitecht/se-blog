@@ -69,7 +69,7 @@ export class ProfileComponent implements OnInit {
             avatarUrl: response.data.avatarUrl || '',
             phone: response.data.phone || '',
             bio: response.data.bio || '',
-            location: response.data.locationAt || '',
+            location: response.data.location || '',
             optionalEmail: response.data.optionalEmail || ''
           });
         }
@@ -102,7 +102,17 @@ export class ProfileComponent implements OnInit {
         this.isLoading.set(false);
         if (response.success) {
           this.successMessage.set('Профиль успешно обновлен');
-          setTimeout(() => this.successMessage.set(''), 300);
+
+          this.loadProfile();
+
+          this.profileForm.markAsPristine();
+          this.profileForm.markAsUntouched();
+
+          setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 100);
+
+          setTimeout(() => this.successMessage.set(''), 3000);
         }
       },
       error: (err) => {

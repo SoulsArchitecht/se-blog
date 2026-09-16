@@ -16,7 +16,7 @@ export interface UserProfile {
     phone: string | null;
     avatarUrl: string | null;
     bio: string | null;
-    locationAt: string | null;
+    location: string | null;
     updatedAt: Date | null;
     lastLoginAt: Date | null;
     rating: number;
