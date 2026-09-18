@@ -38,11 +38,13 @@ export class CommentItem {
   edit = output<{ id: string, content: string }>();
   delete = output<string>();
   voteChanged = output<{ commentId: string; stats: CommentVoteStats} >();
+  reply = output<{ content: string; parentId: string }>();
 
   isEditing = signal(false);
   showReplyForm = signal(false);
   isVoting = signal(false);
   voteStats = signal<VoteStats | null>(null);
+  isExpanded = signal(true);
 
   avatarUrl = computed(() => {
     const avatar = this.comment().author.avatarUrl;
@@ -115,13 +117,20 @@ export class CommentItem {
     if (this.showReplyForm()) this.isEditing.set(false);
   }
 
+  toggleExpand(): void {
+    this.isExpanded.update(v => !v);
+  }
+
   onEditSubmit(event: {content: string}): void {
     this.edit.emit({ id: this.comment().id, content: event.content });
     this.isEditing.set(false);
   }
 
   onReplySubmit(event: { content: string }): void {
-    this.edit.emit({ id: this.comment().id, content: event.content });
+    this.reply.emit({
+      content: event.content,
+      parentId: this.comment().id 
+    });
     this.showReplyForm.set(false);
   }
 

@@ -1,7 +1,7 @@
 <article class="comment-item" [class.deleted]="comment().isDeleted">
       <div class="comment-header">
         <img 
-          [src]="avatarUrl()" 
+          [src]="getAvatarUrl(comment().author.avatarUrl)" 
           [alt]="comment().author.username"
           class="comment-avatar"
           onerror="this.src='/assets/default-avatar.png'"
@@ -72,6 +72,12 @@
             </span>
           }
 
+          @if (comment().replies?.length) {
+            <button (click)="toggleExpand()" class="btn-outline btn-sm">
+              {{ isExpanded() ? 'Скрыть ответы' : `Показать ответы (${comment().replies!.length})` }}
+            </button>
+          }
+
         </div>
       }
 
@@ -80,23 +86,26 @@
           <app-comment-form
             placeholder="Написать ответ..."
             submitLabel="Ответить"
+            cancelLabel="Отмена"
             [isReply]="true"
+            [parentId]="comment().id"
             (submit)="onReplySubmit($event)"
             (cancel)="toggleReply()"
           />
         </div>
       }
 
-      @if (comment().replies?.length && !isReply()) {
+      @if (comment().replies?.length && !isReply() && isExpanded()) {
         <div class="replies">
-          @for (reply of comment().replies; track reply.id) {
+          @for (childReply of comment().replies; track childReply.id) {
             <app-comment-item
-              [comment]="reply"
+              [comment]="childReply"
               [postId]="postId()"
               [depth]="depth() + 1"
               [isReply]="true"
               (edit)="edit.emit($event)"
               (delete)="delete.emit($event)"
+              (reply)="reply.emit($event)"
             />
           }
         </div>

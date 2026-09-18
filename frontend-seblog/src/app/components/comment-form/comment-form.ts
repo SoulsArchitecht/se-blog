@@ -24,6 +24,7 @@ export class CommentForm implements OnInit {
   rows = input<number>(4);
   initialContent = input<string>('');
   isReply = input<boolean>(false);
+  parentId = input<string | undefined>(undefined);
 
   // Outputs
   submit = output<{ content: string; parentId?: string }>();
@@ -37,27 +38,56 @@ export class CommentForm implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      content: ['', [Validators.required, Validators.minLength(5)]]
+      content: [this.initialContent(), [
+        Validators.required, Validators.minLength(5), Validators.maxLength(1000)]]
     });
 
-    if (this.initialContent()) {
-      this.form.patchValue({ content: this.initialContent() });
-    }
+    // if (this.initialContent()) {
+    //   this.form.patchValue({ content: this.initialContent() });
+    // }
   }
 
   onSubmit(): void {
-    if (this.form.invalid || !this.authService.isAuthenticated()) return;
-    
+    if (this.form.invalid || !this.authService.isAuthenticated()) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    if (this.isSubmitting()) return;
     this.isSubmitting.set(true);
+
+    const rawContent = this.form.value.content;
+    const cleanContent = typeof rawContent === 'string' ? rawContent.trim() : '';
+  
+    if (!cleanContent) {
+      this.isSubmitting.set(false);
+      return;
+    }
+
+    const parentIdValue = this.parentId();
+    const cleanParentId = (parentIdValue && parentIdValue !== 'undefined' && parentIdValue !== 'null')
+      ? parentIdValue
+      : undefined;
+
     this.submit.emit({ 
-      content: this.form.value.content!,
-      parentId: this.isReply() ? undefined : undefined
+      //content: this.form.value.content!,
+      //parentId: this.parentId()
+      content: cleanContent,
+      parentId: cleanParentId
     });
+
+    this.reset();
+  }
+
+  onCancel(): void {
+    this.form.reset();
+    this.cancel.emit();
   }
 
   reset(): void {
     this.form.reset();
-    this.isSubmitting.set(false);
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    setTimeout(() => this.isSubmitting.set(false), 500);
   }
 
   setSubmitting(value: boolean): void {

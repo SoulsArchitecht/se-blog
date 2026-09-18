@@ -28,7 +28,7 @@ export class CommentList {
   protected authService = inject(AuthService);
 
   postId = input.required<string>();
-  viewMode = input<'list' | 'tree'>('list');
+  viewMode = signal<'list' | 'tree'>('list');
 
   commentAdded = output<Comment>();
   commentUpdated = output<{ id: string, content: string }>();
@@ -52,7 +52,10 @@ export class CommentList {
 
   toggleView(): void {
     const newMode = this.viewMode() === 'list' ? 'tree' : 'list';
+    console.log('Переключение в режим:', newMode);
     localStorage.setItem('commentViewMode', newMode);
+
+    this.viewMode.set(newMode);
     this.loadComments(0);
   }
 
@@ -212,5 +215,28 @@ export class CommentList {
   
   get isAuthenticated(): boolean {
     return this.authService.isAuthenticated();
+  }
+
+  async handleReply(event: { content: string; parentId: string }): Promise<void> {
+    try {
+      const newComment = await firstValueFrom(
+        this.commentService.createComment(this.postId(), { 
+          content: event.content, 
+          parentId: event.parentId 
+        })
+      );
+      
+      if (newComment) {
+        if (this.viewMode() === 'tree') {
+          this.rootComments.update(comments => [newComment, ...comments]);
+        } else {
+          await this.loadComments(0);
+        }  
+        this.totalComments.update(n => n + 1);
+        this.commentAdded.emit(newComment);
+      }
+    } catch (err: any) {
+      this.error.set(err.message || 'Не удалось опубликовать ответ');
+    }
   }
 }

@@ -1,146 +1,109 @@
 .comments-section {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-}
+  margin-top: 2rem;
 
-.comments-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  
-  h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #1f2937;
-  }
-}
+  .comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
 
-.auth-prompt {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-  padding: 1.5rem;
-  border-radius: 12px;
-  text-align: center;
-  margin-bottom: 1.5rem;
-  border: 2px solid #c7d2fe;
-  
-  p {
-    margin: 0;
-    color: #4b5563;
-    font-size: 0.95rem;
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: #1f2937;
+    }
   }
-  
-  .auth-link {
-    color: #4f46e5;
-    text-decoration: none;
-    font-weight: 600;
+
+  .new-comment-form {
+    margin-bottom: 2rem;
+  }
+
+  .loading-comments {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem;
+    color: #6b7280;
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid #e5e7eb;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .no-comments {
+    text-align: center;
+    padding: 3rem;
+    color: #9ca3af;
+    font-style: italic;
+  }
+
+  .comments-list,
+  .comments-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .btn-load-more {
+    width: 100%;
+    padding: 1rem;
+    background: white;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    color: #6b7280;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    
-    &:hover {
-      color: #4338ca;
-      background: rgba(79, 70, 229, 0.1);
-      text-decoration: underline;
+
+    &:hover:not(:disabled) {
+      border-color: #667eea;
+      color: #667eea;
+      background: #f9fafb;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   }
-}
 
-.login-prompt-text {
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-style: italic;
-  
-  .login-link {
-    color: #4f46e5;
-    text-decoration: none;
-    font-weight: 600;
-    
-    &:hover {
-      text-decoration: underline;
+  .error-alert {
+    background: #fee2e2;
+    border-left: 4px solid #ef4444;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+
+    p {
+      margin: 0 0 0.75rem 0;
+      color: #991b1b;
     }
-  }
-}
 
-.new-comment-form {
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-}
+    .btn-secondary {
+      background: white;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
 
-.loading-comments {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 2rem;
-  color: #667eea;
-  
-  .spinner {
-    width: 24px;
-    height: 24px;
-    border: 2px solid rgba(102, 126, 234, 0.3);
-    border-top-color: #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+      &:hover {
+        background: #fecaca;
+      }
+    }
   }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.no-comments {
-  text-align: center;
-  color: #6b7280;
-  font-style: italic;
-  padding: 2rem;
-}
-
-.comments-list, .comments-tree {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.btn-load-more {
-  width: 100%;
-  padding: 0.875rem;
-  margin-top: 1.5rem;
-  border: 2px dashed #d1d5db;
-  border-radius: 8px;
-  background: transparent;
-  color: #667eea;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  
-  &:hover:not(:disabled) {
-    border-color: #667eea;
-    background: #f0f5ff;
+  to {
+    transform: rotate(360deg);
   }
-  
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-.error-alert {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: #fee2e2;
-  border-left: 4px solid #ef4444;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
 }

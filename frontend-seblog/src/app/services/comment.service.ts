@@ -34,7 +34,7 @@ export class CommentService {
 
     getCommentTree(postId: string): Observable<Comment[]> {
         return this.apiService
-            .get<Comment[]>(`/posts/${postId}/commetns/tree`)
+            .get<Comment[]>(`/posts/${postId}/comments/tree`)
             .pipe(map(response => response.data));
     }
 
