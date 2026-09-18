@@ -50,6 +50,7 @@ public class CommentService {
 
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_MODERATOR', 'ROLE_ADMIN')")
     @CacheEvict(value = {"commentsByPost", "commentsTree"}, key = "#postId")
+    @Transactional
     public CommentResponse createComment(UUID postId, CommentCreateRequest request) {
         log.info("Create comment for post: {}", postId);
 
@@ -80,6 +81,9 @@ public class CommentService {
                                 parent.getId(), parent.getPost().getId(), post.getId())
                         );
             }
+
+            parent.setReplyCount(parent.getReplyCount() != null ? parent.getReplyCount() + 1 : 1);
+            commentRepository.save(parent);
         }
 
         Comment comment = Comment.builder()
@@ -125,7 +129,8 @@ public class CommentService {
     public List<CommentResponse> getCommentTree(UUID postId) {
         log.debug("Get comments for post: {}", postId);
 
-        List<Comment> rootComments = commentRepository.findRootCommentsByPostId(
+        //List<Comment> rootComments = commentRepository.findRootCommentsByPostId(
+        List<Comment> rootComments = commentRepository.findCommentTreeByPostId(
                 postId, CommentStatus.ACTIVE);
 
         return rootComments.stream()
@@ -245,6 +250,6 @@ public class CommentService {
                 .map(this::buildCommentTree)
                 .toList();
 
-        return commentMapper.mapToResponse(comment);
+        return commentMapper.mapToResponse(comment, replies);
     }
 }

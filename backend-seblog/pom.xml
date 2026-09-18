@@ -130,6 +130,12 @@
 			<version>0.6</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>74.2</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.webjars.npm/i18next-browser-languagedetector -->
 <!--		<dependency>
 			<groupId>org.webjars.npm</groupId>
