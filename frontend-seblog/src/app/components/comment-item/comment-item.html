@@ -60,7 +60,7 @@
         </p>
       }
 
-      @if (!comment().isDeleted && !isReply()) {
+      @if (!comment().isDeleted) {
         <div class="comment-actions">
           @if (isAuthenticated) {
             <button (click)="toggleReply()" class="btn-outline btn-sm">
@@ -95,7 +95,7 @@
         </div>
       }
 
-      @if (comment().replies?.length && !isReply() && isExpanded()) {
+      @if (comment().replies?.length && isExpanded()) {
         <div class="replies">
           @for (childReply of comment().replies; track childReply.id) {
             <app-comment-item
