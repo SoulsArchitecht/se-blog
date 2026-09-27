@@ -98,7 +98,7 @@ public class CommentService {
         Comment newComment = commentRepository.save(comment);
         log.info("Comment created: ID {}", newComment.getId());
 
-        return commentMapper.mapToResponse(comment);
+        return commentMapper.mapToResponse(newComment);
     }
 
     @Transactional(readOnly = true)
