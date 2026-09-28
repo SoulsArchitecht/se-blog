@@ -131,28 +131,28 @@ export class CommentList {
     this.loadComments(0);
   }
 
-  async createComment(request: { content: string; parentId?: string }): Promise<void> {
-    try {
-      const newComment = await firstValueFrom(
-        this.commentService.createComment(this.postId(), { 
-          content: request.content, 
-          parentId: request.parentId 
-        })
-      );
+  // async createComment(request: { content: string; parentId?: string }): Promise<void> {
+  //   try {
+  //     const newComment = await firstValueFrom(
+  //       this.commentService.createComment(this.postId(), { 
+  //         content: request.content, 
+  //         parentId: request.parentId 
+  //       })
+  //     );
       
-      if (newComment) {
-        if (this.viewMode() === 'tree' && !request.parentId) {
-          this.rootComments.update(comments => [newComment, ...comments]);
-        } else {
-          this.comments.update(comments => [newComment, ...comments]);
-        }
-        this.totalComments.update(n => n + 1);
-        this.commentAdded.emit(newComment);
-      }
-    } catch (err: any) {
-      this.error.set(err.message || 'Не удалось опубликовать комментарий');
-    }
-  }
+  //     if (newComment) {
+  //       if (this.viewMode() === 'tree' && !request.parentId) {
+  //         this.rootComments.update(comments => [newComment, ...comments]);
+  //       } else {
+  //         this.comments.update(comments => [newComment, ...comments]);
+  //       }
+  //       this.totalComments.update(n => n + 1);
+  //       this.commentAdded.emit(newComment);
+  //     }
+  //   } catch (err: any) {
+  //     this.error.set(err.message || 'Не удалось опубликовать комментарий');
+  //   }
+  // }
 
   async handleEdit(event: { id: string; content: string }): Promise<void> {
     try {
@@ -217,18 +217,76 @@ export class CommentList {
     return this.authService.isAuthenticated();
   }
 
-  async handleReply(event: { content: string; parentId: string }): Promise<void> {
+  // async handleReply(event: { content: string; parentId: string }): Promise<void> {
+  //   try {
+  //     const newComment = await firstValueFrom(
+  //       this.commentService.createComment(this.postId(), { 
+  //         content: event.content, 
+  //         parentId: event.parentId 
+  //       })
+  //     );
+      
+  //     if (newComment) {
+  //       if (this.viewMode() === 'tree') {
+  //         this.rootComments.update(comments => [newComment, ...comments]);
+  //       } else {
+  //         await this.loadComments(0);
+  //       }  
+  //       this.totalComments.update(n => n + 1);
+  //       this.commentAdded.emit(newComment);
+  //     }
+  //   } catch (err: any) {
+  //     this.error.set(err.message || 'Не удалось опубликовать ответ');
+  //   }
+  // }
+
+  async createComment(request: { content: string; parentId?: string }): Promise<void> {
+
+    if (!request || !request.content || typeof request.content !== 'string' || request.content.trim() === '') {
+      this.error.set('Текст комментария не может быть пустым');
+      return; 
+    }
+
     try {
       const newComment = await firstValueFrom(
         this.commentService.createComment(this.postId(), { 
-          content: event.content, 
+          content: request.content.trim(), 
+          parentId: request.parentId 
+        })
+      );
+      
+      if (newComment) {
+        if (this.viewMode() === 'tree' && !request.parentId) {
+          this.rootComments.update(comments => [newComment, ...comments]);
+        } else {
+          this.comments.update(comments => [newComment, ...comments]);
+        }
+        this.totalComments.update(n => n + 1);
+        this.commentAdded.emit(newComment);
+      }
+    } catch (err: any) {
+      this.error.set(err.error?.userMessage || err.message || 'Не удалось опубликовать комментарий');
+    }
+  }
+
+  async handleReply(event: { content: string; parentId: string }): Promise<void> {
+
+    if (!event || !event.content || typeof event.content !== 'string' || event.content.trim() === '') {
+      this.error.set('Текст ответа не может быть пустым');
+      return;
+    }
+
+    try {
+      const newComment = await firstValueFrom(
+        this.commentService.createComment(this.postId(), { 
+          content: event.content.trim(),
           parentId: event.parentId 
         })
       );
       
       if (newComment) {
         if (this.viewMode() === 'tree') {
-          this.rootComments.update(comments => [newComment, ...comments]);
+          await this.loadTree();
         } else {
           await this.loadComments(0);
         }  
@@ -236,7 +294,7 @@ export class CommentList {
         this.commentAdded.emit(newComment);
       }
     } catch (err: any) {
-      this.error.set(err.message || 'Не удалось опубликовать ответ');
+      this.error.set(err.error?.userMessage || err.message || 'Не удалось опубликовать ответ');
     }
   }
 }

@@ -27,7 +27,7 @@ export class CommentForm implements OnInit {
   parentId = input<string | undefined>(undefined);
 
   // Outputs
-  submit = output<{ content: string; parentId?: string }>();
+  commentSubmitted = output<{ content: string; parentId?: string }>();
   cancel = output<void>();
 
   // State
@@ -39,7 +39,7 @@ export class CommentForm implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       content: [this.initialContent(), [
-        Validators.required, Validators.minLength(5), Validators.maxLength(1000)]]
+        Validators.required, Validators.minLength(2), Validators.maxLength(1000)]]
     });
 
     // if (this.initialContent()) {
@@ -48,11 +48,11 @@ export class CommentForm implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || !this.authService.isAuthenticated()) {
+    if (this.isSubmitting() || this.form.invalid || !this.authService.isAuthenticated()) {
       this.form.markAllAsTouched();
       return;
     }
-    if (this.isSubmitting()) return;
+    
     this.isSubmitting.set(true);
 
     const rawContent = this.form.value.content;
@@ -68,14 +68,19 @@ export class CommentForm implements OnInit {
       ? parentIdValue
       : undefined;
 
-    this.submit.emit({ 
+    this.commentSubmitted.emit({ 
       //content: this.form.value.content!,
       //parentId: this.parentId()
       content: cleanContent,
       parentId: cleanParentId
     });
 
-    this.reset();
+    //this.reset();
+    this.form.reset();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+
+    setTimeout(() => this.isSubmitting.set(false), 500);
   }
 
   onCancel(): void {

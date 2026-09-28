@@ -51,7 +51,7 @@
           [initialContent]="comment().content"
           submitLabel="Сохранить"
           cancelLabel="Отмена"
-          (submit)="onEditSubmit($event)"
+          (commentSubmitted)="onEditSubmit($event)"
           (cancel)="toggleEdit()"
         />
       } @else {
@@ -89,7 +89,7 @@
             cancelLabel="Отмена"
             [isReply]="true"
             [parentId]="comment().id"
-            (submit)="onReplySubmit($event)"
+            (commentSubmitted)="onReplySubmit($event)"
             (cancel)="toggleReply()"
           />
         </div>

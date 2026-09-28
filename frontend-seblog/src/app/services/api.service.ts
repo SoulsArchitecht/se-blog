@@ -68,4 +68,24 @@ export class ApiService {
         console.error('API Error: ', error);
         return throwError(() => new Error(errorMessage));
     }
+
+    // FOR DEBUG MODE ONLY:
+    // post<T>(endpoint: string, body: any, options?: { headers?: HttpHeaders }): Observable<ApiResponse<T>> {
+
+    //     console.error('🚨 [ApiService] КТО-ТО ВЫЗЫВАЕТ POST НА:', endpoint);
+    //     console.error('🚨 [ApiService] С ДАННЫМИ :', body);
+    //     console.trace('🕵️ [ApiService] СТЕК ВЫЗОВА :');
+
+    //     if (body instanceof FormData) {
+    //         return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, body, {
+    //             headers: options?.headers || new HttpHeaders()
+    //         });
+    //     }
+
+    //     const headers = (options?.headers || new HttpHeaders())
+    //         .set('Content-Type', 'application/json');
+
+    //     return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, body, { headers })
+    //         .pipe(catchError(this.handleError));
+    // }
 }
