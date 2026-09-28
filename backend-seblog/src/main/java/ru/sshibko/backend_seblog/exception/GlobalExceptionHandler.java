@@ -188,8 +188,8 @@ public class GlobalExceptionHandler {
             globalErrors.put(objectName, errorMessage != null ? errorMessage : "Validation error");
         });
 
-        log.warn("MethodArgumentNotValidException [{}] at path {}: {} field errors, {} global errors",
-                requestId, path, fieldErrors.size(), globalErrors.size());
+        log.warn("MethodArgumentNotValidException [{}] at path {}: {} field errors, {} global errors. DETAILS: {}",
+                requestId, path, fieldErrors.size(), globalErrors.size(), fieldErrors);
 
         ValidationErrorResponse errorResponse = ValidationErrorResponse.create(
                 HttpStatus.BAD_REQUEST.value(),
