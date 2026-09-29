@@ -41,11 +41,24 @@ export class LoginComponent {
     
     this.authService.login({ email, password }).subscribe({
       next: () => {
+        this.isLoading.set(false);
         this.router.navigate(['/']);
       },
       error: (error) => {
-        this.errorMessage.set(error.message || 'Неверный email или пароль');
+        //this.errorMessage.set(error.message || 'Неверный email или пароль');
         this.isLoading.set(false);
+
+        const backendMessage = error.error?.userMessage;
+
+        if (error.status === 401) {
+          this.errorMessage.set(backendMessage || 'Неверный email или пароль');
+        } else if (error.status === 400) {
+          this.errorMessage.set(backendMessage || 'Ошибка валидации данных');
+        } else if (error.status === 0) {
+          this.errorMessage.set('нет соединения с сервером. Проверьте интернет.');
+        } else {
+          this.errorMessage.set('Произошла ошибка сервера. Попробуйте позже');
+        }
       },
       complete: () => {
         this.isLoading.set(false);

@@ -66,7 +66,7 @@ export class ApiService {
         }
 
         console.error('API Error: ', error);
-        return throwError(() => new Error(errorMessage));
+        return throwError(() => error);
     }
 
     // FOR DEBUG MODE ONLY:
