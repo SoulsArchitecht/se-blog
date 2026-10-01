@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.sshibko.backend_seblog.dto.request.PostCreateRequest;
 import ru.sshibko.backend_seblog.dto.request.PostUpdateRequest;
 import ru.sshibko.backend_seblog.dto.response.PostResponse;
+import ru.sshibko.backend_seblog.dto.security.HtmlSanitizer;
 import ru.sshibko.backend_seblog.exception.*;
 import ru.sshibko.backend_seblog.mapper.PostMapperService;
 import ru.sshibko.backend_seblog.model.entity.Post;
@@ -54,6 +55,8 @@ public class PostService {
     private final CommentService commentService;
 
     private final PostTypeService postTypeService;
+
+    private final HtmlSanitizer htmlSanitizer;
 
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_MODERATOR', 'ROLE_ADMIN')")
     @CacheEvict(value = {"posts", "postByType", "postByTag", "postsByAuthor"}, allEntries = true)
@@ -107,9 +110,11 @@ public class PostService {
                .orElseThrow(() -> new ResourceNotFoundException(
                        "Post type not found " + request.postTypeId()));*/
 
+        String safeContent = htmlSanitizer.sanitize(request.content());
+
         Post post = Post.builder()
                 .title(request.title())
-                .content(request.content())
+                .content(safeContent)
                 .slug(slug)
                 .status(request.status())
                 .author(currentUser)
@@ -159,7 +164,8 @@ public class PostService {
         }
 
         if (request.content() != null) {
-            post.setContent(request.content());
+            String safeContent = htmlSanitizer.sanitize(request.content());
+            post.setContent(safeContent);
         }
 
         if (request.slug() != null && !request.slug().isBlank()) {

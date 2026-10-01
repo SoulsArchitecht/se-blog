@@ -82,14 +82,7 @@ public class UserProfileService {
         UUID userId = currentUser.getId();
 
         UserProfile userProfile = userProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new NotFoundException(
-                        ErrorCode.USER_PROFILE_NOT_FOUND,
-                        "UserProfile",
-                        userId,
-                        "UserProfile not found with id: " + userId));
-        if (userProfile == null) {
-            userProfile = createDefaultProfile(currentUser);
-        }
+                .orElseGet(() -> createDefaultProfile(currentUser));
 
         if (userProfileDto.getDisplayName() != null) {
             userProfile.setDisplayName(userProfileDto.getDisplayName());
@@ -128,15 +121,9 @@ public class UserProfileService {
     public String uploadAvatar(MultipartFile file) {
         User user = userService.getCurrentUser();
         UserProfile userProfile = userProfileRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new NotFoundException(
-                        ErrorCode.USER_PROFILE_NOT_FOUND,
-                        "UserProfile",
-                        user.getId(),
-                        "UserProfile not found with id: " + user.getId()));
-        if (userProfile == null) {
-            userProfile = createDefaultProfile(user);
-        }
-        String fileName = fileStorageService.store(file);
+                .orElseGet(() -> createDefaultProfile(user));
+
+        String fileName = fileStorageService.storeAvatar(file);
         userProfile.setAvatarUrl(fileName);
         userProfileRepository.save(userProfile);
 
