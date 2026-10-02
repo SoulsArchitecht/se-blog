@@ -6,12 +6,17 @@ import { AuthService } from '../../services/auth.service';
 import { PostVoteService } from '../../services/post-vote.service';
 import { VoteStats } from '../../models/vote.model';
 import { VoteButtons } from '../vote-buttons/vote-buttons';
+import { AvatarUrlPipe } from '../../pipes/avatar-url.pipe';
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
   imports: [
-    CommonModule, DatePipe, RouterLink, VoteButtons
+    CommonModule, 
+    DatePipe, 
+    RouterLink, 
+    VoteButtons,
+    AvatarUrlPipe
   ],
   templateUrl: './post-card.html',
   styleUrl: './post-card.scss'

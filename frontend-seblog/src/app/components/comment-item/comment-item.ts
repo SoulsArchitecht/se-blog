@@ -8,6 +8,7 @@ import { CommentVoteService } from '../../services/comment-vote.service';
 import { VoteStats } from '../../models/vote.model';
 import { NotificationService } from '../../services/notification.service';
 import { RouterLink } from '@angular/router';
+import { AvatarUrlPipe } from '../../pipes/avatar-url.pipe';
 
 @Component({
   selector: 'app-comment-item',
@@ -17,7 +18,8 @@ import { RouterLink } from '@angular/router';
     DatePipe,
     CommentForm,
     VoteButtons,
-    RouterLink
+    RouterLink,
+    AvatarUrlPipe
   ],
   templateUrl: './comment-item.html',
   styleUrl: './comment-item.scss',

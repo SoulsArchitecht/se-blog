@@ -13,6 +13,7 @@ import { VoteStats } from '../../models/vote.model';
 import { VoteButtons } from '../../components/vote-buttons/vote-buttons';
 import { ContrastColorPipe } from '../../pipes/contrast-color.pipe';
 import { CategoryIconPipe } from '../../pipes/category-icon.pipe';
+import { AvatarUrlPipe } from '../../pipes/avatar-url.pipe';
 
 @Component({
   selector: 'app-post-detail',
@@ -24,7 +25,8 @@ import { CategoryIconPipe } from '../../pipes/category-icon.pipe';
     CommentList,
     VoteButtons,
     ContrastColorPipe,
-    CategoryIconPipe
+    CategoryIconPipe,
+    AvatarUrlPipe
   ],
   templateUrl: './post-detail.html',
   styleUrls: ['./post-detail.scss']

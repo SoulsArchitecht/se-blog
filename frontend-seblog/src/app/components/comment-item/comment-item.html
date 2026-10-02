@@ -1,7 +1,13 @@
 <article class="comment-item" [class.deleted]="comment().isDeleted">
       <div class="comment-header">
-        <img 
+        <!-- <img 
           [src]="getAvatarUrl(comment().author.avatarUrl)" 
+          [alt]="comment().author.username"
+          class="comment-avatar"
+          onerror="this.src='/assets/default-avatar.png'"
+        > -->
+        <img 
+          [src]="comment().author.avatarUrl | avatarUrl" 
           [alt]="comment().author.username"
           class="comment-avatar"
           onerror="this.src='/assets/default-avatar.png'"

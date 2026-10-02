@@ -13,8 +13,14 @@
   } @else if (profile()) {
     <!-- Шапка -->
     <div class="profile-header">
-      <img 
+      <!-- <img 
         [src]="getAvatarUrl(profile()!.avatarUrl)" 
+        [alt]="profile()!.username"
+        class="profile-avatar"
+        onerror="this.src='/assets/default-avatar.png'"
+      > -->
+      <img 
+        [src]="profile()!.avatarUrl | avatarUrl" 
         [alt]="profile()!.username"
         class="profile-avatar"
         onerror="this.src='/assets/default-avatar.png'"

@@ -16,6 +16,8 @@ export class UserProfileService {
     readonly profile = this.profileSignal.asReadonly();
     readonly isLoading = this.loadingSignal.asReadonly();
 
+    private apiUrl = "http://localhost:8080";
+
     getProfile(): Observable<ApiResponse<UserProfile>> {
         this.loadingSignal.set(true);
 
@@ -84,12 +86,28 @@ export class UserProfileService {
         this.profileSignal.set(null);
     }
 
+    // getAvatarUrl(avatarFilename: string | null | undefined): string {
+    //     if (!avatarFilename) {
+    //         return '/assets/default-avatar.png';
+    //     }
+    //     //return `${environment.apiUrl}/uploads/${avatarFilename}`;
+    //     return `/api/v1/uploads/${avatarFilename}`;
+    // }
+
     getAvatarUrl(avatarFilename: string | null | undefined): string {
-        if (!avatarFilename) {
+        if(!avatarFilename) {
             return '/assets/default-avatar.png';
         }
-        //return `${environment.apiUrl}/uploads/${avatarFilename}`;
-        return `/api/v1/uploads/${avatarFilename}`;
+
+        if (avatarFilename.startsWith('https://')) {
+            return avatarFilename;
+        }
+
+        if (avatarFilename.startsWith('/api/v1/uploads/')) {
+            return avatarFilename;
+        }
+
+        return `${this.apiUrl}/api/v1/uplads/avatars/${avatarFilename}`;
     }
 
     getUserProfile(userId: string): Observable<ApiResponse<UserProfile>> {

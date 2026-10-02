@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { UserPublicProfileService } from '../../services/user-public-profile.service';
 import { UserPublicProfile } from '../../models/user-public-profile.model';
+import { AvatarUrlPipe } from '../../pipes/avatar-url.pipe';
 
 @Component({
   selector: 'app-user-public-profile',
@@ -10,7 +11,8 @@ import { UserPublicProfile } from '../../models/user-public-profile.model';
   imports: [
     CommonModule,
     DatePipe,
-    RouterLink
+    RouterLink,
+    AvatarUrlPipe
   ],
   templateUrl: './user-public-profile.html',
   styleUrl: './user-public-profile.scss'
@@ -48,6 +50,6 @@ export class UserPublicProfileComponent implements OnInit {
 
   getAvatarUrl(avatar?: string | null): string {
     if (!avatar) return '/assets/default-avatar.png';
-    return `/api/v1/uploads/${avatar}`;
+    return `/${avatar}`;
   }
 }

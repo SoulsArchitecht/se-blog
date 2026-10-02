@@ -28,7 +28,7 @@
         <div class="post-meta">
           <div class="author-info">
             <img 
-              [src]="getAvatarUrl(post()!.author.avatarUrl)" 
+              [src]="post()!.author.avatarUrl | avatarUrl" 
               [alt]="post()!.author.username"
               class="author-avatar"
               onerror="this.src='/assets/default-avatar.png'"

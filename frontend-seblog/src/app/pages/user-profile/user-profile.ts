@@ -8,11 +8,16 @@ import { User } from '../../models/user.model';
 import { RouterLink } from '@angular/router';
 import { UserProfileService } from '../../services/user-profile.service';
 import { UserProfileUpdate } from '../../models/user-profile.model';
+import { AvatarUrlPipe } from '../../pipes/avatar-url.pipe';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, 
+    ReactiveFormsModule, 
+    RouterLink,
+    AvatarUrlPipe
+  ],
   templateUrl: './user-profile.html',
   styleUrls: ['./user-profile.scss']
 })
@@ -172,7 +177,7 @@ export class ProfileComponent implements OnInit {
     if (!avatarFilename) {
       return '/assets/default-avatar.png';
     }
-    return `/api/v1/uploads/${avatarFilename}`;
+    return `/${avatarFilename}`;
   }
 
   
