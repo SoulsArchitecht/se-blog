@@ -50,5 +50,12 @@ export const routes: Routes = [
     loadComponent: () => import('./components/user-public-profile/user-public-profile')
       .then(m => m.UserPublicProfileComponent),
     title: 'Профиль пользователя'
+  },
+  {
+    path: 'post/:id/edit',
+    loadComponent: () => import('./pages/post-edit/post-edit')
+      .then(m => m.PostEdit),
+      canActivate: [authGuard],
+      title: 'Редактировать пост'
   }
 ];

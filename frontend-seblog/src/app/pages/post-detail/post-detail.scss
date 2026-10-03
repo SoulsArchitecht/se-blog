@@ -149,19 +149,33 @@
       right: 1.5rem;
       display: flex;
       gap: 0.5rem;
+      flex-shrink: 0;
 
+      .btn-edit,
       .btn-danger {
-        background: #ef4444;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
         color: white;
         border: none;
         padding: 0.5rem 1rem;
         border-radius: 6px;
         font-weight: 500;
         cursor: pointer;
-        transition: background 0.2s;
+        font-size: 16px;
+        transition: all 0.2s;
 
         &:hover {
-          background: #dc2626;
+          background: #f3f4f6;
+          border-color: #d1d5db;
+        }
+      }
+
+      .btn-danger {
+        &:hover {
+          background: #fee2e2;
+          border-color: #ef4444;
         }
       }
     }

@@ -1,4 +1,4 @@
-.post-create-page {
+.post-edit-page {
   max-width: 900px;
   margin: 0 auto;
   padding: 32px 24px;
@@ -8,6 +8,13 @@
     font-size: 28px;
     color: #1f2937;
   }
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #6b7280;
 }
 
 .alert {

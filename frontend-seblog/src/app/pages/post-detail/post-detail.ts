@@ -14,6 +14,7 @@ import { VoteButtons } from '../../components/vote-buttons/vote-buttons';
 import { ContrastColorPipe } from '../../pipes/contrast-color.pipe';
 import { CategoryIconPipe } from '../../pipes/category-icon.pipe';
 import { AvatarUrlPipe } from '../../pipes/avatar-url.pipe';
+import { safeHtmlPipe } from '../../pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-post-detail',
@@ -26,7 +27,8 @@ import { AvatarUrlPipe } from '../../pipes/avatar-url.pipe';
     VoteButtons,
     ContrastColorPipe,
     CategoryIconPipe,
-    AvatarUrlPipe
+    AvatarUrlPipe,
+    safeHtmlPipe
   ],
   templateUrl: './post-detail.html',
   styleUrls: ['./post-detail.scss']

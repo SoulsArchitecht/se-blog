@@ -1,0 +1,83 @@
+<form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-form">
+  <div class="form-group">
+    <label for="title">Заголовок</label>
+    <input
+      id="title"
+      formControlName="title"
+      type="text"
+      placeholder="Введите заголовок поста"
+      class="form-control"
+    >
+    @if (postForm.get('title')?.invalid && postForm.get('title')?.touched) {
+      <span class="error-message">Заголовок обязателен (от 5 до 200 символов)</span>
+    }
+  </div>
+
+  <div class="form-group">
+    <label for="postType">Категория</label>
+    <select id="postType" formControlName="postType" class="form-control">
+      <option value="">Выберите категорию</option>
+      @for (cat of categories; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+    @if (postForm.get('postType')?.invalid && postForm.get('postType')?.touched) {
+      <span class="error-message">Выберите категорию</span>
+    }
+  </div>
+
+  <div class="form-group">
+    <label>Содержание</label>
+    <quill-editor
+      formControlName="content"
+      [modules]="editorModules"
+      [styles]="{ height: '400px' }"
+      placeholder="Напишите содержание поста..."
+    ></quill-editor>
+    @if (postForm.get('content')?.invalid && postForm.get('content')?.touched) {
+      <span class="error-message">Содержание обязательно (минимум 50 символов)</span>
+    }
+  </div>
+
+  <div class="form-group">
+    <label for="tags">Теги (через запятую)</label>
+    <input
+      id="tags"
+      formControlName="tags"
+      type="text"
+      placeholder="java, spring, backend"
+      class="form-control"
+    >
+  </div>
+
+  <div class="form-group">
+    <label for="customSlug">Slug (необязательно)</label>
+    <input
+      id="customSlug"
+      formControlName="customSlug"
+      type="text"
+      placeholder="my-awesome-post"
+      class="form-control"
+    >
+  </div>
+
+  <div class="form-group checkbox-group">
+    <label>
+      <input type="checkbox" formControlName="isPublished">
+      Опубликовать сразу
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <button
+      type="submit"
+      [disabled]="isSubmitting() || postForm.invalid"
+      class="btn btn-primary"
+    >
+      {{ isSubmitting() ? 'Сохранение...' : (mode() === 'edit' ? 'Обновить' : 'Создать') }}
+    </button>
+    <button type="button" (click)="onCancel()" class="btn btn-secondary">
+      Отмена
+    </button>
+  </div>
+</form>

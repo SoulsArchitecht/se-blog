@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PostForm } from '../../components/post-form/post-form';
 import { Router, RouterLink } from '@angular/router';
 import { PostService } from '../../services/post.service';
 import { PostCreate } from '../../models/post.model';
@@ -10,80 +10,30 @@ import { PostCreate } from '../../models/post.model';
   standalone: true,
   imports: [
     CommonModule, 
-    ReactiveFormsModule,
+    PostForm,
     RouterLink
   ],
   templateUrl: './post-create.html',
   styleUrls: ['./post-create.scss']
 })
 export class PostCreateComponent {
-  private fb = inject(FormBuilder);
   private postService = inject(PostService);
   public router = inject(Router);
   
-  postForm: FormGroup;
-  isLoading = signal(false);
   errorMessage = signal<string>('');
   
-  categories = [
-    'Hardware',
-    'Software',
-    'Music',
-    'Humor',
-    'Поэзия',
-    'Проза'
-  ];
-  
-  constructor() {
-    this.postForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
-      content: ['', [Validators.required, Validators.minLength(50)]],
-      postType: ['', Validators.required],
-      tags: [''],
-      isPublished: [true],
-      customSlug: ['']
-    });
-  }
-  
-  onSubmit(): void {
-    if (this.postForm.invalid) {
-      this.markFormAsTouched();
-      return;
-    }
-    
-    this.isLoading.set(true);
-    this.errorMessage.set('');
-    
-    const formValue = this.postForm.value;
-    const postData: PostCreate = {
-      content: formValue.content,
-      postTypeName: formValue.postType,
-      title: formValue.title,
-      status: formValue.isPublished ? 'PUBLISHED' : 'DRAFT',
-      tagNames: formValue.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
-      customSlug: formValue.customSlug || undefined,
-    };
-
-    console.log('Raw form value:', this.postForm.value);
-    console.log('JSON for request: ' + JSON.stringify(postData, null, 2));
-    
+  onSubmit(postData: any): void {
     this.postService.createPost(postData).subscribe({
       next: (response) => {
-        console.log('Post created successfully:', response);
-        this.isLoading.set(false);
         this.router.navigate(['/post', response.data.id]);
       },
       error: (error) => {
-        console.error('Error creating post', error);
-        this.errorMessage.set(error.message);
-        this.isLoading.set(false);
+        this.errorMessage.set(error.messgae || 'Ошибка создания поста');
       }
     });
   }
-  
-  private markFormAsTouched(): void {
-    Object.values(this.postForm.controls).forEach(control => {
-      control.markAsTouched();
-    });
+
+  onCancel(): void {
+    this.router.navigate(['/']);
   }
 }

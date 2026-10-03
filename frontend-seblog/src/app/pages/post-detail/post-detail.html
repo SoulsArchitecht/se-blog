@@ -15,6 +15,7 @@
   } @else if (post()) {
     <article class="post-detail">
       <header class="post-header">
+        <!-- Категория -->
         @if (post()!.type) {
           <a [routerLink]="['/type', post()!.type.slug]" class="category-badge"
              [style.backgroundColor]="post()!.type.colorHex"
@@ -23,8 +24,24 @@
             <span>{{ post()!.type.name }}</span>
           </a>
         }
-        <h1 class="post-title">{{ post()!.title }}</h1>
+
+        <!-- Заголовок + кнопки действий в одной строке -->
+        <div class="post-title-row">
+          <h1 class="post-title">{{ post()!.title }}</h1>
+          
+          @if (isAuthor) {
+            <div class="post-actions">
+              <a [routerLink]="['/post', post()!.id, 'edit']" class="btn-edit" title="Редактировать">
+                ✏️
+              </a>
+              <button (click)="deletePost()" class="btn-danger" title="Удалить">
+                🗑️
+              </button>
+            </div>
+          }
+        </div>
         
+        <!-- Мета-информация -->
         <div class="post-meta">
           <div class="author-info">
             <img 
@@ -48,23 +65,14 @@
             </span>
           </div>
         </div>
-
-        @if (canEdit) {
-          <div class="post-actions">
-            <button 
-              (click)="deletePost()" 
-              class="btn-danger"
-            >
-              Удалить
-            </button>
-          </div>
-        }
       </header>
 
+      <!-- Содержимое поста (теперь как HTML) -->
       <div class="post-content">
-        <div class="post-body">{{ post()!.content }}</div>
+        <div class="post-body" [innerHTML]="post()!.content | safeHtml"></div>
       </div>
 
+      <!-- Голосование -->
       <div class="post-voting">
         <app-vote-buttons
           entityType="post"
@@ -76,9 +84,10 @@
         />  
       </div>
 
+      <!-- Статистика -->
       <div class="post-stats">
         <div class="stat-item">
-          <span class="stat-icon">👁️</span>
+          <span class="stat-icon">️</span>
           <span>{{ post()?.viewCount ?? 0 }} просмотров</span>
         </div>
         <div class="stat-item">

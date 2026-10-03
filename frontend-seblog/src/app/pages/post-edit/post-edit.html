@@ -1,0 +1,18 @@
+<div class="post-edit-page">
+  <h1>Редактировать пост</h1>
+
+  @if (isLoading()) {
+    <div class="loading">Загрузка...</div>
+  } @else if (errorMessage()) {
+    <div class="alert alert-error">
+      {{ errorMessage() }}
+    </div>
+  } @else {
+    <app-post-form
+      mode="edit"
+      [initialData]="postData()"
+      (submitted)="onSubmit($event)"
+      (cancelled)="onCancel()"
+    />
+  }
+</div>
