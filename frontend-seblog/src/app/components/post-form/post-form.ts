@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import Quill from 'quill';
 import { QuillModule, QuillModules } from 'ngx-quill';
 import { ApiService } from '../../services/api.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-post-form',
@@ -31,7 +32,7 @@ export class PostForm implements OnInit {
   postForm!: FormGroup;
   isSubmitting = signal(false);
 
-  categories = ['Hardware', 'Software', 'Music', 'Poetry', 'Proza'];
+  categories = ['Hardware', 'Software', 'Music', 'Humor', 'Поэзия', 'Проза'];
 
   editorModules: QuillModules = {
     toolbar: {
@@ -41,10 +42,7 @@ export class PostForm implements OnInit {
         [{list: 'ordered'}, {list: 'bullet'}],
         ['link', 'image', 'video'],
         ['clean']
-      ],
-      handlers: {
-        image: this.imageHandler.bind(this)
-      }
+      ]
     }
   };
 
@@ -60,21 +58,38 @@ export class PostForm implements OnInit {
 
     if (this.mode() === 'edit' && this.initialData()) {
       const data = this.initialData();
+
+      const rawTags = data.tagNames || data.tags || [];
+
+      let initialTags = '';
+
+      if (Array.isArray(rawTags)) {
+        if (rawTags.length > 0 && typeof rawTags[0] === 'object') {
+          initialTags = rawTags.map((tag: any) => tag.name || tag).join(', ');
+        } else {
+          initialTags = rawTags.join(', ');
+        }
+      } else if (typeof rawTags === 'string') {
+        initialTags = rawTags;
+      }      
+
       this.postForm.patchValue({
         title: data.title,
         content: data.content,
         postType: data.postTypeName || data.type?.name,
-        tags: data.tagNames?.join(', ') || '',
+        tags: initialTags,
         isPublished: data.status === 'PUBLISHED',
         customSlug: data.slug || ''
       });
     }
   }
 
-  private imageHandler(): void {
-    const quill = (this as any).quillEditor?.quill;
-    if (!quill) return;
+  onEditorCreated(quill: any): void {
+    const toolbar = quill.getModule('toolbar');
+    toolbar.addHandler('image', () => this.imageHandler(quill));
+  }
 
+  private imageHandler(quill: any): void {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
@@ -84,13 +99,16 @@ export class PostForm implements OnInit {
       if (!file) return;
 
       const range = quill.getSelection(true);
-      quill.insertText(range.index, 'Загрузка изображения...',  { italic: true });
+      if (!range) return;
+
+      quill.insertText(range.index, 'Загрузка изображения...', { italic: true });
 
       try {
         const formData = new FormData();
         formData.append('image', file);
+        
         const response: any = await this.apiService.post('/uploads/post-image', formData).toPromise();
-        const url = response?.data?.url || response?.url;
+        let url = response?.data?.url || response?.url;
 
         quill.deleteText(range.index, 'Загрузка изображения...'.length);
         quill.insertEmbed(range.index, 'image', url);
@@ -98,6 +116,7 @@ export class PostForm implements OnInit {
       } catch (error) {
         console.error('Ошибка загрузки изображения', error);
         quill.deleteText(range.index, 'Загрузка изображения...'.length);
+        alert('Не удалось загрузить изображение');
       }
     };
 
@@ -113,15 +132,31 @@ export class PostForm implements OnInit {
     this.isSubmitting.set(true);
     const formValue = this.postForm.value;
 
+    let finalSlug = formValue.customSlug?.trim();
+    if (this.mode() === 'edit' && (!finalSlug || finalSlug.length === 0)) {
+      finalSlug = this.initialData()?.slug || undefined;
+    }
+
+    let rawTagsArray = formValue.tags
+      ? formValue.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
+      : [];
+
+    let finalTagNames = rawTagsArray;
+    if (this.mode() === 'edit' && rawTagsArray.length === 0) {
+      const originalTags = this.initialData()?.tagNames;
+      finalTagNames = Array.isArray(originalTags) ? originalTags : (originalTags ? [originalTags] : undefined);
+    }
+
     const postData = {
-      content: formValue.content,
-      postTypeName: formValue.postType,
       title: formValue.title,
+      content: formValue.content,
+      postTypeName: formValue.postType, 
       status: formValue.isPublished ? 'PUBLISHED' : 'DRAFT',
-      tagNames: formValue.tags.split(',').map((t: string) => t.trim()).filter(Boolean),
-      customSlug: formValue.customSlug || undefined,
+      slug: finalSlug,                  
+      tagNames: finalTagNames
     };
 
+    console.log('📤 Отправляем на бэкенд:', postData);
     this.submitted.emit(postData);
   }
 

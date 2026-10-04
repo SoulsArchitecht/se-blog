@@ -33,6 +33,7 @@
       [modules]="editorModules"
       [styles]="{ height: '400px' }"
       placeholder="Напишите содержание поста..."
+      (onEditorCreated)="onEditorCreated($event)"
     ></quill-editor>
     @if (postForm.get('content')?.invalid && postForm.get('content')?.touched) {
       <span class="error-message">Содержание обязательно (минимум 50 символов)</span>
