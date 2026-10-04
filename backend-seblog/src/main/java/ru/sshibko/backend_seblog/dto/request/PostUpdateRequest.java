@@ -30,9 +30,9 @@ public record PostUpdateRequest(
                 example = "PUBLISHED")
         PostStatus status,
 
-        @Schema(description = "Новый тип поста",
-                example = "123e4567-e89b-12d3-a456-426614174000")
-        UUID postTypeId,
+        @Schema(description = "Новое имя типа поста",
+                example = "Hardware")
+        String postTypeName,
 
         @Schema(description = "Новые теги",
                 example = "[\"updated\", \"tags\"]")

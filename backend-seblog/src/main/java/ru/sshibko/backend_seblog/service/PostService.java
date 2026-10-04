@@ -200,16 +200,19 @@ public class PostService {
             }
         }
 
-        PostType postType = postTypeRepository.findById(request.postTypeId())
-                .orElseThrow(() -> new NotFoundException(
-                        ErrorCode.POST_NOT_FOUND,
-                        "Post",
-                        request.postTypeId(),
-                        "Post type not found with ID: " + request.postTypeId()));
+        if (request.postTypeName() != null && !request.postTypeName().isBlank()) {
+            PostType newPostType = postTypeRepository.findByName(request.postTypeName())
+                    .orElseThrow(() -> new NotFoundException(
+                            ErrorCode.POST_NOT_FOUND,
+                            "PostType",
+                            request.postTypeName(),
+                            "Post type not found with ID: " + request.postTypeName()
+                    ));
 
-        post.setType(postType);
+            post.setType(newPostType);
+        }
 
-        if (request.tagNames() != null) {
+        if (request.tagNames() != null && !request.tagNames().isEmpty()) {
             Set<Tag> tags = tagService.getOrCreateTags(request.tagNames());
             post.setTags(tags);
         }

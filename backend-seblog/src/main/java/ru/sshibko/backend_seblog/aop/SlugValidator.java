@@ -14,7 +14,7 @@ public class SlugValidator implements ConstraintValidator<ValidSlug, String> {
     @Override
     public boolean isValid(String slug, ConstraintValidatorContext context) {
         if (slug == null || slug.isBlank()) {
-            return false;
+            return true;
         }
         return SLUG_PATTERN.matcher(slug).matches();
     }
