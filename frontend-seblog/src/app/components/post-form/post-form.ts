@@ -111,7 +111,8 @@ export class PostForm implements OnInit {
         let url = response?.data?.url || response?.url;
 
         if (url && url.startsWith('/')) {
-          url = window.location.origin + url;
+          const path = url.replace('/api/v1', '');
+          url = environment.apiUrl + path;
         }
 
         quill.deleteText(range.index, 'Загрузка изображения...'.length);
