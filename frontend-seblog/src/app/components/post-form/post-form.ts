@@ -110,9 +110,17 @@ export class PostForm implements OnInit {
         const response: any = await this.apiService.post('/uploads/post-image', formData).toPromise();
         let url = response?.data?.url || response?.url;
 
+        if (url && url.startsWith('/')) {
+          url = window.location.origin + url;
+        }
+
         quill.deleteText(range.index, 'Загрузка изображения...'.length);
         quill.insertEmbed(range.index, 'image', url);
         quill.setSelection(range.index + 1);
+
+        const html = quill.root.innerHTML;
+        this.postForm.get('content')?.setValue(html, { emitEvent: true});
+
       } catch (error) {
         console.error('Ошибка загрузки изображения', error);
         quill.deleteText(range.index, 'Загрузка изображения...'.length);
