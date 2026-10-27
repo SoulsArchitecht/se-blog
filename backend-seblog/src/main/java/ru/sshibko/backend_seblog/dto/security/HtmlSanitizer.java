@@ -11,6 +11,7 @@ public class HtmlSanitizer {
 
     private final Safelist safelist;
 
+    //TODO update before deploy
     public HtmlSanitizer() {
         this.safelist = Safelist.relaxed()
                 .addTags("figure", "figcaption")
@@ -25,8 +26,8 @@ public class HtmlSanitizer {
                 .addProtocols("a", "href", "http", "https", "mailto")
                 .addEnforcedAttribute("a", "rel", "noOpener noReferrer nofollow")
                 //for pics
-                .addAttributes("img", "src", "alt", "title", "width", "height")
-                .addProtocols("img", "src", "http", "https", "data");
+                .addAttributes("img", "src", "alt", "title", "width", "height");
+                //.addProtocols("img", "src", "http", "https", "data");
     }
 
     public String sanitize(String html) {
