@@ -18,8 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.sshibko.backend_seblog.dto.UserDto;
 import ru.sshibko.backend_seblog.dto.security.AuthRequest;
 import ru.sshibko.backend_seblog.dto.security.AuthResponse;
+import ru.sshibko.backend_seblog.dto.security.RefreshTokenRequest;
 import ru.sshibko.backend_seblog.dto.security.RegisterRequest;
 import ru.sshibko.backend_seblog.exception.AuthenticationException;
+import ru.sshibko.backend_seblog.exception.InvalidTokenException;
 import ru.sshibko.backend_seblog.mapper.UserMapperService;
 import ru.sshibko.backend_seblog.model.entity.User;
 import ru.sshibko.backend_seblog.model.entity.enums.UserRole;
@@ -196,6 +198,43 @@ class AuthServiceTest {
                     .hasMessageContaining("User already exists with email: " + request.getEmail());
 
             verify(userRepository, never()).save(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("Refresh Token Method")
+    class RefreshTokenTests {
+
+        @Test
+        @DisplayName("Should return new tokens when refresh token is valid")
+        void refreshTokenShouldNewTokensWhenTokenIsValid() {
+            RefreshTokenRequest request = UserTestData.createRefreshTokenRequest(REFRESH_TOKEN);
+
+            when(jwtUtils.extractUsername(REFRESH_TOKEN)).thenReturn(testUser.getUsername());
+            when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
+            when(jwtUtils.validateToken(REFRESH_TOKEN)).thenReturn(true);
+            when(jwtUtils.generateToken(any(UserDetails.class))).thenReturn("new-access-token");
+            when(jwtUtils.generateRefreshToken(any(UserDetails.class))).thenReturn("new-refresh-token");
+            when(userMapperService.mapToUserDto(testUser)).thenReturn(testUserDto);
+
+            AuthResponse response = authService.refreshToken(request);
+
+            assertThat(response.getAccessToken()).isEqualTo("new-access-token");
+            assertThat(response.getRefreshToken()).isEqualTo("new-refresh-token");
+        }
+
+        @Test
+        @DisplayName("Should throw InvalidTokenException when token validation fails")
+        void refreshTokenShouldThrowInvalidTokenExceptionWhenTokenIsInvalid() {
+            RefreshTokenRequest request = UserTestData.createRefreshTokenRequest("invalid-token");
+
+            when(jwtUtils.extractUsername("invalid-token")).thenReturn(testUser.getUsername());
+            when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
+            when(jwtUtils.validateToken("invalid-token")).thenReturn(false);
+
+            assertThatThrownBy(() -> authService.refreshToken(request))
+                    .isInstanceOf(InvalidTokenException.class)
+                    .hasMessageContaining("invalid-token");
         }
     }
 }
