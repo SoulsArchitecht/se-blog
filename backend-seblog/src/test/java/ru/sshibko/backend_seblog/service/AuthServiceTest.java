@@ -77,7 +77,7 @@ class AuthServiceTest {
     class LoginTests {
 
         @Test
-        @DisplayName("Should return AtuhResponse when credentials are valid")
+        @DisplayName("Should return AuthResponse when credentials are valid")
         void loginShouldReturnAuthResponseWhenCredentialsAreValid() {
             //Arrange
             AuthRequest request = UserTestData.createAuthRequest(testUser.getEmail(), RAW_PASSWORD);
