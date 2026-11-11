@@ -18,7 +18,7 @@ public class PostTestData {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    public static User crateAuthor() {
+    public static User createAuthor() {
         return User.builder()
                 .id(UUID.randomUUID())
                 .username("author")
@@ -48,6 +48,13 @@ public class PostTestData {
                 .author(author)
                 .type(type)
                 .viewCount(0L)
+                .build();
+    }
+
+    public static PostType createPostType(String name) {
+        return PostType.builder()
+                .id(UUID.randomUUID())
+                .name(name)
                 .build();
     }
 
