@@ -28,7 +28,7 @@ public class PostTestData {
                 .build();
     }
 
-    public static User crateAnotherUser() {
+    public static User createAnotherUser() {
         return User.builder()
                 .id(UUID.randomUUID())
                 .username("somebody")
