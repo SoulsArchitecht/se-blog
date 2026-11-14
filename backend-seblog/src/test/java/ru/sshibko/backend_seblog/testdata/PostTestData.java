@@ -12,7 +12,7 @@ import ru.sshibko.backend_seblog.model.entity.enums.UserStatus;
 import java.util.Set;
 import java.util.UUID;
 
-public class PostTestData {
+public final class PostTestData {
 
     private PostTestData() {
         throw new UnsupportedOperationException("Utility class");

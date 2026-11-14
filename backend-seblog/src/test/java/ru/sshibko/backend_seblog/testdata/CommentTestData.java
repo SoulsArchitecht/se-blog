@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class CommentTestData {
+public final class CommentTestData {
 
     private CommentTestData() {
         throw new UnsupportedOperationException("Utility class");
