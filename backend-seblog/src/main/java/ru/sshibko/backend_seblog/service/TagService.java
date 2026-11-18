@@ -66,7 +66,7 @@ public class TagService {
             throw new ValidationException(
                     ErrorCode.DUPLICATE_TAG_NAME,
                     "Тэг уже существует",
-                    request.name()
+                    "Tag already exists with name " + request.name()
             );
         }
 
