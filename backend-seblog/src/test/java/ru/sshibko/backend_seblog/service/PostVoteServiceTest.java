@@ -10,10 +10,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import ru.sshibko.backend_seblog.dto.VoteStats;
 import ru.sshibko.backend_seblog.dto.request.VoteRequest;
 import ru.sshibko.backend_seblog.exception.AccessDeniedException;
+import ru.sshibko.backend_seblog.exception.NotFoundException;
 import ru.sshibko.backend_seblog.model.entity.Post;
 import ru.sshibko.backend_seblog.model.entity.PostVote;
 import ru.sshibko.backend_seblog.model.entity.User;
@@ -164,6 +167,110 @@ class PostVoteServiceTest {
             //Assert
             assertThat(result).isEqualTo(VoteType.DISLIKE);
         }
+
+        @Test
+        @DisplayName("Should return null when user is not authenticated")
+        void getCurrentUserVoteForPostShouldReturnNullWhenNotAuthenticated() {
+            //Arrange
+            when(userService.getCurrentUserOrNull()).thenReturn(null);
+
+            //Act
+            VoteType result = postVoteService.getCurrentUserVoteForPost(testPost.getId());
+
+            //Assert
+            assertThat(result).isNull();
+            verify(postVoteRepository, never()).findByUserIdAndPostId(any(), any());
+        }
     }
 
+    @Nested
+    @DisplayName("Remove Post Vote Method")
+    class RemovePostVoteMethod {
+
+        @Test
+        @DisplayName("Should delete vote successfully")
+        void removePostVoteShouldDeleteVoteWhenExists() {
+            //Arrange
+            PostVote existingVote = PostVoteTestData.createVote(testVoter, testPost, VoteType.LIKE);
+            when(postVoteRepository.findByUserIdAndPostId(testVoter.getId(), testPost.getId()))
+                    .thenReturn(Optional.of(existingVote));
+
+            //Act
+            postVoteService.removePostVote(testPost.getId());
+
+            //Assert
+            verify(postVoteRepository, times(1)).delete(existingVote);
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when vote does not exist")
+        void removePostVoteShouldThrowExceptionWhenVoteNoteFound() {
+            //Arrange
+            when(postVoteRepository.findByUserIdAndPostId(testVoter.getId(), testPost.getId()))
+                    .thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThatThrownBy(() -> postVoteService.removePostVote(testPost.getId()))
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessageContaining("PostVote with identifier '" + testPost.getId()
+                    + "' not found");
+
+            verify(postVoteRepository, never()).delete(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("Get Post Vote Stats Method")
+    class GetPostVoteStatsTests {
+
+        @Test
+        @DisplayName("Should calculate stats correctly for authenticated user")
+        void getPostVoteStatsShouldCalculateCorrectlyWhenUserIsAuthenticated() {
+            //Arrange
+            PostVote userVote = PostVoteTestData.createVote(testVoter, testPost, VoteType.LIKE);
+            when(postVoteRepository.countByPostIdAndType(testPost.getId(), VoteType.LIKE)).thenReturn(10);
+            when(postVoteRepository.countByPostIdAndType(testPost.getId(), VoteType.DISLIKE)).thenReturn(3);
+            when(postVoteRepository.findByUserIdAndPostId(testVoter.getId(), testPost.getId()))
+                    .thenReturn(Optional.of(userVote));
+
+            Authentication mockAuth = mock(Authentication.class);
+            when(mockAuth.isAuthenticated()).thenReturn(true);
+            when(mockAuth.getName()).thenReturn("authenticatedUser");
+            when(securityContext.getAuthentication()).thenReturn(mockAuth);
+
+            when(userService.getCurrentUser()).thenReturn(testVoter);
+
+            //Act
+            VoteStats stats = postVoteService.getPostVoteStats(testPost.getId());
+
+            //Assert
+            assertThat(stats.likesCount()).isEqualTo(10);
+            assertThat(stats.dislikesCount()).isEqualTo(3);
+            assertThat(stats.totalScore()).isEqualTo(7);
+            assertThat(stats.userVote()).isEqualTo(VoteType.LIKE);
+        }
+
+        @Test
+        @DisplayName("Should gracefully handle exceptions and return null userVote for anonymous")
+        void getPostVoteStatsShouldGracefullyHandleExceptionWhenUserIsAnonymous() {
+            //Arrange
+            when(postVoteRepository.countByPostIdAndType(testPost.getId(), VoteType.LIKE)).thenReturn(5);
+            when(postVoteRepository.countByPostIdAndType(testPost.getId(), VoteType.DISLIKE)).thenReturn(2);
+
+            Authentication mockAuth = mock(Authentication.class);
+            when(mockAuth.isAuthenticated()).thenReturn(false);
+            when(securityContext.getAuthentication()).thenReturn(mockAuth);
+
+            //Act
+            VoteStats stats = postVoteService.getPostVoteStats(testPost.getId());
+
+            //Assert
+            assertThat(stats.likesCount()).isEqualTo(5);
+            assertThat(stats.dislikesCount()).isEqualTo(2);
+            assertThat(stats.totalScore()).isEqualTo(3);
+            assertThat(stats.userVote()).isNull();
+
+            verify(postVoteRepository, never()).findByUserIdAndPostId(any(), any());
+        }
+    }
 }
