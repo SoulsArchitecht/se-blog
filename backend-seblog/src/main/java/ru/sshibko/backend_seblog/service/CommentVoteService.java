@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,7 +50,11 @@ public class CommentVoteService {
                         "comment not found with ID: " + commentId));
 
         if (comment.getAuthor().getId().equals(currentUser.getId())) {
-            throw new AccessDeniedException("You are not allowed to vote this comment");
+            throw new AccessDeniedException(
+                    ErrorCode.ACCESS_DENIED,
+                    "Вы не можете голосовать за свой комментарий",
+                    "User is not allowed to vote for this comment with id: " + commentId
+            );
         }
 
         Optional<CommentVote> existingVote = commentVoteRepository.findByUserIdAndCommentId(
